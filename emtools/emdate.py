@@ -13,6 +13,17 @@ def fixed_length(_s, length=2, fixed="0", behind=None):
     return _s
 
 
+def timestamp_to_datetime(ts_date):
+    if isinstance(ts_date, int):
+        return dt.datetime.fromtimestamp(ts_date)
+    if isinstance(ts_date, str):
+        try:
+            ts_date = int(ts_date)
+        except:
+            ts_date = 0
+        return dt.datetime.fromtimestamp(ts_date)
+
+
 def datetime_to_int(_dt, date_day=None, date_time=None, time_int=None):
     if date_day:
         return _dt.year * 10000 + _dt.month * 100 + _dt.day
@@ -24,7 +35,7 @@ def datetime_to_int(_dt, date_day=None, date_time=None, time_int=None):
 
 def datetime_format(
         _dt, repair=1, date_day=None, date_month=None,
-        date_time=None, date_hour=None, date_minute=None, format_sisign="-"
+        date_time=None, date_hour=None, date_minute=None, format_sign="-"
 ):
     _year = _dt.year
     if repair:
@@ -36,19 +47,19 @@ def datetime_format(
     else:
         _month, _day, _hour, _minute, _second = _dt.month, _dt.day, _dt.hour, _dt.minute, _dt.second
     if date_day:
-        return "{Y}{si}{M}{si}{D}".format(Y=_year, M=_month, D=_day, si=format_sisign)
+        return "{Y}{si}{M}{si}{D}".format(Y=_year, M=_month, D=_day, si=format_sign)
     if date_month:
-        return "{Y}{si}{M}".format(Y=_year, M=_month, si=format_sisign)
+        return "{Y}{si}{M}".format(Y=_year, M=_month, si=format_sign)
     if date_time:
         return "{Y}{si}{M}{si}{D} {H}:{m}:{s}".format(
-            Y=_year, M=_month, D=_day, H=_hour, m=_minute, s=_second, si=format_sisign
+            Y=_year, M=_month, D=_day, H=_hour, m=_minute, s=_second, si=format_sign
         )
     if date_hour:
         return "{Y}{si}{M}{si}{D} {H}".format(
-            Y=_year, M=_month, D=_day, H=_hour, si=format_sisign
+            Y=_year, M=_month, D=_day, H=_hour, si=format_sign
         )
     if date_minute:
         return "{Y}{si}{M}{si}{D} {H}:{m}".format(
-            Y=_year, M=_month, D=_day, H=_hour, m=_minute, si=format_sisign
+            Y=_year, M=_month, D=_day, H=_hour, m=_minute, si=format_sign
         )
     return "--"
