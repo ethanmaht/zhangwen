@@ -7,66 +7,38 @@ database_host:
   - data_base:
       name: happy_seven
       host: rr-2zeh202up6hhmg5kc.mysql.rds.aliyuncs.com
-      base:
-        cps:
 
   - data_base:
-      name: distribution_1
+      name: shard
       host: rr-2zeosaq969q3d1lw2.mysql.rds.aliyuncs.com
       size:
         start: 0
         end: 127
-      base:
-        cps_user:
-          user:
-          order:
-        cps_shard:
-          consume:
-          sign:
-          user_recently_read:
+
   - data_base:
-      name: distribution_2
-      host: rr-2zeihi538whv400p2.mysql.rds.aliyuncs.com
+      name: shard
+      host: rr-2zeo525og61jh6wz4.mysql.rds.aliyuncs.com
       size:
         start: 128
         end: 255
-      base:
-        cps_user:
-          user:
-          order:
-        cps_shard:
-          consume:
-          sign:
-          user_recently_read:
+
   - data_base:
-      name: distribution_3
+      name: shard
       host: rr-2ze9l7as602nysv4y.mysql.rds.aliyuncs.com
       size:
         start: 256
         end: 383
-      base:
-        cps_user:
-          user:
-          order:
-        cps_shard:
-          consume:
-          sign:
-          user_recently_read:
+
   - data_base:
-      name: distribution_4
+      name: shard
       host: rr-2ze963rfwrs7nq264.mysql.rds.aliyuncs.com
       size:
         start: 384
         end: 511
-      base:
-        cps_user:
-          user:
-          order:
-        cps_shard:
-          consume:
-          sign:
-          user_recently_read:
 
 
-
-
+datamarket:
+  host: 172.16.0.248
+  user: root
+  pw: Qiyue@123
+  db_name: happy_seven
