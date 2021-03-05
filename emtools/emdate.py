@@ -63,3 +63,14 @@ def datetime_format(
             Y=_year, M=_month, D=_day, H=_hour, m=_minute, si=format_sign
         )
     return "--"
+
+
+def date_num_dict(date, days):
+    date = dt.datetime.strptime(str(date), "%Y-%m-%d")
+    date_dict = {}
+    for _ in range(days):
+        _day = _ + 1
+        _date = date + dt.timedelta(days=_day)
+        date_dict.update({datetime_format(_date, date_day=1): str(_day+1)})
+    return date_dict
+

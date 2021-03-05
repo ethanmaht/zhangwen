@@ -29,12 +29,14 @@ def connect_database(host, db_name):
         host='127.0.0.1', port=server.local_bind_port,
         user='cps_select', passwd='KU4CsBwrVKpmXt@4yk&LBDuI'
     )
+    print('**********************')
     return conn
 
 
 def connect_database_vpn(base_name):
     _config = read_db_host('config.yml')
     _base = _config[base_name]
+    print(_base)
     conn = pymysql.connect(
         host=_base['host'], port=3306,
         user=_base['user'], passwd=_base['pw'], db=_base['db_name']
@@ -113,11 +115,11 @@ def insert_to_data(write_data, conn, table, method=None):
     _sql, _val = make_inert_sql(table, _data)
     cursor = conn.cursor()
     cursor.executemany(_sql, _val)
-    print('****** write success {table}'.format(table=table))
     conn.commit()
+    print('****** write success {table} ******'.format(table=table))
     # try:
     #     cursor.executemany(_sql, _val)
-    #     print('======>> write success {table}'.format(table=table))
+    #     print('****** write success {table} ******'.format(table=table))
     #     conn.commit()
     # except:
     #     conn.rollback()
@@ -139,6 +141,13 @@ def switch_job(db_name, conn, size):
     """
     if db_name == 'shard':
         data_job.read_data_user_day(conn, size)
+
+
+def read_from_sql(sql, conn):
+    with conn.cursor() as cursor:
+        cursor.execute(sql)
+        result = cursor.fetchall()
+    return result
 
 
 if __name__ == "__main__":

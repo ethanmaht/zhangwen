@@ -41,3 +41,18 @@ FROM cps_user_{_num}.orders
 where createtime >= unix_timestamp('{date}')
 group by user_id,date_day;
 """
+
+sql_retain_date_day = """
+select * 
+from happy_seven.user_day
+where date_day = {date} 
+    and tab_num >= {s_num} and tab_num < {e_num}
+"""
+
+sql_retain_date_day_30 = """
+select user_id,date_day
+from happy_seven.user_day
+where date_day >= {s_date} and date_day < {e_date}
+    and tab_num >= {s_num} and tab_num < {e_num}
+"""
+
