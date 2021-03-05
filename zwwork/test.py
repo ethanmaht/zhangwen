@@ -30,8 +30,11 @@ def connect_database_vpn():
 
 if __name__ == '__main__':
     # print(os.getcwd())
-    # a = df({'ke': 1, 'v': 2}, index=[0])
+    # a = df({'ke': [1, 2], 'v': [3, 4]})
+    #
+    # print(cm.pad_col(a, ['s', 'b', 'v']))
     # print(a)
+
     a = retained.KeepTableDay()
     a.count_keep_table_day_run()
 

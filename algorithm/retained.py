@@ -4,7 +4,6 @@ from pandas import DataFrame as df
 from emtools import sql_code
 from emtools import currency_means as cm
 from emtools import read_database as rd
-import datetime as dt
 from emtools import emdate
 
 
@@ -32,6 +31,7 @@ def retain_date_day(conn, db_name, table, date):
     one_day['user_id'] = one_day['user_id'].astype(int)
     one_day = pd.merge(one_day, day_30, on='user_id', how='left')
     one_day.rename(columns=date_dict, inplace=True)
+    one_day = cm.pad_col(one_day)
     one_day.fillna(0, inplace=True)
     one_day.to_csv(r'D:\work\test_files\t.csv')
     return one_day
@@ -41,7 +41,7 @@ class KeepTableDay:
     def __init__(self):
         self.host = '172.16.0.248'
         self.table_ = 'user_day'
-        self.s_date = '2021-01-19'
+        self.s_date = '2021-02-05'
         self.e_date = '2021-04-01'
 
     def count_keep_table_day_run(self):

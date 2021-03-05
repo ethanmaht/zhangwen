@@ -84,3 +84,13 @@ def cut_list(s_num, e_num, ways):
                 _.append(step)
             queue.append(_)
     return queue
+
+
+def pad_col(_df, col_list=None, fill=0):
+    if not col_list:
+        col_list = [str(n+1) for n in range(30)]
+    if isinstance(col_list, list):
+        df_col = list(_df.columns)
+        pad_list = [_ for _ in col_list if _ not in df_col]
+        _df[pad_list] = fill
+    return _df

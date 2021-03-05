@@ -15,11 +15,6 @@ def db_select(conn, sql):
     return _df
 
 
-def kan_book_day(conn, name):
-    # print(sql_code.sql_kan_book_day.format(date='2021-03-01'))
-    print(db_select(conn, sql_code.sql_kan_book_day.format(date='2021-03-01')))
-
-
 def read_data_user_day(conn_fig, size):
     _s, _e = size['start'], size['end'] + 1
     cm.thread_tool(_s, _e, 20, one_user_day, conn_fig, 'datamarket')

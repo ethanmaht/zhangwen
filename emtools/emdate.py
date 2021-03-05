@@ -1,5 +1,4 @@
 import datetime as dt
-import copy
 
 
 def fixed_length(_s, length=2, fixed="0", behind=None):

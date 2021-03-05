@@ -60,4 +60,3 @@ select user_id,date_day
 from {db}.{tab}
 where date_day >= '{s_date}' and date_day < '{e_date}'
 """
-

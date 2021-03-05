@@ -3,7 +3,6 @@ import yaml
 import pymysql
 from emtools import data_job
 import pandas as pd
-from pandas import DataFrame as df
 from emtools import sql_code
 import os
 
@@ -78,7 +77,6 @@ class DataBaseWork:
         size = self.size
         _s, _e = size['start'], size['end']
         while _e >= _s:
-            db_name = format_db_name(base, _s)
             conn = connect_database(self.host, )
             switch_job(base, conn, size)
             conn.close()
@@ -117,7 +115,7 @@ def make_inert_sql(db_name, table, _data):
     return f"replace INTO {db_name}.`{table}` {_col} VALUES {_char}", _val
 
 
-def insert_to_data(write_data, conn, db_name, table, method=None):
+def insert_to_data(write_data, conn, db_name, table):
     create_table(conn, db_name, table, 'ud_id')
     _data = write_data.to_dict(orient='split')
     _col = _data['columns']
@@ -178,4 +176,3 @@ if __name__ == "__main__":
     # connect = connect_database_vpn('datamarket')
     # insert_to_data(a, connect, 'test')
     # connect.close()
-
