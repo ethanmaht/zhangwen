@@ -42,7 +42,7 @@ def process_tool(s_num, e_num, ways, func, *args):
     for _one in queue:
         for step in _one:
             if step:
-                process_list.append(Process(target=func, args=(*args,)))
+                process_list.append(Process(target=func, args=(*args, step,)))
         for _ in process_list:
             # time.sleep(1)
             _.start()
@@ -59,7 +59,7 @@ def thread_tool(s_num, e_num, ways, func, *args):
             if step:
                 threads.append(threading.Thread(target=func, args=(*args, step,)))
         for _ in threads:
-            # time.sleep(10)
+            time.sleep(0.1)
             _.start()
         for t in threads:
             t.join()

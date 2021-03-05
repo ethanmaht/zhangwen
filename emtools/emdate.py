@@ -1,4 +1,5 @@
 import datetime as dt
+import copy
 
 
 def fixed_length(_s, length=2, fixed="0", behind=None):
@@ -65,6 +66,21 @@ def datetime_format(
     return "--"
 
 
+def datetime_format_code(
+        _dt, repair=1, code='{Y}-{M}-{D}'
+):
+    _year = _dt.year
+    if repair:
+        _month = fixed_length(_dt.month, )
+        _day = fixed_length(_dt.day, )
+        _hour = fixed_length(_dt.hour)
+        _minute = fixed_length(_dt.minute)
+        _second = fixed_length(_dt.second)
+    else:
+        _month, _day, _hour, _minute, _second = _dt.month, _dt.day, _dt.hour, _dt.minute, _dt.second
+    return code.format(Y=_year, M=_month, D=_day, h=_hour, m=_minute, s=_second)
+
+
 def date_num_dict(date, days):
     date = dt.datetime.strptime(str(date), "%Y-%m-%d")
     date_dict = {}
@@ -74,3 +90,27 @@ def date_num_dict(date, days):
         date_dict.update({datetime_format(_date, date_day=1): str(_day+1)})
     return date_dict
 
+
+def date_list(s_date, e_date, num=None, format_code=None):
+    if isinstance(s_date, str):
+        s_date = dt.datetime.strptime(s_date.split(' ')[0], "%Y-%m-%d")
+    if isinstance(e_date, str):
+        e_date = dt.datetime.strptime(e_date.split(' ')[0], "%Y-%m-%d")
+    _list, _ = [], s_date
+    if num:
+        for _num in range(num):
+            _ = s_date + dt.timedelta(days=_num)
+            if format_code:
+                _dt = datetime_format_code(_, code=format_code)
+            else:
+                _dt = _
+            _list.append(_dt)
+        return _list
+    while _ <= e_date:
+        if format_code:
+            _dt = datetime_format_code(_, code=format_code)
+        else:
+            _dt = _
+        _list.append(_dt)
+        _ = _ + dt.timedelta(days=1)
+    return _list

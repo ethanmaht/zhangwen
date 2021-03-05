@@ -8,6 +8,13 @@ where createtime >= unix_timestamp('{date}')
 group by book_id,createdate
 """
 
+sql_create_table = """
+CREATE TABLE IF NOT EXISTS {db_name}.`{table_name}`(
+   `{key_name}` BIGINT(20) UNSIGNED AUTO_INCREMENT,
+   PRIMARY KEY ( `{key_name}` )
+)ENGINE=InnoDB DEFAULT CHARSET=utf8;
+"""
+
 # 日别-用户-消费 1604160000 = 2020-11-01
 sql_user_consume_day = """
 SELECT user_id,date(from_unixtime(createtime)) date_day,sum(kandian) kd,
@@ -44,15 +51,13 @@ group by user_id,date_day;
 
 sql_retain_date_day = """
 select * 
-from happy_seven.user_day
-where date_day = {date} 
-    and tab_num >= {s_num} and tab_num < {e_num}
+from {db}.{tab}
+where date_day = '{date}'
 """
 
 sql_retain_date_day_30 = """
 select user_id,date_day
-from happy_seven.user_day
-where date_day >= {s_date} and date_day < {e_date}
-    and tab_num >= {s_num} and tab_num < {e_num}
+from {db}.{tab}
+where date_day >= '{s_date}' and date_day < '{e_date}'
 """
 

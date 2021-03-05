@@ -10,7 +10,7 @@ database_host:
 
   - data_base:
       name: shard
-      host: rr-2zeosaq969q3d1lw2.mysql.rds.aliyuncs.com
+      host: rr-2ze03zpy7yf536008.mysql.rds.aliyuncs.com
       size:
         start: 0
         end: 127
@@ -42,3 +42,23 @@ datamarket:
   user: root
   pw: Qiyue@123
   db_name: happy_seven
+
+shard_1:
+  host: rr-2ze03zpy7yf536008.mysql.rds.aliyuncs.com
+  user: cps_select
+  pw: KU4CsBwrVKpmXt@4yk&LBDuI
+
+shard_2:
+  host: rr-2ze03zpy7yf536008.mysql.rds.aliyuncs.com
+  user: cps_select
+  pw: KU4CsBwrVKpmXt@4yk&LBDuI
+
+shard_3:
+  host: rr-2ze03zpy7yf536008.mysql.rds.aliyuncs.com
+  user: cps_select
+  pw: KU4CsBwrVKpmXt@4yk&LBDuI
+
+shard_4:
+  host: rr-2ze03zpy7yf536008.mysql.rds.aliyuncs.com
+  user: cps_select
+  pw: KU4CsBwrVKpmXt@4yk&LBDuI

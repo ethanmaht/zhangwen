@@ -4,6 +4,8 @@ import pymysql
 from emtools import data_job
 import pandas as pd
 from pandas import DataFrame as df
+from emtools import sql_code
+import os
 
 
 def read_db_host(file_path):
@@ -17,7 +19,7 @@ def format_db_name(db_name, _num):
     return "{db_name}_{_num}".format(db_name=db_name, _num=_num)
 
 
-def connect_database(host, db_name):
+def connect_database(host, ):
     server = SSHTunnelForwarder(
         ('123.56.72.6', 22),
         ssh_username='root',
@@ -34,14 +36,21 @@ def connect_database(host, db_name):
 
 
 def connect_database_vpn(base_name):
-    _config = read_db_host('config.yml')
+    _config = read_db_host(os.getcwd() + '/config.yml')
     _base = _config[base_name]
-    print(_base)
     conn = pymysql.connect(
         host=_base['host'], port=3306,
-        user=_base['user'], passwd=_base['pw'], db=_base['db_name']
+        user=_base['user'], passwd=_base['pw'],
     )
-    print('****** connect success: {db_name} ******'.format(db_name=_base['db_name']))
+    print('****** connect success: {db_name} ******'.format(db_name=base_name))
+    return conn
+
+
+def connect_database_host(host, user='cps_select', passwd='KU4CsBwrVKpmXt@4yk&LBDuI', port=3306):
+    conn = pymysql.connect(
+        host=host, port=port,
+        user=user, passwd=passwd,
+    )
     return conn
 
 
@@ -70,49 +79,50 @@ class DataBaseWork:
         _s, _e = size['start'], size['end']
         while _e >= _s:
             db_name = format_db_name(base, _s)
-            conn = connect_database(self.host, db_name)
+            conn = connect_database(self.host, )
             switch_job(base, conn, size)
             conn.close()
             _s += 1
 
     def no_size_conn(self, db_name, size=None):
-        conn = connect_database(self.host, db_name)
-        switch_job(db_name, conn, size)
-        conn.close()
+        # conn = connect_database(self.host, )
+        switch_job(db_name, self.host, size)
+        # conn.close()
 
 
-def chick_col(conn, table, _col):
+def chick_col(conn, db_name, table, _col):
     table_col = pd.read_sql(
-        'select * from {tab} limit 1'.format(tab=table), conn
+        'select * from {db}.{tab} limit 1'.format(db=db_name, tab=table), conn
     ).columns.tolist()
     _add_cols = list(set(_col).difference(set(table_col)))
     if _add_cols:
-        add_col(conn, table, _add_cols)
+        add_col(conn, db_name, table, _add_cols)
 
 
-def add_col(conn, table, cols):
+def add_col(conn, db_name, table, cols):
     cursor = conn.cursor()
     for _ in cols:
-        _sql = "ALTER TABLE `{table}` ADD COLUMN `{col}` varchar(20)".format(table=table, col=_)
+        _sql = "ALTER TABLE {db}.`{tab}` ADD COLUMN `{col}` varchar(20)".format(db=db_name, tab=table, col=_)
         cursor.execute(_sql)
         conn.commit()
 
 
-def make_inert_sql(table, _data):
+def make_inert_sql(db_name, table, _data):
     _col = _data['columns']
     _len = len(_col)
     _col = tuple(_col)
     _col = str(_col).replace("'", "`")
     _char = '({len})'.format(len='%s,' * _len)[:-2] + ')'
     _val = [tuple(_) for _ in _data['data']]
-    return f"replace INTO `{table}` {_col} VALUES {_char}", _val
+    return f"replace INTO {db_name}.`{table}` {_col} VALUES {_char}", _val
 
 
-def insert_to_data(write_data, conn, table, method=None):
+def insert_to_data(write_data, conn, db_name, table, method=None):
+    create_table(conn, db_name, table, 'ud_id')
     _data = write_data.to_dict(orient='split')
     _col = _data['columns']
-    chick_col(conn, table, _col)
-    _sql, _val = make_inert_sql(table, _data)
+    chick_col(conn, db_name, table, _col)
+    _sql, _val = make_inert_sql(db_name, table, _data)
     cursor = conn.cursor()
     cursor.executemany(_sql, _val)
     conn.commit()
@@ -125,7 +135,7 @@ def insert_to_data(write_data, conn, table, method=None):
     #     conn.rollback()
 
 
-def switch_job(db_name, conn, size):
+def switch_job(db_name, conn_fig, size):
     """
     this place is to add work, that we want to run.
     Examples:
@@ -140,7 +150,7 @@ def switch_job(db_name, conn, size):
     :return -> null run in this place
     """
     if db_name == 'shard':
-        data_job.read_data_user_day(conn, size)
+        data_job.read_data_user_day(conn_fig, size)
 
 
 def read_from_sql(sql, conn):
@@ -148,6 +158,17 @@ def read_from_sql(sql, conn):
         cursor.execute(sql)
         result = cursor.fetchall()
     return result
+
+
+def create_table(conn, db_name, table_name, key_name):
+    cursor = conn.cursor()
+    cursor.execute(
+        sql_code.sql_create_table.format(
+            db_name=db_name, table_name=table_name, key_name=key_name
+        )
+    )
+    conn.commit()
+    # print('****** create table success {db}-{tab} ******'.format(db=db_name, tab=table_name))
 
 
 if __name__ == "__main__":
