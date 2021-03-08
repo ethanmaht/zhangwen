@@ -9,6 +9,7 @@ import datetime as dt
 import os
 from pandas import DataFrame as df
 from algorithm import retained
+from pandas import DataFrame as df
 
 
 # a = df({'ke': [1, 2], 'v': ['v1', 'v2']})
@@ -29,14 +30,13 @@ def connect_database_vpn():
 
 
 if __name__ == '__main__':
+    print(1)
     # print(os.getcwd())
-    # a = df({'ke': [1, 2], 'v': [3, 4]})
+    a = df({'ke': [1, 2], 'v': [3, 4]})
+    
     #
     # print(cm.pad_col(a, ['s', 'b', 'v']))
     # print(a)
-
-    a = retained.KeepTableDay()
-    a.count_keep_table_day_run()
 
     # conns = connect_database_vpn()
     # t_s = dt.datetime.now()

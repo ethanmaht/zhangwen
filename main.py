@@ -1,16 +1,23 @@
-# This is a sample Python script.
-
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
-
-
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+# coding=utf8
+from emtools import read_database as rd
+from algorithm import retained
 
 
-# Press the green button in the gutter to run the script.
+def syn_shard_user_day_work(s_date=None):
+    print(1)
+    work = rd.DataBaseWork()
+    if s_date:
+        work.date = s_date
+    work.loop_all_database()
+
+
+def syn_market_keep_day(s_date=None):
+    work = retained.KeepTableDay(list_day=[1, 2, 3, 7, 14, 30])
+    if s_date:
+        work.s_date = s_date
+    work.count_keep_table_day_run()
+
+
 if __name__ == '__main__':
-    print_hi('PyCharm')
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+    print('Start work:')
+    syn_market_keep_day('2021-01-20')

@@ -5,6 +5,8 @@ from emtools import data_job
 import pandas as pd
 from emtools import sql_code
 import os
+from emtools import emdate
+import datetime as dt
 
 
 def read_db_host(file_path):
@@ -30,7 +32,6 @@ def connect_database(host, ):
         host='127.0.0.1', port=server.local_bind_port,
         user='cps_select', passwd='KU4CsBwrVKpmXt@4yk&LBDuI'
     )
-    print('**********************')
     return conn
 
 
@@ -59,6 +60,8 @@ class DataBaseWork:
         self.data_list = read_db_host('config.yml')['database_host']
         self.size = {}
         self.host = ''
+        self.date = None
+        self.process_num = 32
 
     def loop_all_database(self):
         for _db in self.data_list:
@@ -78,13 +81,13 @@ class DataBaseWork:
         _s, _e = size['start'], size['end']
         while _e >= _s:
             conn = connect_database(self.host, )
-            switch_job(base, conn, size)
+            switch_job(base, conn, size, self.process_num)
             conn.close()
             _s += 1
 
     def no_size_conn(self, db_name, size=None):
         # conn = connect_database(self.host, )
-        switch_job(db_name, self.host, size)
+        switch_job(db_name, self.host, size, self.process_num, self.date)
         # conn.close()
 
 
@@ -133,7 +136,7 @@ def insert_to_data(write_data, conn, db_name, table):
     #     conn.rollback()
 
 
-def switch_job(db_name, conn_fig, size):
+def switch_job(db_name, conn_fig, size, process_num, date=None):
     """
     this place is to add work, that we want to run.
     Examples:
@@ -148,7 +151,7 @@ def switch_job(db_name, conn_fig, size):
     :return -> null run in this place
     """
     if db_name == 'shard':
-        data_job.read_data_user_day(conn_fig, size)
+        data_job.read_data_user_day(conn_fig, size, date, process_num)
 
 
 def read_from_sql(sql, conn):
@@ -166,13 +169,12 @@ def create_table(conn, db_name, table_name, key_name):
         )
     )
     conn.commit()
-    # print('****** create table success {db}-{tab} ******'.format(db=db_name, tab=table_name))
 
 
-if __name__ == "__main__":
-    a = DataBaseWork()
-    a.loop_all_database()
-    # a = df({'ke': [1, 2], 'v': ['v1', 'v2']})
-    # connect = connect_database_vpn('datamarket')
-    # insert_to_data(a, connect, 'test')
-    # connect.close()
+def read_last_date(conn, db_name, tab_name, date_type_name, is_list=None):
+    sql = sql_code.sql_read_last_date.format(dtype=date_type_name, db=db_name, tab=tab_name)
+    last_date = pd.read_sql(sql, conn)['md'][0]
+    if is_list:
+        _today = dt.datetime.now()
+        return emdate.date_list(last_date, _today)
+    return last_date

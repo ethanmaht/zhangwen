@@ -33,22 +33,30 @@ def retain_date_day(conn, db_name, table, date):
     one_day.rename(columns=date_dict, inplace=True)
     one_day = cm.pad_col(one_day)
     one_day.fillna(0, inplace=True)
-    one_day.to_csv(r'D:\work\test_files\t.csv')
     return one_day
 
 
 class KeepTableDay:
-    def __init__(self):
+    def __init__(self, list_day):
         self.host = '172.16.0.248'
         self.table_ = 'user_day'
-        self.s_date = '2021-02-05'
-        self.e_date = '2021-04-01'
+        self.s_date = None
+        self.list_day = list_day
+        self.write_db = 'market_read'
+        self.write_tab = 'keep_table_day'
 
-    def count_keep_table_day_run(self):
-        date_list = emdate.date_list(self.s_date, self.e_date, format_code='{Y}-{M}-{D}')
+    def count_keep_table_day_run(self, process_num=32):
+        if self.s_date:
+            _date = self.s_date
+        else:
+            conn = rd.connect_database_host(self.host, 'root', 'Qiyue@123')
+            _date = rd.read_last_date(conn, self.write_db, self.write_tab, date_type_name='date_day')
+            conn.close()
+        date_list = emdate.date_list(_date, num=self.list_day, format_code='{Y}-{M}-{D}')
         for _day in date_list:
-            print('****** Start to run: count_keep_table_day ******')
-            cm.thread_tool(0, 511, 32, self.one_day_run, _day)
+            print('****** Start to run: {d} - count_keep_table_day ******'.format(d=_day))
+            tars = [_ for _ in range(512)]
+            cm.thread_work(self.one_day_run, _day, tars=tars, process_num=process_num, interval=0.03, step=1)
 
     def one_day_run(self, date, num):
         print('======> is run to date:', date, ' num:', num)
@@ -62,7 +70,11 @@ class KeepTableDay:
         one_day_dict = df(one_day_dict, index=[num])
         one_day_dict.fillna(0, inplace=True)
         one_day_dict['ud_id'] = one_day_dict.apply(lambda x: cm.user_date_id(x['date_day'], x['tab_num']), axis=1)
-        rd.insert_to_data(one_day_dict, conn, 'market_read', 'keep_table_day')
+        one_day_dict['month_natural_week'] = one_day_dict['date_day'].apply(
+            lambda x: emdate.datetime_format_code(x, code='{nmw}'))
+        one_day_dict['year_month'] = one_day_dict['date_day'].apply(
+            lambda x: emdate.datetime_format_code(x, code='{Y}-{M}'))
+        rd.insert_to_data(one_day_dict, conn, self.write_db, self.write_tab)
         conn.close()
 
 

@@ -2,8 +2,7 @@ import datetime as dt
 
 
 def fixed_length(_s, length=2, fixed="0", behind=None):
-    if not isinstance(_s, str):
-        _s = str(_s)
+    _s = str(_s)
     _len = length - len(_s)
     if _len > 0:
         _fixed = fixed * _len
@@ -65,9 +64,9 @@ def datetime_format(
     return "--"
 
 
-def datetime_format_code(
-        _dt, repair=1, code='{Y}-{M}-{D}'
-):
+def datetime_format_code(_dt, repair=1, code='{Y}-{M}-{D}'):
+    if isinstance(_dt, str):
+        _dt = dt.datetime.strptime(_dt, "%Y-%m-%d")
     _year = _dt.year
     if repair:
         _month = fixed_length(_dt.month, )
@@ -77,7 +76,11 @@ def datetime_format_code(
         _second = fixed_length(_dt.second)
     else:
         _month, _day, _hour, _minute, _second = _dt.month, _dt.day, _dt.hour, _dt.minute, _dt.second
-    return code.format(Y=_year, M=_month, D=_day, h=_hour, m=_minute, s=_second)
+    wd, mw, nmw = _dt.weekday(), month_week(_dt), month_week(_dt, natural=1)
+    yw, nyw = year_week(_dt), year_week(_dt, natural=1)
+    return code.format(
+        Y=_year, M=_month, D=_day, h=_hour, m=_minute, s=_second, wd=wd, mw=mw, nmw=nmw, yw=yw, nyw=nyw
+    )
 
 
 def date_num_dict(date, days):
@@ -86,30 +89,69 @@ def date_num_dict(date, days):
     for _ in range(days):
         _day = _ + 1
         _date = date + dt.timedelta(days=_day)
-        date_dict.update({datetime_format(_date, date_day=1): str(_day+1)})
+        date_dict.update({datetime_format_code(_date, code='{Y}-{M}-{D}'): str(_day+1)})
     return date_dict
 
 
-def date_list(s_date, e_date, num=None, format_code=None):
+def date_list(s_date, e_date=None, num=None, format_code=None):
     if isinstance(s_date, str):
         s_date = dt.datetime.strptime(s_date.split(' ')[0], "%Y-%m-%d")
     if isinstance(e_date, str):
         e_date = dt.datetime.strptime(e_date.split(' ')[0], "%Y-%m-%d")
     _list, _ = [], s_date
     if num:
-        for _num in range(num):
-            _ = s_date + dt.timedelta(days=_num)
+        if isinstance(num, list):
+            for _num in num:
+                _ = s_date - dt.timedelta(days=_num-1)
+                if format_code:
+                    _dt = datetime_format_code(_, code=format_code)
+                else:
+                    _dt = _
+                _list.append(_dt)
+            return _list
+        else:
+            if num >= 0:
+                for _num in range(num):
+                    _ = s_date + dt.timedelta(days=_num)
+                    if format_code:
+                        _dt = datetime_format_code(_, code=format_code)
+                    else:
+                        _dt = _
+                    _list.append(_dt)
+                return _list
+            else:
+                for _num in range(abs(num)):
+                    _ = s_date - dt.timedelta(days=_num)
+                    if format_code:
+                        _dt = datetime_format_code(_, code=format_code)
+                    else:
+                        _dt = _
+                    _list.append(_dt)
+                return _list
+    if e_date:
+        while _ <= e_date:
             if format_code:
                 _dt = datetime_format_code(_, code=format_code)
             else:
                 _dt = _
             _list.append(_dt)
+            _ = _ + dt.timedelta(days=1)
         return _list
-    while _ <= e_date:
-        if format_code:
-            _dt = datetime_format_code(_, code=format_code)
-        else:
-            _dt = _
-        _list.append(_dt)
-        _ = _ + dt.timedelta(days=1)
-    return _list
+
+
+def year_week(_dt, natural=0):
+    year_s = dt.datetime(_dt.year, 1, 1)
+    _day = (_dt - year_s).days
+    if natural:
+        return _day // 7 + 1
+    year_s_wd = dt.datetime(_dt.year, 1, 1).weekday()
+    return (_day - year_s_wd) // 7 + 1
+
+
+def month_week(_dt, natural=0):
+    month_s = dt.datetime(_dt.year, _dt.month, 1)
+    _day = (_dt - month_s).days
+    if natural:
+        return _day // 7 + 1
+    month_s_wd = dt.datetime(_dt.year, _dt.month, 1).weekday()
+    return (_day - month_s_wd) // 7 + 1

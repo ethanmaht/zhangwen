@@ -16,10 +16,8 @@ def df_merge(df_list, on, how='left', fill_na=None):
 
 
 def user_date_id(date, user_id):
-    if not isinstance(user_id, int):
-        user_id = int(user_id)
-    if isinstance(date, str):
-        date = dt.datetime.strptime(date.split(' ')[0], '%Y-%m-%d')
+    user_id = int(user_id)
+    date = dt.datetime.strptime(str(date).split(' ')[0], '%Y-%m-%d')
     return user_id * pow(10, 8) + emdate.datetime_to_int(date, date_day=1)
 
 
@@ -49,6 +47,20 @@ def process_tool(s_num, e_num, ways, func, *args):
         for t in process_list:
             t.join()
         process_list.clear()
+
+
+def thread_work(func, *args, tars, process_num=8, interval=0.03, step=None):
+    while tars:
+        pool = []
+        if len(threading.enumerate()) <= process_num:
+            _one = tars.pop(0)
+            if step:
+                pool.append(threading.Thread(target=func, args=(*args, _one)))
+            else:
+                pool.append(threading.Thread(target=func, args=(*args, )))
+            for _ in pool:
+                _.start()
+        time.sleep(interval)
 
 
 def thread_tool(s_num, e_num, ways, func, *args):
