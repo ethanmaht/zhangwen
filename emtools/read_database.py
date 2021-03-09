@@ -1,4 +1,4 @@
-from sshtunnel import SSHTunnelForwarder
+# from sshtunnel import SSHTunnelForwarder
 import yaml
 import pymysql
 from emtools import data_job
@@ -20,23 +20,23 @@ def format_db_name(db_name, _num):
     return "{db_name}_{_num}".format(db_name=db_name, _num=_num)
 
 
-def connect_database(host, ):
-    server = SSHTunnelForwarder(
-        ('123.56.72.6', 22),
-        ssh_username='root',
-        ssh_password='#X@VnR4bVk!yF1LI9k7Mxq7h',
-        remote_bind_address=(host, 3306)  # 远程数据库的IP和端口
-    )
-    server.start()
-    conn = pymysql.connect(
-        host='127.0.0.1', port=server.local_bind_port,
-        user='cps_select', passwd='KU4CsBwrVKpmXt@4yk&LBDuI'
-    )
-    return conn
+# def connect_database(host, ):
+#     server = SSHTunnelForwarder(
+#         ('123.56.72.6', 22),
+#         ssh_username='root',
+#         ssh_password='#X@VnR4bVk!yF1LI9k7Mxq7h',
+#         remote_bind_address=(host, 3306)  # 远程数据库的IP和端口
+#     )
+#     server.start()
+#     conn = pymysql.connect(
+#         host='127.0.0.1', port=server.local_bind_port,
+#         user='cps_select', passwd='KU4CsBwrVKpmXt@4yk&LBDuI'
+#     )
+#     return conn
 
 
 def connect_database_vpn(base_name):
-    _config = read_db_host(os.getcwd() + '/config.yml')
+    _config = read_db_host('/home/datawork/emtools/config.yml')
     _base = _config[base_name]
     conn = pymysql.connect(
         host=_base['host'], port=3306,
@@ -51,13 +51,14 @@ def connect_database_host(host, user='cps_select', passwd='KU4CsBwrVKpmXt@4yk&LB
         host=host, port=port,
         user=user, passwd=passwd,
     )
+    print(host, '****************')
     return conn
 
 
 class DataBaseWork:
 
     def __init__(self):
-        self.data_list = read_db_host('config.yml')['database_host']
+        self.data_list = read_db_host('/home/datawork/emtools/config.yml')['database_host']
         self.size = {}
         self.host = ''
         self.date = None
@@ -76,14 +77,14 @@ class DataBaseWork:
         else:
             self.no_size_conn(_db)
 
-    def loop_size_conn(self, base):
-        size = self.size
-        _s, _e = size['start'], size['end']
-        while _e >= _s:
-            conn = connect_database(self.host, )
-            switch_job(base, conn, size, self.process_num)
-            conn.close()
-            _s += 1
+    # def loop_size_conn(self, base):
+    #     size = self.size
+    #     _s, _e = size['start'], size['end']
+    #     while _e >= _s:
+    #         conn = connect_database(self.host, )
+    #         switch_job(base, conn, size, self.process_num)
+    #         conn.close()
+    #         _s += 1
 
     def no_size_conn(self, db_name, size=None):
         # conn = connect_database(self.host, )

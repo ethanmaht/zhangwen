@@ -12,9 +12,10 @@ def read_data_user_day(conn_fig, size, date, process_num):
         cm.thread_work(
             one_user_day, conn_fig, 'datamarket', date, tars=tars, process_num=process_num, interval=0.03, step=1
         )
-    # cm.thread_tool(_s, _e, 1, one_user_day, conn_fig, 'datamarket')
     else:
-        cm.thread_work(one_user_day, conn_fig, 'datamarket', tars=tars, process_num=process_num, interval=0.03, step=1)
+        cm.thread_work(
+            one_user_day, conn_fig, 'datamarket', None, tars=tars, process_num=process_num, interval=0.03, step=1
+        )
 
 
 def one_user_day(read_conn_fig, write_conn_fig, date, _):
@@ -23,11 +24,11 @@ def one_user_day(read_conn_fig, write_conn_fig, date, _):
     #     return 0
     read_conn = rd.connect_database_host(read_conn_fig)
     write_conn = rd.connect_database_vpn(write_conn_fig)
-    db_name = 'happy_seven'
-    table_name = 'user_day_{num}'.format(num=_)
+    write_db_name = 'happy_seven'
+    write_table_name = 'user_day_{num}'.format(num=_)
     if not date:
-        date = rd.read_last_date(write_conn, db_name, table_name, 'date_day')
-    print('======> is work to {num} start '.format(num=_), dt.datetime.now())
+        date = rd.read_last_date(write_conn, write_db_name, write_table_name, 'date_day')
+    print('======> is work to read -*- one_user_day -*- ===> num:{num} start '.format(num=_), dt.datetime.now())
     user_consume_day = pd.read_sql(
         sql_code.sql_user_consume_day.format(_num=_, date=date), read_conn,
     )
@@ -46,6 +47,41 @@ def one_user_day(read_conn_fig, write_conn_fig, date, _):
     )
     mine_df['ud_id'] = mine_df.apply(lambda x: cm.user_date_id(x['date_day'], x['user_id']), axis=1)
     mine_df['tab_num'] = _
-    rd.insert_to_data(mine_df, write_conn, db_name, table_name)
+    rd.insert_to_data(mine_df, write_conn, write_db_name, write_table_name)
+    read_conn.close()
+    write_conn.close()
+
+
+def read_user_and_order(conn_fig, size, date, process_num):
+    _s, _e = size['start'], size['end'] + 1
+    tars = [_ for _ in range(_s, _e)]
+    return 1
+
+
+def user_and_order(read_conn_fig, write_conn_fig, date, _):
+    print('======> is work to read -*- user_and_order -*- ===> num:{num} start '.format(num=_), dt.datetime.now())
+    read_conn = rd.connect_database_host(read_conn_fig)
+    write_conn = rd.connect_database_vpn(write_conn_fig)
+    write_user_db_name = 'user_info'
+    write_user_tab_name = 'user_info_{num}'.format(num=_)
+    write_order_db_name = 'order_info'
+    write_order_tab_name = 'order_info_{num}'.format(num=_)
+    if not date:
+        user_date = rd.read_last_date(write_conn, write_user_db_name, write_user_tab_name, 'date_day')
+        order_date = rd.read_last_date(write_conn, write_order_db_name, write_order_tab_name, 'date_day')
+    else:
+        user_date, order_date = date, date
+    first_order = pd.read_sql(
+        sql_code.sql_user_consume_day.format(_num=_, date=date), read_conn,
+    )
+    order_info = pd.read_sql(
+        sql_code.sql_user_logon_day.format(_num=_, date=date), read_conn,
+    )
+    user_info = pd.read_sql(
+        sql_code.sql_user_sign_day.format(_num=_, date=date), read_conn
+    )
+    user_referral = pd.read_sql(
+        sql_code.sql_user_sign_day.format(_num=_, date=date), read_conn
+    )
     read_conn.close()
     write_conn.close()

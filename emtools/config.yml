@@ -6,32 +6,32 @@
 database_host:
   - data_base:
       name: happy_seven
-      host: rr-2zeh202up6hhmg5kc.mysql.rds.aliyuncs.com
+      host: rr-2zea0g0z399brxl1b.mysql.rds.aliyuncs.com
 
   - data_base:
       name: shard
-      host: rr-2ze03zpy7yf536008.mysql.rds.aliyuncs.com
+      host: rr-2zeosaq969q3d1lw2.mysql.rds.aliyuncs.com
       size:
         start: 0
         end: 127
 
   - data_base:
       name: shard
-      host: rr-2zeo525og61jh6wz4.mysql.rds.aliyuncs.com
+      host: rr-2zeihi538whv400p2.mysql.rds.aliyuncs.com
       size:
         start: 128
         end: 255
 
   - data_base:
       name: shard
-      host: rr-2ze9l7as602nysv4y.mysql.rds.aliyuncs.com
+      host: rr-2zer748zs4766l2wa.mysql.rds.aliyuncs.com
       size:
         start: 256
         end: 383
 
   - data_base:
       name: shard
-      host: rr-2ze963rfwrs7nq264.mysql.rds.aliyuncs.com
+      host: rr-2ze4666299886n585.mysql.rds.aliyuncs.com
       size:
         start: 384
         end: 511
@@ -44,21 +44,21 @@ datamarket:
   db_name: happy_seven
 
 shard_1:
-  host: rr-2ze03zpy7yf536008.mysql.rds.aliyuncs.com
+  host: rr-2zeosaq969q3d1lw2.mysql.rds.aliyuncs.com
   user: cps_select
   pw: KU4CsBwrVKpmXt@4yk&LBDuI
 
 shard_2:
-  host: rr-2ze03zpy7yf536008.mysql.rds.aliyuncs.com
+  host: rr-2zeihi538whv400p2.mysql.rds.aliyuncs.com
   user: cps_select
   pw: KU4CsBwrVKpmXt@4yk&LBDuI
 
 shard_3:
-  host: rr-2ze03zpy7yf536008.mysql.rds.aliyuncs.com
+  host: rr-2zer748zs4766l2wa.mysql.rds.aliyuncs.com
   user: cps_select
   pw: KU4CsBwrVKpmXt@4yk&LBDuI
 
 shard_4:
-  host: rr-2ze03zpy7yf536008.mysql.rds.aliyuncs.com
+  host: rr-2ze4666299886n585.mysql.rds.aliyuncs.com
   user: cps_select
   pw: KU4CsBwrVKpmXt@4yk&LBDuI

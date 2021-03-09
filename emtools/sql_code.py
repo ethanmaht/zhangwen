@@ -15,7 +15,6 @@ CREATE TABLE IF NOT EXISTS {db_name}.`{table_name}`(
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
 """
 
-# 日别-用户-消费 1604160000 = 2020-11-01
 sql_user_consume_day = """
 SELECT user_id,date(from_unixtime(createtime)) date_day,sum(kandian) kd,
     sum(free_kandian) fd,count(*) chapters 
@@ -63,4 +62,33 @@ where date_day >= '{s_date}' and date_day < '{e_date}'
 
 sql_read_last_date = """
 SELECT MAX({dtype}) md FROM {db}.{tab}
+"""
+
+sql_first_order_time = """
+select user_id,min(createtime) first_time from {db}.orders
+where state = 1
+group by user_id
+"""
+
+sql_order_info = """
+select user_id,createtime,updatetime,state,type,book_id,chapter_id,admin_id,referral_id 
+FROM {db}.orders;
+"""
+
+sql_user_info = """
+select id user_id,createtime,channel_id admin_id,sex,country,
+    province,city,isp,referral_id,referral_id_permanent,ext 
+FROM {db}.user;
+"""
+
+sql_dict_total_admin = """
+
+"""
+
+sql_dict_total_book = """
+
+"""
+
+sql_dict_update_referral = """
+
 """
