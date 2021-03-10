@@ -65,30 +65,41 @@ SELECT MAX({dtype}) md FROM {db}.{tab}
 """
 
 sql_first_order_time = """
-select user_id,min(createtime) first_time from {db}.orders
+select user_id,min(createtime) first_time from cps_user_{_num}.orders
 where state = 1
 group by user_id
 """
 
 sql_order_info = """
-select user_id,createtime,updatetime,state,type,book_id,chapter_id,admin_id,referral_id 
-FROM {db}.orders;
+select user_id,createtime,updatetime,state,type,book_id,chapter_id,admin_id,referral_id_permanent,
+    money,money_benefit,benefit,kandian,free_kandian
+where updatetime >= unix_timestamp('{date}')
+FROM cps_user_{_num}.orders;
 """
 
 sql_user_info = """
 select id user_id,createtime,channel_id admin_id,sex,country,
     province,city,isp,referral_id,referral_id_permanent,ext 
-FROM {db}.user;
+where createtime >= unix_timestamp('{date}')
+FROM cps_user_{_num}.user;
 """
 
 sql_dict_total_admin = """
-
+SELECT a.id,a.nickname,a.createtime,c.nickname business_name,c.id business_id 
+FROM cps.admin a
+    left join cps.admin_extend b on a.id = b.admin_id
+    left join cps.admin c on b.create_by = c.id;
 """
 
 sql_dict_total_book = """
-
+SELECT id,book_category_id,name,real_read_num,author,state,sex,price,is_finish,free_chapter_num,first_chapter_id,
+    last_chapter_id,read_num,is_cp,cp_name,real_read_num,book_recharge,booktag 
+FROM cps.book;
 """
 
 sql_dict_update_referral = """
-
+SELECT id,book_id,chapter_id,chapter_name,name,cost,type,uv,follow,unfollow_num,net_follow_num,
+    guide_chapter_idx,incr_num,money,orders_num,createtime,updatetime,state 
+FROM cps.referral 
+where updatetime >= unix_timestamp('{date}');
 """

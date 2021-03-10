@@ -4,7 +4,6 @@ import pymysql
 from emtools import data_job
 import pandas as pd
 from emtools import sql_code
-import os
 from emtools import emdate
 import datetime as dt
 
@@ -51,7 +50,6 @@ def connect_database_host(host, user='cps_select', passwd='KU4CsBwrVKpmXt@4yk&LB
         host=host, port=port,
         user=user, passwd=passwd,
     )
-    print(host, '****************')
     return conn
 
 
@@ -76,15 +74,6 @@ class DataBaseWork:
             self.no_size_conn(_db, data_base['size'])
         else:
             self.no_size_conn(_db)
-
-    # def loop_size_conn(self, base):
-    #     size = self.size
-    #     _s, _e = size['start'], size['end']
-    #     while _e >= _s:
-    #         conn = connect_database(self.host, )
-    #         switch_job(base, conn, size, self.process_num)
-    #         conn.close()
-    #         _s += 1
 
     def no_size_conn(self, db_name, size=None):
         # conn = connect_database(self.host, )
@@ -128,13 +117,6 @@ def insert_to_data(write_data, conn, db_name, table):
     cursor = conn.cursor()
     cursor.executemany(_sql, _val)
     conn.commit()
-    print('****** write success {table} ******'.format(table=table))
-    # try:
-    #     cursor.executemany(_sql, _val)
-    #     print('****** write success {table} ******'.format(table=table))
-    #     conn.commit()
-    # except:
-    #     conn.rollback()
 
 
 def switch_job(db_name, conn_fig, size, process_num, date=None):

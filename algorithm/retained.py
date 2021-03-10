@@ -5,6 +5,7 @@ from emtools import sql_code
 from emtools import currency_means as cm
 from emtools import read_database as rd
 from emtools import emdate
+import datetime as dt
 
 
 def retain_date_day(conn, db_name, table, date):
@@ -52,14 +53,19 @@ class KeepTableDay:
             conn = rd.connect_database_host(self.host, 'root', 'Qiyue@123')
             _date = rd.read_last_date(conn, self.write_db, self.write_tab, date_type_name='date_day')
             conn.close()
-        date_list = emdate.date_list(_date, num=self.list_day, format_code='{Y}-{M}-{D}')
+        date_list = []
+        tar_date_list = emdate.date_list(_date, e_date=dt.datetime.now(), format_code='{Y}-{M}-{D}')
+        for _date in tar_date_list:
+            date_list += emdate.date_list(_date, num=self.list_day, format_code='{Y}-{M}-{D}')
+        date_list = list(set(date_list))
+        date_list.sort()
         for _day in date_list:
             print('****** Start to run: {d} - count_keep_table_day ******'.format(d=_day))
             tars = [_ for _ in range(512)]
             cm.thread_work(self.one_day_run, _day, tars=tars, process_num=process_num, interval=0.03, step=1)
 
     def one_day_run(self, date, num):
-        print('======> is run to date:', date, ' num:', num)
+        print('======> is run keep_table_day to date:', date, ' num:', num)
         conn = rd.connect_database_host(self.host, 'root', 'Qiyue@123')
         one_day_dict = {'date_day': date, 'tab_num': num}
         table_name = self.table_ + '_' + str(num)
