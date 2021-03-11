@@ -46,7 +46,7 @@ class KeepTableDay:
         self.write_db = 'market_read'
         self.write_tab = 'keep_table_day'
 
-    def count_keep_table_day_run(self, process_num=32):
+    def count_keep_table_day_run(self, process_num=16):
         if self.s_date:
             _date = self.s_date
         else:
@@ -138,3 +138,90 @@ def count_keep_table_day_order(_data):
         'order_14': order_14,
         'order_30': order_30,
     }
+
+
+class RunCount:
+    def __init__(self, func, write_tab, date_col, extend='continue'):
+        self.host = {'host': '172.16.0.248', 'user': 'root', 'pw': 'Qiyue@123'}
+        self.s_date = None
+        self.write_db = 'market_read'
+        self.write_tab = write_tab
+        self.date_col = date_col
+        self.func = func
+        self.extend = extend
+
+    def step_run(self, process_num=16, run_num=512, interval=0.03, step=1):
+        tar_date_list = [0]
+        if self.extend == 'list':
+            tar_date_list = self.read_last_date()
+        if self.extend == 'continue':
+            tar_date_list = self.read_last_date(is_list=0)
+        if self.extend == 'delete':
+            tar_date_list = self.read_last_date(is_list=0)
+            self.delete_last_date(tar_date_list)
+        for _day in tar_date_list:
+            print('****** Start to run: {d} - {tab} ******'.format(d=_day, tab=self.write_tab))
+            tars = [_ for _ in range(run_num)]
+            cm.thread_work(
+                self.func, self.host, self.write_db, self.write_tab, _day,
+                tars=tars, process_num=process_num, interval=interval, step=step
+            )
+
+    def direct_run(self, func, *args):
+        tar_date_list = self.read_last_date(is_list=0)[0]
+        func(self.host, self.write_db, self.write_tab, self.date_col, tar_date_list, *args)
+
+    def read_last_date(self, is_list=1, date_format='{Y}-{M}-{D}'):
+        if self.s_date:
+            _date = self.s_date
+        else:
+            conn = rd.connect_database_host(self.host['host'], self.host['user'], self.host['pw'])
+            _date = rd.read_last_date(conn, self.write_db, self.write_tab, date_type_name=self.date_col)
+            conn.close()
+            # _date = '2019-01-01'
+        if is_list:
+            _date = emdate.date_list(_date, e_date=dt.datetime.now(), format_code=date_format)
+            _date.sort()
+        else:
+            _date = [_date]
+        return _date
+
+    def delete_last_date(self, del_date):
+        del_db, del_tab, del_types = self.write_db, self.write_tab, self.date_col
+        conn = rd.connect_database_host(self.host['host'], self.host['user'], self.host['pw'])
+        for _type in del_types:
+            conn = rd.connect_database_host(self.host['host'], self.host['user'], self.host['pw'])
+            _date = rd.delete_last_date(conn, del_db, del_tab, _type, del_date)
+        conn.close()
+
+
+def count_order_logon_conversion(host, write_db, write_tab, date, num):
+    print('======> is start to run {db}.{tab} - {num} ===> start time:'.format(
+        db=write_db, tab=write_tab, num=num), dt.datetime.now())
+    conn = rd.connect_database_host(host['host'], host['user'], host['pw'])
+    first_order = pd.read_sql(sql_code.analysis_first_order.format(num=num, date=date), conn)
+    repeat_order = pd.read_sql(sql_code.analysis_repeat_order.format(num=num, date=date), conn)
+    logon_book_admin = pd.read_sql(sql_code.analysis_logon_book_admin.format(num=num, date=date), conn)
+    one_num = pd.concat([logon_book_admin, first_order, repeat_order])
+    one_num = one_num.fillna(0)
+    rd.insert_to_data(one_num, conn, write_db, write_tab)
+    conn.close()
+
+
+def compress_order_logon_conversion(host, write_db, write_tab, date_type_name, date):
+    conn = rd.connect_database_host(host['host'], host['user'], host['pw'])
+    compress_date = pd.read_sql(
+        sql_code.analysis_compress_order_logon_conversion.format(
+            db=write_db, tab=write_tab, date=date
+        ),
+        conn
+    )
+    compress_date['date_sub'] = compress_date.apply(lambda x: emdate.sub_date(x['logon_day'], x['order_day']), axis=1)
+    compress_date = compress_date.fillna(0)
+    rd.delete_last_date(conn, write_db, write_tab, date_type_name, date)
+    rd.insert_to_data(compress_date, conn, write_db, date_type_name)
+    conn.close()
+
+
+def count_order_test(num):
+    sql = 'SELECT count(*) user_num FROM user_info.user_info_{num};'.format(num=num)

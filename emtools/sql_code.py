@@ -64,6 +64,10 @@ sql_read_last_date = """
 SELECT MAX({dtype}) md FROM {db}.{tab}
 """
 
+sql_delete_last_date = """
+delete from {db}.{tab} where {type} >= '{date}'
+"""
+
 sql_first_order_time = """
 select user_id,min(createtime) first_time from cps_user_{_num}.orders
 where state > 0
@@ -92,7 +96,7 @@ FROM cps.admin a
 """
 
 sql_dict_total_book = """
-SELECT id,book_category_id,real_read_num,author,state,sex,price,is_finish,free_chapter_num,first_chapter_id,
+SELECT id,book_category_id,name,real_read_num,author,state,sex,price,is_finish,free_chapter_num,first_chapter_id,
     last_chapter_id,read_num,is_cp,cp_name,book_recharge 
 FROM cps.book;
 """
@@ -113,6 +117,40 @@ FROM market_read.referral_info;
 """
 ========================= -*- analysis_sql -*- =========================
 以下是分析语句
+"""
+
+analysis_first_order = """
+select date(from_unixtime(user_createtime)) logon_day,book_id,admin_id,
+    date(from_unixtime(first_time)) order_day,count(*) order_user,sum(kandian/100) order_money,
+    sum(if(type=2, 1, 0)) order_vip,sum(if(type=2, money, 0)) vip_money,1 order_type,{num} tab_num
+from orders_log.orders_log_{num}
+where state > 0 and first_time = createtime and date(from_unixtime(createtime)) >= '{date}'
+group by logon_day,book_id,admin_id,order_day;
+"""
+
+analysis_repeat_order = """
+select date(from_unixtime(user_createtime)) logon_day,book_id,admin_id,
+    date(from_unixtime(createtime)) order_day,count(user_id) order_user,sum(kandian/100) order_money,
+    sum(if(type=2, 1, 0)) order_vip,sum(if(type=2, money, 0)) vip_money,2 order_type,{num} tab_num
+from orders_log.orders_log_{num}
+where state > 0 and first_time != createtime and date(from_unixtime(createtime)) >= '{date}'
+group by logon_day,book_id,admin_id,order_day;
+"""
+
+analysis_logon_book_admin = """
+select date(from_unixtime(createtime)) logon_day,referral_book book_id,admin_id,
+    date(from_unixtime(createtime)) order_day, count(*) order_user,0 order_type,{num} tab_num
+from user_info.user_info_{num}
+where date(from_unixtime(createtime)) >= '{date}'
+group by logon_day,book_id,admin_id,order_day
+"""
+
+analysis_compress_order_logon_conversion = """
+select book_id,admin_id,order_day,logon_day,order_type,sum(order_user) order_user, sum(order_money) order_money, 
+    sum(order_vip) order_vip, sum(vip_money) vip_money
+from {db}.{tab}
+where order_day >= '{date}'
+group by book_id,admin_id,order_day,logon_day,order_type
 """
 
 analysis_reason_for_save = """

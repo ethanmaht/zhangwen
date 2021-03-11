@@ -65,6 +65,8 @@ def datetime_format(
 
 
 def datetime_format_code(_dt, repair=1, code='{Y}-{M}-{D}'):
+    if not code:
+        return _dt
     if isinstance(_dt, str):
         _dt = dt.datetime.strptime(_dt, "%Y-%m-%d")
     _year = _dt.year
@@ -101,51 +103,27 @@ def date_list(s_date, e_date=None, num=None, format_code=None, direction=0):
     _list, _ = [], s_date
     if num:
         if isinstance(num, list):
-            if direction:
-                for _num in num:
-                    _ = s_date + dt.timedelta(days=_num - 1)
-                    if format_code:
-                        _dt = datetime_format_code(_, code=format_code)
-                    else:
-                        _dt = _
-                    _list.append(_dt)
-                return _list
+            num = num
+        if isinstance(num, int):
+            num = range(abs(num))
+        if direction:
             for _num in num:
-                _ = s_date - dt.timedelta(days=_num-1)
-                if format_code:
-                    _dt = datetime_format_code(_, code=format_code)
-                else:
-                    _dt = _
+                _ = s_date + dt.timedelta(days=_num - 1)
+                _dt = datetime_format_code(_, code=format_code)
                 _list.append(_dt)
             return _list
-        else:
-            if num >= 0:
-                for _num in range(num):
-                    _ = s_date + dt.timedelta(days=_num)
-                    if format_code:
-                        _dt = datetime_format_code(_, code=format_code)
-                    else:
-                        _dt = _
-                    _list.append(_dt)
-                return _list
-            else:
-                for _num in range(abs(num)):
-                    _ = s_date - dt.timedelta(days=_num)
-                    if format_code:
-                        _dt = datetime_format_code(_, code=format_code)
-                    else:
-                        _dt = _
-                    _list.append(_dt)
-                return _list
+        for _num in num:
+            _ = s_date - dt.timedelta(days=_num-1)
+            _dt = datetime_format_code(_, code=format_code)
+            _list.append(_dt)
+        return _list
     if e_date:
         while _ <= e_date:
-            if format_code:
-                _dt = datetime_format_code(_, code=format_code)
-            else:
-                _dt = _
+            _dt = datetime_format_code(_, code=format_code)
             _list.append(_dt)
             _ = _ + dt.timedelta(days=1)
         return _list
+    return [s_date]
 
 
 def year_week(_dt, natural=0):
@@ -164,3 +142,20 @@ def month_week(_dt, natural=0):
         return _day // 7 + 1
     month_s_wd = dt.datetime(_dt.year, _dt.month, 1).weekday()
     return (_day - month_s_wd) // 7 + 1
+
+
+def sub_date(s_date, e_date, types='day'):
+    if isinstance(s_date, str):
+        s_date = dt.datetime.strptime(s_date, '%Y-%m-%d')
+    if isinstance(e_date, str):
+        e_date = dt.datetime.strptime(e_date, '%Y-%m-%d')
+    sub = e_date - s_date
+    types_dict = {
+        'hour': sub.total_seconds() / 3600,
+        'minute': sub.total_seconds() / 60,
+        'second': sub.total_seconds(),
+        'day': sub.days
+    }
+    if types in types_dict.keys():
+        return types_dict[types]
+    return types_dict['day']

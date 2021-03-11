@@ -174,3 +174,10 @@ def read_last_date(conn, db_name, tab_name, date_type_name, is_list=None):
         _today = dt.datetime.now()
         return emdate.date_list(last_date, _today)
     return last_date
+
+
+def delete_last_date(conn, db_name, tab_name, date_type_name, date):
+    del_sql = sql_code.sql_delete_last_date.format(type=date_type_name, db=db_name, tab=tab_name, date=date)
+    cursor = conn.cursor()
+    cursor.execute(del_sql)
+    conn.commit()
