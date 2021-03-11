@@ -93,7 +93,7 @@ def date_num_dict(date, days):
     return date_dict
 
 
-def date_list(s_date, e_date=None, num=None, format_code=None):
+def date_list(s_date, e_date=None, num=None, format_code=None, direction=0):
     if isinstance(s_date, str):
         s_date = dt.datetime.strptime(s_date.split(' ')[0], "%Y-%m-%d")
     if isinstance(e_date, str):
@@ -101,6 +101,15 @@ def date_list(s_date, e_date=None, num=None, format_code=None):
     _list, _ = [], s_date
     if num:
         if isinstance(num, list):
+            if direction:
+                for _num in num:
+                    _ = s_date + dt.timedelta(days=_num - 1)
+                    if format_code:
+                        _dt = datetime_format_code(_, code=format_code)
+                    else:
+                        _dt = _
+                    _list.append(_dt)
+                return _list
             for _num in num:
                 _ = s_date - dt.timedelta(days=_num-1)
                 if format_code:

@@ -66,22 +66,22 @@ SELECT MAX({dtype}) md FROM {db}.{tab}
 
 sql_first_order_time = """
 select user_id,min(createtime) first_time from cps_user_{_num}.orders
-where state = 1
+where state > 0
 group by user_id
 """
 
 sql_order_info = """
-select user_id,createtime,updatetime,state,type,book_id,chapter_id,admin_id,referral_id_permanent,
-    money,money_benefit,benefit,kandian,free_kandian
-where updatetime >= unix_timestamp('{date}')
-FROM cps_user_{_num}.orders;
+select id,user_id,createtime,updatetime,state,type,book_id,chapter_id,admin_id,referral_id_permanent,
+    money,money_benefit,benefit,kandian,free_kandian,user_createtime
+FROM cps_user_{_num}.orders
+where updatetime >= '{date}'
 """
 
 sql_user_info = """
 select id user_id,createtime,channel_id admin_id,sex,country,
-    province,city,isp,referral_id,referral_id_permanent,ext 
-where createtime >= unix_timestamp('{date}')
-FROM cps_user_{_num}.user;
+    province,city,isp,referral_id,referral_id_permanent,ext
+FROM cps_user_{_num}.user
+where createtime >= '{date}'
 """
 
 sql_dict_total_admin = """
@@ -92,14 +92,102 @@ FROM cps.admin a
 """
 
 sql_dict_total_book = """
-SELECT id,book_category_id,name,real_read_num,author,state,sex,price,is_finish,free_chapter_num,first_chapter_id,
-    last_chapter_id,read_num,is_cp,cp_name,real_read_num,book_recharge,booktag 
+SELECT id,book_category_id,real_read_num,author,state,sex,price,is_finish,free_chapter_num,first_chapter_id,
+    last_chapter_id,read_num,is_cp,cp_name,book_recharge 
 FROM cps.book;
 """
 
 sql_dict_update_referral = """
-SELECT id,book_id,chapter_id,chapter_name,name,cost,type,uv,follow,unfollow_num,net_follow_num,
+SELECT id,book_id,chapter_id,admin_id,chapter_name,cost,type,uv,follow,unfollow_num,net_follow_num,
     guide_chapter_idx,incr_num,money,orders_num,createtime,updatetime,state 
 FROM cps.referral 
-where updatetime >= unix_timestamp('{date}');
+where updatetime >= '{date}';
+"""
+
+sql_referral_dict = """
+SELECT id,book_id referral_book,chapter_id referral_chapter,admin_id referral_admin
+FROM market_read.referral_info;
+"""
+
+
+"""
+========================= -*- analysis_sql -*- =========================
+以下是分析语句
+"""
+
+analysis_reason_for_save = """
+select count(*) nums,sum(bv) saves,sum(signv) reason_signs,sum(fdv) reason_fd,
+    sum(kdv) reason_dk,sum(orderv) reason_order, 'all' types
+from (SELECT distinct a.user_id, bv,signv,fdv,kdv,orderv FROM happy_seven.user_day_{tab_num} a
+    left join (select distinct user_id,1 bv 
+    from happy_seven.user_day_{tab_num} 
+    where date_day = '{e_day}') b 
+        on a.user_id = b.user_id
+    left join (select distinct user_id,1 signv 
+    from happy_seven.user_day_{tab_num}
+    where date_day = '{e_day}' and signs > 0) sign 
+        on a.user_id = sign.user_id
+    left join (select distinct user_id,1 fdv 
+    from happy_seven.user_day_{tab_num}
+    where date_day = '{e_day}' and fd > 0) fd 
+        on a.user_id = fd.user_id
+    left join (select distinct user_id,1 kdv 
+    from happy_seven.user_day_{tab_num}
+    where date_day = '{e_day}' and kd > 0) kd 
+        on a.user_id = kd.user_id
+    left join (select distinct user_id,1 orderv 
+    from happy_seven.user_day_{tab_num}
+    where date_day = '{e_day}' and order_success > 0) orders 
+        on a.user_id = orders.user_id
+where date_day = '{s_day}') base
+union all
+select count(*) nums,sum(bv) saves,sum(signv) reason_signs,sum(fdv) reason_fd,
+    sum(kdv) reason_dk,sum(orderv) reason_order, 'order' types
+from (SELECT distinct a.user_id, bv,signv,fdv,kdv,orderv FROM happy_seven.user_day_{tab_num} a
+    left join (select distinct user_id,1 bv 
+    from happy_seven.user_day_{tab_num} 
+    where date_day = '{e_day}') b 
+        on a.user_id = b.user_id
+    left join (select distinct user_id,1 signv 
+    from happy_seven.user_day_{tab_num}
+    where date_day = '{e_day}' and signs > 0) sign 
+        on a.user_id = sign.user_id
+    left join (select distinct user_id,1 fdv 
+    from happy_seven.user_day_{tab_num}
+    where date_day = '{e_day}' and fd > 0) fd 
+        on a.user_id = fd.user_id
+    left join (select distinct user_id,1 kdv 
+    from happy_seven.user_day_{tab_num}
+    where date_day = '{e_day}' and kd > 0) kd 
+        on a.user_id = kd.user_id
+    left join (select distinct user_id,1 orderv 
+    from happy_seven.user_day_{tab_num}
+    where date_day = '{e_day}' and order_success > 0) orders 
+        on a.user_id = orders.user_id
+where date_day = '{s_day}' and order_success > 0) base
+union all
+select count(*) nums,sum(bv) saves,sum(signv) reason_signs,sum(fdv) reason_fd,
+    sum(kdv) reason_dk,sum(orderv) reason_order, 'logon' types
+from (SELECT distinct a.user_id, bv,signv,fdv,kdv,orderv FROM happy_seven.user_day_{tab_num} a
+    left join (select distinct user_id,1 bv 
+    from happy_seven.user_day_{tab_num} 
+    where date_day = '{e_day}') b 
+        on a.user_id = b.user_id
+    left join (select distinct user_id,1 signv 
+    from happy_seven.user_day_{tab_num}
+    where date_day = '{e_day}' and signs > 0) sign 
+        on a.user_id = sign.user_id
+    left join (select distinct user_id,1 fdv 
+    from happy_seven.user_day_{tab_num}
+    where date_day = '{e_day}' and fd > 0) fd 
+        on a.user_id = fd.user_id
+    left join (select distinct user_id,1 kdv 
+    from happy_seven.user_day_{tab_num}
+    where date_day = '{e_day}' and kd > 0) kd 
+        on a.user_id = kd.user_id
+    left join (select distinct user_id,1 orderv 
+    from happy_seven.user_day_{tab_num}
+    where date_day = '{e_day}' and order_success > 0) orders 
+        on a.user_id = orders.user_id
+where date_day = '{s_day}' and logon > 0) base
 """

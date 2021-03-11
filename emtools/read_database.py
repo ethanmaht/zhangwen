@@ -6,9 +6,12 @@ import pandas as pd
 from emtools import sql_code
 from emtools import emdate
 import datetime as dt
+import os
 
 
 def read_db_host(file_path):
+    file_path = os.path.split(os.path.realpath(__file__))[0] + '/config.yml'
+    # print('**************', file_path)
     _file = open(file_path, 'r', encoding='utf-8')
     cont = _file.read()
     config = yaml.load(cont, Loader=yaml.FullLoader)
@@ -60,7 +63,7 @@ class DataBaseWork:
         self.size = {}
         self.host = ''
         self.date = None
-        self.process_num = 32
+        self.process_num = 16
 
     def loop_all_database(self):
         for _db in self.data_list:
@@ -92,8 +95,15 @@ def chick_col(conn, db_name, table, _col):
 
 def add_col(conn, db_name, table, cols):
     cursor = conn.cursor()
+    col_type = 'varchar(30)'
+    special = {
+        'province': 'varchar(50)',
+        'ext': 'TEXT',
+    }
     for _ in cols:
-        _sql = "ALTER TABLE {db}.`{tab}` ADD COLUMN `{col}` varchar(20)".format(db=db_name, tab=table, col=_)
+        if _ in special.keys():
+            col_type = special[_]
+        _sql = "ALTER TABLE {db}.`{tab}` ADD COLUMN `{col}` {type}".format(db=db_name, tab=table, col=_, type=col_type)
         cursor.execute(_sql)
         conn.commit()
 
@@ -108,8 +118,8 @@ def make_inert_sql(db_name, table, _data):
     return f"replace INTO {db_name}.`{table}` {_col} VALUES {_char}", _val
 
 
-def insert_to_data(write_data, conn, db_name, table):
-    create_table(conn, db_name, table, 'ud_id')
+def insert_to_data(write_data, conn, db_name, table, key_name='id'):
+    create_table(conn, db_name, table, key_name)
     _data = write_data.to_dict(orient='split')
     _col = _data['columns']
     chick_col(conn, db_name, table, _col)
@@ -133,7 +143,10 @@ def switch_job(db_name, conn_fig, size, process_num, date=None):
     :conn -> the databases connect.
     :return -> null run in this place
     """
+    if db_name == 'happy_seven':
+        data_job.read_dict_table(conn_fig, 'datamarket', date)
     if db_name == 'shard':
+        data_job.read_user_and_order(conn_fig, size, date, process_num)
         data_job.read_data_user_day(conn_fig, size, date, process_num)
 
 
