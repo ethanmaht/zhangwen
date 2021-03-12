@@ -6,6 +6,8 @@ from emtools import currency_means as cm
 from emtools import read_database as rd
 from emtools import emdate
 import datetime as dt
+import random
+import time
 
 
 def retain_date_day(conn, db_name, table, date):
@@ -141,16 +143,19 @@ def count_keep_table_day_order(_data):
 
 
 class RunCount:
-    def __init__(self, func, write_tab, date_col, extend='continue'):
+    def __init__(self, write_db, write_tab, date_col, extend='continue'):
         self.host = {'host': '172.16.0.248', 'user': 'root', 'pw': 'Qiyue@123'}
         self.s_date = None
-        self.write_db = 'market_read'
+        self.write_db = write_db
         self.write_tab = write_tab
         self.date_col = date_col
-        self.func = func
         self.extend = extend
 
-    def step_run(self, process_num=16, run_num=512, interval=0.03, step=1):
+    def step_run(self, func, process_num=16, run_num=512, interval=0.03, step=1, *args):
+        if isinstance(run_num, int):
+            tars = [_ for _ in range(run_num)]
+        else:
+            tars = run_num
         tar_date_list = [0]
         if self.extend == 'list':
             tar_date_list = self.read_last_date()
@@ -161,9 +166,8 @@ class RunCount:
             self.delete_last_date(tar_date_list)
         for _day in tar_date_list:
             print('****** Start to run: {d} - {tab} ******'.format(d=_day, tab=self.write_tab))
-            tars = [_ for _ in range(run_num)]
             cm.thread_work(
-                self.func, self.host, self.write_db, self.write_tab, _day,
+                func, *args, self.host, self.write_db, self.write_tab, _day,
                 tars=tars, process_num=process_num, interval=interval, step=step
             )
 
@@ -189,9 +193,8 @@ class RunCount:
     def delete_last_date(self, del_date):
         del_db, del_tab, del_types = self.write_db, self.write_tab, self.date_col
         conn = rd.connect_database_host(self.host['host'], self.host['user'], self.host['pw'])
-        for _type in del_types:
-            conn = rd.connect_database_host(self.host['host'], self.host['user'], self.host['pw'])
-            _date = rd.delete_last_date(conn, del_db, del_tab, _type, del_date)
+        del_date = del_date[0]
+        rd.delete_last_date(conn, del_db, del_tab, del_types, del_date)
         conn.close()
 
 
@@ -219,9 +222,21 @@ def compress_order_logon_conversion(host, write_db, write_tab, date_type_name, d
     compress_date['date_sub'] = compress_date.apply(lambda x: emdate.sub_date(x['logon_day'], x['order_day']), axis=1)
     compress_date = compress_date.fillna(0)
     rd.delete_last_date(conn, write_db, write_tab, date_type_name, date)
-    rd.insert_to_data(compress_date, conn, write_db, date_type_name)
+    rd.insert_to_data(compress_date, conn, write_db, write_tab)
     conn.close()
 
 
 def count_order_test(num):
     sql = 'SELECT count(*) user_num FROM user_info.user_info_{num};'.format(num=num)
+
+
+def make_sample_list(size, limit_max, limit_min=0):
+    _limit = limit_max - limit_min + 1
+    if size > _limit:
+        size = _limit
+    sample_list = []
+    while len(sample_list) < size:
+        sample_list.append(random.randint(limit_min, limit_max))
+        sample_list = list(set(sample_list))
+    sample_list.sort()
+    return sample_list

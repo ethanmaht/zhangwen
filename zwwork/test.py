@@ -14,6 +14,6 @@ def test():
 
 
 if __name__ == '__main__':
-    a = retained.RunCount(retained.count_order_logon_conversion, 'order_logon_conversion', 'order_day')
+    a = retained.RunCount('market_read', 'order_logon_conversion', 'order_day')
     # a.step_run()
     a.direct_run(retained.compress_order_logon_conversion)

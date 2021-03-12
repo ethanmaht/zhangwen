@@ -1,5 +1,11 @@
 from emtools import emdate
+from pandas import DataFrame as df
 
-a = '2021-01-01'
-b = '2020-02-03'
-print(emdate.sub_date(a, b, 'second'))
+a = df({'key': [1, 2], 'val': [3, None]})
+
+a = a.fillna(0)
+
+print(a)
+
+
+
