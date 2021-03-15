@@ -178,6 +178,17 @@ def read_last_date(conn, db_name, tab_name, date_type_name, is_list=None):
 
 def delete_last_date(conn, db_name, tab_name, date_type_name, date):
     del_sql = sql_code.sql_delete_last_date.format(type=date_type_name, db=db_name, tab=tab_name, date=date)
+    print(del_sql)
     cursor = conn.cursor()
     cursor.execute(del_sql)
     conn.commit()
+
+
+def delete_table_data(conn, db_name, tab_name):
+    del_sql = sql_code.sql_delete_table_data.format(db=db_name, tab=tab_name)
+    cursor = conn.cursor()
+    try:
+        cursor.execute(del_sql)
+        conn.commit()
+    except:
+        print('delete_table_data: err', db_name, tab_name)

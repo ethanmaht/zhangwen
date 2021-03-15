@@ -68,6 +68,10 @@ sql_delete_last_date = """
 delete from {db}.{tab} where {type} >= '{date}'
 """
 
+sql_delete_table_data = """
+delete from {db}.{tab}
+"""
+
 sql_first_order_time = """
 select user_id,min(createtime) first_time from cps_user_{_num}.orders
 where state > 0
@@ -130,7 +134,8 @@ group by logon_day,book_id,admin_id,order_day;
 
 analysis_repeat_order = """
 select date(from_unixtime(user_createtime)) logon_day,book_id,admin_id,
-    date(from_unixtime(createtime)) order_day,count(user_id) order_user,sum(kandian/100) order_money,
+    date(from_unixtime(createtime)) order_day,count(distinct user_id) order_user,
+    count(user_id) order_times,sum(kandian/100) order_money,
     sum(if(type=2, 1, 0)) order_vip,sum(if(type=2, money, 0)) vip_money,2 order_type,{num} tab_num
 from orders_log.orders_log_{num}
 where state > 0 and first_time != createtime and date(from_unixtime(createtime)) >= '{date}'
@@ -146,8 +151,8 @@ group by logon_day,book_id,admin_id,order_day
 """
 
 analysis_compress_order_logon_conversion = """
-select book_id,admin_id,order_day,logon_day,order_type,sum(order_user) order_user, sum(order_money) order_money, 
-    sum(order_vip) order_vip, sum(vip_money) vip_money
+select book_id,admin_id,order_day,logon_day,order_type,sum(order_user) order_user, sum(order_times) order_times, 
+    sum(order_money) order_money, sum(order_vip) order_vip, sum(vip_money) vip_money
 from {db}.{tab}
 where order_day >= '{date}'
 group by book_id,admin_id,order_day,logon_day,order_type

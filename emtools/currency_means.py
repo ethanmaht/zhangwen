@@ -4,6 +4,7 @@ from emtools import emdate
 import threading
 import time
 from multiprocessing import Process
+from pandas import DataFrame as df
 
 
 def df_merge(df_list, on, how='left', fill_na=None):
@@ -106,3 +107,56 @@ def pad_col(_df, col_list=None, fill=0):
         pad_list = [_ for _ in col_list if _ not in df_col]
         _df[pad_list] = fill
     return _df
+
+
+def col_name_splicing(_df, col_list, new_col='union_col', symbol='_'):
+    _col_left = col_list.pop(0)
+    _col_right = col_list.pop(0)
+    _df[new_col] = _df.apply(lambda x: _name_splicing(x[_col_left], symbol, x[_col_right]), axis=1)
+    while col_list:
+        _col_right = col_list.pop(0)
+        _df[new_col] = _df.apply(lambda x: _name_splicing(x[new_col], symbol, x[_col_right]), axis=1)
+    return _df
+        
+        
+def _name_splicing(_left, symbol, _right):
+    return str(_left) + str(symbol) + str(_right)
+
+
+def list_name_splicing(col_list, symbol='_'):
+    _col_left = col_list.pop(0)
+    _col_right = col_list.pop(0)
+    re_name = _name_splicing(_col_left, symbol, _col_right)
+    while col_list:
+        _col_right = col_list.pop(0)
+        re_name = _name_splicing(_col_left, symbol, _col_right)
+    return re_name
+
+
+def df_pivot_table(_df, columns, index, values, agg_func='sum', fill_na=0):
+    _df[values] = _df[values].astype(float)
+    date_pivot = _df.pivot_table(
+        columns=columns,
+        index=index,
+        values=values,
+        aggfunc=agg_func
+    )
+    df_val = df(date_pivot.values)
+    df_col = []
+    for _col in date_pivot.columns:
+        df_col.append(list_name_splicing(list(_col)))
+    df_val.columns = df_col
+    index_val = df([_ for _ in date_pivot.index])
+    index_val.columns = index
+    pivot_table = pd.concat([index_val, df_val], axis=1)
+    pivot_table = pivot_table.fillna(fill_na)
+    return pivot_table
+
+
+def df_sort_col(_df, col_list, except_col=None):
+    _df_col = _df.columns
+    _col = [_ for _ in col_list if _ in _df_col]
+    _df_col = list(set(_df_col).difference(set(_col)))
+    if except_col:
+        _col = _col + _df_col
+    return _df[_col]

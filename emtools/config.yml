@@ -62,3 +62,21 @@ shard_4:
   host: rr-2ze4666299886n585.mysql.rds.aliyuncs.com
   user: cps_select
   pw: KU4CsBwrVKpmXt@4yk&LBDuI
+
+
+shart_host:
+  region:
+    - 128
+    - 256
+    - 384
+    - 512
+  host:
+    - rr-2zeosaq969q3d1lw2.mysql.rds.aliyuncs.com
+    - rr-2zeihi538whv400p2.mysql.rds.aliyuncs.com
+    - rr-2zer748zs4766l2wa.mysql.rds.aliyuncs.com
+    - rr-2ze4666299886n585.mysql.rds.aliyuncs.com
+  user:
+    cps_select
+  pw:
+    KU4CsBwrVKpmXt@4yk&LBDuI
+

@@ -7,7 +7,6 @@ from emtools import read_database as rd
 from emtools import emdate
 import datetime as dt
 import random
-import time
 
 
 def retain_date_day(conn, db_name, table, date):
@@ -150,20 +149,14 @@ class RunCount:
         self.write_tab = write_tab
         self.date_col = date_col
         self.extend = extend
+        self.refresh = None
 
     def step_run(self, func, process_num=16, run_num=512, interval=0.03, step=1, *args):
         if isinstance(run_num, int):
             tars = [_ for _ in range(run_num)]
         else:
             tars = run_num
-        tar_date_list = [0]
-        if self.extend == 'list':
-            tar_date_list = self.read_last_date()
-        if self.extend == 'continue':
-            tar_date_list = self.read_last_date(is_list=0)
-        if self.extend == 'delete':
-            tar_date_list = self.read_last_date(is_list=0)
-            self.delete_last_date(tar_date_list)
+        tar_date_list = self.get_date()
         for _day in tar_date_list:
             print('****** Start to run: {d} - {tab} ******'.format(d=_day, tab=self.write_tab))
             cm.thread_work(
@@ -172,8 +165,24 @@ class RunCount:
             )
 
     def direct_run(self, func, *args):
-        tar_date_list = self.read_last_date(is_list=0)[0]
+        if self.date_col:
+            tar_date_list = self.read_last_date(is_list=0)[0]
+        else:
+            tar_date_list = self.s_date
+        if self.refresh:
+            self.refresh_table()
         func(self.host, self.write_db, self.write_tab, self.date_col, tar_date_list, *args)
+
+    def get_date(self):
+        tar_date_list = [0]
+        if self.extend == 'list':
+            tar_date_list = self.read_last_date()
+        if self.extend == 'continue':
+            tar_date_list = self.read_last_date(is_list=0)
+        if self.extend == 'delete':
+            tar_date_list = self.read_last_date(is_list=0)
+            self.delete_last_date(tar_date_list)
+        return tar_date_list
 
     def read_last_date(self, is_list=1, date_format='{Y}-{M}-{D}'):
         if self.s_date:
@@ -182,7 +191,6 @@ class RunCount:
             conn = rd.connect_database_host(self.host['host'], self.host['user'], self.host['pw'])
             _date = rd.read_last_date(conn, self.write_db, self.write_tab, date_type_name=self.date_col)
             conn.close()
-            # _date = '2019-01-01'
         if is_list:
             _date = emdate.date_list(_date, e_date=dt.datetime.now(), format_code=date_format)
             _date.sort()
@@ -195,6 +203,15 @@ class RunCount:
         conn = rd.connect_database_host(self.host['host'], self.host['user'], self.host['pw'])
         del_date = del_date[0]
         rd.delete_last_date(conn, del_db, del_tab, del_types, del_date)
+        conn.close()
+
+    def refresh_table(self, del_db=None, del_tab=None):
+        if not del_db:
+            del_db = self.write_db
+        if not del_tab:
+            del_tab = self.write_tab
+        conn = rd.connect_database_host(self.host['host'], self.host['user'], self.host['pw'])
+        rd.delete_table_data(conn, del_db, del_tab)
         conn.close()
 
 

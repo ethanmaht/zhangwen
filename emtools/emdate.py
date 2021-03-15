@@ -151,9 +151,9 @@ def sub_date(s_date, e_date, types='day'):
         e_date = dt.datetime.strptime(e_date, '%Y-%m-%d')
     sub = e_date - s_date
     types_dict = {
-        'hour': sub.total_seconds() / 3600,
-        'minute': sub.total_seconds() / 60,
-        'second': sub.total_seconds(),
+        # 'hour': sub.total_seconds() / 3600,
+        # 'minute': sub.total_seconds() / 60,
+        # 'second': sub.total_seconds(),
         'day': sub.days
     }
     if types in types_dict.keys():
