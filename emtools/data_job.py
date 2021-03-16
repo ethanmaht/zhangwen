@@ -61,7 +61,6 @@ def read_user_and_order(conn_fig, size, date, process_num):
     write_conn = rd.connect_database_vpn('datamarket')
     referral_data = pd.read_sql(sql_code.sql_referral_dict, write_conn)
     tars = [_ for _ in range(_s, _e)]
-    date = 16145280
     if date:
         cm.thread_work(
             user_and_order, conn_fig, 'datamarket', date, referral_data,
@@ -77,6 +76,9 @@ def read_user_and_order(conn_fig, size, date, process_num):
 
 def user_and_order(read_conn_fig, write_conn_fig, date, referral_data, _):
     print('======> is work to read -*- user_and_order -*- ===> num:{num} start '.format(num=_), dt.datetime.now())
+    # if _ < 80:
+    #     print('is has do ', _)
+    #     return 0
     read_conn = rd.connect_database_host(read_conn_fig)
     write_conn = rd.connect_database_vpn(write_conn_fig)
     write_user_db_name = 'user_info'

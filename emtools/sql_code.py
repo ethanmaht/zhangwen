@@ -38,13 +38,12 @@ group by user_id,createdate;
 """
 
 sql_user_order_day = """
-SELECT user_id,date(from_unixtime(createtime)) date_day,sum(state) order_success,
-    sum(if(state=0,1,0)) order_fail,
-    sum(if(state=1,money,0)) money,sum(if(state=1,money_benefit,0)) money_benefit,
-    sum(if(state=1,kandian,0)) order_kd,sum(if(state=1,free_kandian,0)) order_fd,
-    sum(if(type=1 & state=1, 1, 0)) bays,sum(if(type=2 & state=1,1,0)) vips
+SELECT user_id,date(from_unixtime(createtime)) date_day,
+    sum(money) money,sum(money_benefit) money_benefit,
+    sum(kandian) order_kd,sum(free_kandian) order_fd,
+    sum(if(type='1', 1, 0)) bays,sum(if(type='2',1,0)) vips
 FROM cps_user_{_num}.orders 
-where createtime >= unix_timestamp('{date}')
+where createtime >= unix_timestamp('{date}') and state = '1' and deduct = 0
 group by user_id,date_day;
 """
 
@@ -74,13 +73,13 @@ delete from {db}.{tab}
 
 sql_first_order_time = """
 select user_id,min(createtime) first_time from cps_user_{_num}.orders
-where state > 0
+where state = '1' and deduct = 0 
 group by user_id
 """
 
 sql_order_info = """
 select id,user_id,createtime,updatetime,state,type,book_id,chapter_id,admin_id,referral_id_permanent,
-    money,money_benefit,benefit,kandian,free_kandian,user_createtime
+    money,money_benefit,benefit,kandian,free_kandian,user_createtime,deduct
 FROM cps_user_{_num}.orders
 where updatetime >= '{date}'
 """
@@ -128,7 +127,7 @@ select date(from_unixtime(user_createtime)) logon_day,book_id,admin_id,
     date(from_unixtime(first_time)) order_day,count(*) order_user,sum(kandian/100) order_money,
     sum(if(type=2, 1, 0)) order_vip,sum(if(type=2, money, 0)) vip_money,1 order_type,{num} tab_num
 from orders_log.orders_log_{num}
-where state > 0 and first_time = createtime and date(from_unixtime(createtime)) >= '{date}'
+where state = '1' and deduct = 0 and first_time = createtime and date(from_unixtime(createtime)) >= '{date}'
 group by logon_day,book_id,admin_id,order_day;
 """
 
@@ -138,7 +137,7 @@ select date(from_unixtime(user_createtime)) logon_day,book_id,admin_id,
     count(user_id) order_times,sum(kandian/100) order_money,
     sum(if(type=2, 1, 0)) order_vip,sum(if(type=2, money, 0)) vip_money,2 order_type,{num} tab_num
 from orders_log.orders_log_{num}
-where state > 0 and first_time != createtime and date(from_unixtime(createtime)) >= '{date}'
+where state = '1' and deduct = 0 and first_time != createtime and date(from_unixtime(createtime)) >= '{date}'
 group by logon_day,book_id,admin_id,order_day;
 """
 

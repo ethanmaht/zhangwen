@@ -44,7 +44,6 @@ def connect_database_vpn(base_name):
         host=_base['host'], port=3306,
         user=_base['user'], passwd=_base['pw'],
     )
-    print('****** connect success: {db_name} ******'.format(db_name=base_name))
     return conn
 
 
@@ -79,9 +78,7 @@ class DataBaseWork:
             self.no_size_conn(_db)
 
     def no_size_conn(self, db_name, size=None):
-        # conn = connect_database(self.host, )
         switch_job(db_name, self.host, size, self.process_num, self.date)
-        # conn.close()
 
 
 def chick_col(conn, db_name, table, _col):

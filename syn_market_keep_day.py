@@ -1,5 +1,6 @@
 from algorithm import retained
 from algorithm import show_tabel
+import time
 
 
 def syn_market_keep_day(s_date=None):
@@ -11,8 +12,9 @@ def syn_market_keep_day(s_date=None):
 
 def syn_admin_book_order():
     work = retained.RunCount('market_read', 'order_logon_conversion', 'order_day', extend='delete')
-    # work.s_date = '2019-03-05'
+    work.s_date = '2021-03-15'
     work.step_run(retained.count_order_logon_conversion)
+    time.sleep(3)
     work.direct_run(retained.compress_order_logon_conversion)
 
 

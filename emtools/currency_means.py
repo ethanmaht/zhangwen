@@ -51,17 +51,18 @@ def process_tool(s_num, e_num, ways, func, *args):
 
 
 def thread_work(func, *args, tars, process_num=8, interval=0.03, step=None):
+    pool = []
     while tars:
-        pool = []
         if len(threading.enumerate()) <= process_num:
             _one = tars.pop(0)
             if step:
                 pool.append(threading.Thread(target=func, args=(*args, _one)))
             else:
                 pool.append(threading.Thread(target=func, args=(*args, )))
-            for _ in pool:
-                _.start()
+            pool[-1].start()
         time.sleep(interval)
+    for t in pool:
+        t.join()
 
 
 def thread_tool(s_num, e_num, ways, func, *args):
