@@ -76,7 +76,7 @@ def read_user_and_order(conn_fig, size, date, process_num):
 
 def user_and_order(read_conn_fig, write_conn_fig, date, referral_data, _):
     print('======> is work to read -*- user_and_order -*- ===> num:{num} start '.format(num=_), dt.datetime.now())
-    # if _ < 80:
+    # if _ < 128:
     #     print('is has do ', _)
     #     return 0
     read_conn = rd.connect_database_host(read_conn_fig)

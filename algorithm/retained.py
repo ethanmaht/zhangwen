@@ -221,8 +221,10 @@ def count_order_logon_conversion(host, write_db, write_tab, date, num):
     conn = rd.connect_database_host(host['host'], host['user'], host['pw'])
     first_order = pd.read_sql(sql_code.analysis_first_order.format(num=num, date=date), conn)
     repeat_order = pd.read_sql(sql_code.analysis_repeat_order.format(num=num, date=date), conn)
+    all_order = pd.read_sql(sql_code.analysis_all_user_order.format(num=num, date=date), conn)
+    vip_order = pd.read_sql(sql_code.analysis_vip_order.format(num=num, date=date), conn)
     logon_book_admin = pd.read_sql(sql_code.analysis_logon_book_admin.format(num=num, date=date), conn)
-    one_num = pd.concat([logon_book_admin, first_order, repeat_order])
+    one_num = pd.concat([logon_book_admin, all_order, first_order, repeat_order, vip_order])
     one_num = one_num.fillna(0)
     rd.insert_to_data(one_num, conn, write_db, write_tab)
     conn.close()
@@ -239,7 +241,7 @@ def compress_order_logon_conversion(host, write_db, write_tab, date_type_name, d
     compress_date['date_sub'] = compress_date.apply(lambda x: emdate.sub_date(x['logon_day'], x['order_day']), axis=1)
     compress_date = compress_date.fillna(0)
     rd.delete_last_date(conn, write_db, write_tab, date_type_name, date)
-    rd.insert_to_data(compress_date, conn, write_db, write_tab)
+    rd.subsection_insert_to_data(compress_date, conn, write_db, write_tab)
     conn.close()
 
 

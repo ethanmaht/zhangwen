@@ -16,11 +16,8 @@ def test(_num):
 
 
 if __name__ == '__main__':
-    a = cm.df_sort_col(a, ['test', 'key', 'xx'], except_col=1)
+    a = a.rename(columns={'s': 'b'})
     print(a)
-    tar = [_ for _ in range(30)]
-    cm.thread_work(test, tars=tar, step=1)
-    print('*************')
     # x = [1, 2, 3]
     # y = [2, 4]
     #

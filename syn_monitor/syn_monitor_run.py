@@ -23,9 +23,6 @@ class SynMonitor:
         self.write_db = write_db['db']
         self.write_tab = write_db['tab']
         self.date_col = write_db['date_col']
-        self.read_db = read_tab['db']
-        self.read_tab = read_tab['tab']
-        self.read_col = read_tab['date_col']
         self.extend = extend
         self.refresh = None
 
@@ -49,7 +46,6 @@ class SynMonitor:
             tars = run_num
         tar_date_list = self.get_date()
         host_config = self.syn_host['shart_host']
-        print(host_config)
         for _day in tar_date_list:
             print('****** Start to run: {d} - {tab} ******'.format(d=_day, tab=self.write_tab))
             cm.thread_work(
@@ -63,6 +59,13 @@ class SynMonitor:
         else:
             tar_date_list = self.s_date
         func(self.market_host, self.write_db, self.write_tab, self.date_col, tar_date_list, *args)
+
+    def direct_run_comparison(self, func, days=30, *args):
+        if self.s_date:
+            date = self.s_date
+        else:
+            date = emdate.date_sub_days(days)
+        func(self.market_host, self.write_dict, date, *args)
 
     def get_date(self):
         tar_date_list = [0]
@@ -101,8 +104,37 @@ def read_data_by_num(host, db_name, tab_name, date_col, date, num, sql, is_db=No
         db_tab = db_name + '_' + str(num) + '.' + tab_name
     else:
         db_tab = db_name + '.' + tab_name + '_' + str(num)
-    conn = rd.connect_database_host(host['host'], host['user'], host['pw'])
+    if isinstance(host, dict):
+        conn = rd.connect_database_host(host['host'], host['user'], host['pw'])
+    else:
+        conn = host
     data = pd.read_sql(sql.format(date=date, date_col=date_col, db_tab=db_tab, num=num), conn)
     conn.close()
     return data
 
+
+def data_comparison(left_tab, right_tab, keys, cols):
+    _left, _right = _make_col_name(cols, '_l'), _make_col_name(cols, '_r')
+    left_tab = left_tab.rename(columns=_left)
+    right_tab = right_tab.rename(columns=_right)
+    _comparison = pd.merge(
+        left_tab, right_tab, on=keys, how='outer'
+    )
+    for _ in cols:
+        _comparison[_] = _comparison.apply(lambda x: _date_sub_comparison(x[_left[_]], x[_right[_]]), axis=1)
+    return _comparison
+
+
+def _make_col_name(cols, add_name):
+    re_dict = {}
+    for _ in cols:
+        re_dict.update({_: _ + add_name})
+    return re_dict
+
+
+def _date_sub_comparison(_x, _y):
+    if isinstance(_x, str):
+        _x = float(_x)
+    if isinstance(_y, str):
+        _y = float(_y)
+    return _x - _y

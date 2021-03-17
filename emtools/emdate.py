@@ -159,3 +159,19 @@ def sub_date(s_date, e_date, types='day'):
     if types in types_dict.keys():
         return types_dict[types]
     return types_dict['day']
+
+
+def date_sub_days(sub_days, _s_day=None):
+    if not _s_day:
+        _s_day = dt.datetime.now()
+    e_day = _s_day - dt.timedelta(days=sub_days)
+    return datetime_format_code(e_day)
+
+
+def get_last_time_in_unit(_date, unit='month'):
+    func_dict = {
+        'month': 1,
+        'quarter': 2,
+        'year': 3
+    }
+

@@ -126,6 +126,34 @@ def insert_to_data(write_data, conn, db_name, table, key_name='id'):
     conn.commit()
 
 
+def subsection_insert_to_data(write_data, conn, db_name, table, key_name='id'):
+    create_table(conn, db_name, table, key_name)
+    _data = write_data.to_dict(orient='split')
+    _col = _data['columns']
+    chick_col(conn, db_name, table, _col)
+    _sql, _val = make_inert_sql(db_name, table, _data)
+    _subsection_insert(conn, _sql, _val)
+
+
+def _subsection_insert(conn, _sql, val, sub=10000):
+    _s, _e, _top = 0, sub, len(val)
+    while _e < _top:
+        val_sub = val[_s: _e]
+        _data_executemany(conn, _sql, val_sub)
+        print('is insert data to db now:', _e, 'for ', _top)
+        _s += sub
+        _e += sub
+    val_sub = val[_s: _top]
+    _data_executemany(conn, _sql, val_sub)
+    print('is insert data to db now:', _e, 'for ', _top)
+
+
+def _data_executemany(conn, _sql, _val):
+    cursor = conn.cursor()
+    cursor.executemany(_sql, _val)
+    conn.commit()
+
+
 def switch_job(db_name, conn_fig, size, process_num, date=None):
     """
     this place is to add work, that we want to run.

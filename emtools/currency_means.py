@@ -161,3 +161,8 @@ def df_sort_col(_df, col_list, except_col=None):
     if except_col:
         _col = _col + _df_col
     return _df[_col]
+
+
+def split_table_by_date(date, tab_name, date_unit='month'):
+
+    return tab_name_date, end_date

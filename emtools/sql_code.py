@@ -81,7 +81,7 @@ sql_order_info = """
 select id,user_id,createtime,updatetime,state,type,book_id,chapter_id,admin_id,referral_id_permanent,
     money,money_benefit,benefit,kandian,free_kandian,user_createtime,deduct
 FROM cps_user_{_num}.orders
-where updatetime >= '{date}'
+where createtime >= '{date}'
 """
 
 sql_user_info = """
@@ -124,37 +124,60 @@ FROM market_read.referral_info;
 
 analysis_first_order = """
 select date(from_unixtime(user_createtime)) logon_day,book_id,admin_id,
-    date(from_unixtime(first_time)) order_day,count(*) order_user,sum(kandian/100) order_money,
-    sum(if(type=2, 1, 0)) order_vip,sum(if(type=2, money, 0)) vip_money,1 order_type,{num} tab_num
+    date(from_unixtime(createtime)) order_day,count(distinct user_id) first_order_user,
+    count(user_id) first_order_times,sum(kandian/100) first_order_money,{num} tab_num
 from orders_log.orders_log_{num}
-where state = '1' and deduct = 0 and first_time = createtime and date(from_unixtime(createtime)) >= '{date}'
+where state = 1 and deduct = 0 and first_time = createtime and date(from_unixtime(createtime)) >= '{date}'
 group by logon_day,book_id,admin_id,order_day;
 """
 
 analysis_repeat_order = """
 select date(from_unixtime(user_createtime)) logon_day,book_id,admin_id,
-    date(from_unixtime(createtime)) order_day,count(distinct user_id) order_user,
-    count(user_id) order_times,sum(kandian/100) order_money,
-    sum(if(type=2, 1, 0)) order_vip,sum(if(type=2, money, 0)) vip_money,2 order_type,{num} tab_num
+    date(from_unixtime(createtime)) order_day,count(distinct user_id) repeat_order_user,
+    count(user_id) repeat_order_times,sum(kandian/100) repeat_order_money,{num} tab_num
 from orders_log.orders_log_{num}
-where state = '1' and deduct = 0 and first_time != createtime and date(from_unixtime(createtime)) >= '{date}'
+where state = 1 and deduct = 0 and first_time != createtime and date(from_unixtime(createtime)) >= '{date}'
+group by logon_day,book_id,admin_id,order_day;
+"""
+
+analysis_all_user_order = """
+select date(from_unixtime(user_createtime)) logon_day,book_id,admin_id,
+    date(from_unixtime(createtime)) order_day,count(distinct user_id) order_user,
+    count(user_id) order_times,sum(kandian/100) order_money,{num} tab_num
+from orders_log.orders_log_{num}
+where state = 1 and deduct = 0 and date(from_unixtime(createtime)) >= '{date}'
+group by logon_day,book_id,admin_id,order_day;
+"""
+
+analysis_vip_order = """
+select date(from_unixtime(user_createtime)) logon_day,book_id,admin_id,
+    date(from_unixtime(createtime)) order_day,count(distinct user_id) vip_order_user,
+    count(user_id) vip_order_times,sum(kandian/100) vip_order_money,{num} tab_num
+from orders_log.orders_log_{num}
+where state = 1 and deduct = 0 and type=2 and date(from_unixtime(createtime)) >= '{date}'
 group by logon_day,book_id,admin_id,order_day;
 """
 
 analysis_logon_book_admin = """
 select date(from_unixtime(createtime)) logon_day,referral_book book_id,admin_id,
-    date(from_unixtime(createtime)) order_day, count(*) order_user,0 order_type,{num} tab_num
+    date(from_unixtime(createtime)) order_day, count(*) logon_user,{num} tab_num
 from user_info.user_info_{num}
 where date(from_unixtime(createtime)) >= '{date}'
 group by logon_day,book_id,admin_id,order_day
 """
 
 analysis_compress_order_logon_conversion = """
-select book_id,admin_id,order_day,logon_day,order_type,sum(order_user) order_user, sum(order_times) order_times, 
-    sum(order_money) order_money, sum(order_vip) order_vip, sum(vip_money) vip_money
+select book_id,admin_id,order_day,logon_day,sum(logon_user) logon_user,
+    sum(order_user) order_user, sum(order_times) order_times, sum(order_money) order_money, 
+    sum(first_order_user) first_order_user, sum(first_order_times) first_order_times, 
+        sum(first_order_money) first_order_money, 
+    sum(repeat_order_user) repeat_order_user, sum(repeat_order_times) repeat_order_times, 
+        sum(repeat_order_money) repeat_order_money, 
+    sum(vip_order_user) vip_order_user, sum(vip_order_times) vip_order_times, 
+        sum(vip_order_money) vip_order_money
 from {db}.{tab}
 where order_day >= '{date}'
-group by book_id,admin_id,order_day,logon_day,order_type
+group by book_id,admin_id,order_day,logon_day
 """
 
 analysis_reason_for_save = """
