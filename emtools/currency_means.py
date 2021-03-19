@@ -65,6 +65,23 @@ def thread_work(func, *args, tars, process_num=8, interval=0.03, step=None):
         t.join()
 
 
+def thread_work_kwargs(func, tars, process_num=8, interval=0.03, step=None, **kwarg):
+    pool = []
+    kwarg_dict = kwarg
+    while tars:
+        if len(threading.enumerate()) <= process_num:
+            _one = tars.pop(0)
+            if step:
+                kwarg_dict.update({'num': _one})
+                pool.append(threading.Thread(target=func, kwargs=kwarg_dict))
+            else:
+                pool.append(threading.Thread(target=func, kwargs=kwarg_dict))
+            pool[-1].start()
+        time.sleep(interval)
+    for t in pool:
+        t.join()
+
+
 def thread_tool(s_num, e_num, ways, func, *args):
     threads = []
     queue = cut_list(s_num, e_num, ways)
@@ -162,7 +179,3 @@ def df_sort_col(_df, col_list, except_col=None):
         _col = _col + _df_col
     return _df[_col]
 
-
-def split_table_by_date(date, tab_name, date_unit='month'):
-
-    return tab_name_date, end_date

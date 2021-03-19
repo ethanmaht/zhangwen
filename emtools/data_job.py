@@ -2,6 +2,7 @@ import pandas as pd
 from emtools import sql_code
 from emtools import currency_means as cm
 from emtools import read_database as rd
+from emtools import emdate
 import datetime as dt
 
 
@@ -142,3 +143,44 @@ def read_dict_update(read_conn, write_conn, read_sql, write_db_name, write_tab_n
     data_info = data_info.fillna(fill_na)
     rd.insert_to_data(data_info, write_conn, write_db_name, write_tab_name)
 
+
+def read_kd_log(read_conn_fig, write_conn_fig, write_db, write_tab, num, date=None, end_date=None):
+    print('======> is start to run {db}.{tab} - {num} ===> start time:'.format(
+        db=write_db, tab=write_tab, num=num), dt.datetime.now())
+    read_conn = rd.connect_database_host(read_conn_fig)
+    write_conn = rd.connect_database_vpn(write_conn_fig)
+    if not date:
+        date = rd.read_last_date(write_conn, write_db, write_tab, 'createtime')
+    date_list = emdate.block_date_list(date, end_date)
+    for _block in date_list:
+        date_name, s_date, e_date = _block['date_name'], _block['s_date'], _block['e_date']
+        block_data = _kd_log_read_data(read_conn, s_date, e_date, num)
+        write_tab_name = write_tab + date_name + '_' + str(num)
+        rd.delete_last_date(write_conn, write_db, write_tab_name, 'createtime', s_date, e_date, date_type='stamp')
+        rd.insert_to_data(block_data, write_conn, write_db, write_tab_name)
+    read_conn.close()
+    write_conn.close()
+
+
+def _kd_log_read_data(read_conn, s_date, e_date, num):
+    user_info = pd.read_sql(
+        sql_code.sql_user_info_kd_log.format(num=num), read_conn
+    )
+    order_log = pd.read_sql(
+        sql_code.sql_order_log.format(s_date=s_date, e_date=e_date, num=num), read_conn
+    )
+    consume_log = pd.read_sql(
+        sql_code.sql_consume_log.format(s_date=s_date, e_date=e_date, num=num), read_conn
+    )
+    sign_log = pd.read_sql(
+        sql_code.sql_sign_log.format(s_date=s_date, e_date=e_date, num=num), read_conn
+    )
+    logon_log = pd.read_sql(
+        sql_code.sql_logon_log.format(s_date=s_date, e_date=e_date, num=num), read_conn
+    )
+    _log = pd.concat([order_log, consume_log, sign_log, logon_log])
+    _log['user_id'] = _log['user_id'].astype(int)
+    user_info['user_id'] = user_info['user_id'].astype(int)
+    _log_info = pd.merge(_log, user_info, on='user_id', how='left')
+    _log_info.fillna(0, inplace=True)
+    return _log_info

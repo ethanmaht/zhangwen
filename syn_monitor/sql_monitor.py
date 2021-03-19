@@ -33,20 +33,20 @@ GROUP BY date_day
 sql_comparison_admin_book_order_lift = """
 SELECT order_day date_day,sum(order_times) order_times, sum(order_user) order_users, sum(logon_user) logon
 from market_read.order_logon_conversion
-where order_day >= '{date}'
+where order_day >= '{date}' and order_day < '{e_date}'
 GROUP BY date_day
 """
 
 sql_comparison_admin_book_order_orders = """
 SELECT date_day,sum(order_times) order_times, sum(order_users) order_users
 from syn_monitor.monitor_orders_syn
-where date_day >= '{date}'
+where date_day >= '{date}' and date_day < '{e_date}'
 GROUP BY date_day
 """
 
 sql_comparison_admin_book_order_users = """
 SELECT date_day,sum(logon_user) logon
 from syn_monitor.monitor_user_syn
-where date_day >= '{date}'
+where date_day >= '{date}' and date_day < '{e_date}'
 GROUP BY date_day
 """

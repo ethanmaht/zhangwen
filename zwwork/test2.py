@@ -1,41 +1,50 @@
-from emtools import emdate
+import time
+import requests
+import hashlib
 from pandas import DataFrame as df
+import json
 
 
-v = [_ for _ in range(10021)]
-a = df({'key': v, 'val': v})
+class RequestsData:
+    def __init__(self):
+        self.appKey = 'EKSTRXINLKALRCRG'
+        self.appSecret = 'EKSTRXINLKALRCRG'
+        self.tenantSign = 'daixiaoer'
+        self.timestamp = str(round(time.time() * 1000))
+        self.version = 'v1'
+        self.upwd = '{tSign}appKey={aKey}&appSecret={apps}&tenantSign={tts}&version={vs}&timestamp={ts}'.format(
+            tSign=self.tenantSign, aKey=self.appKey, apps=self.appSecret,
+            tts=self.tenantSign, vs=self.version, ts=self.timestamp
+        )
 
-a = a.fillna(0)
+    def make_header(self):
+        m = hashlib.sha256()
+        m.update(self.upwd.encode("UTF-8"))
+        signature = m.hexdigest()
+        header = {
+            'appKey': self.appKey,
+            'appSecret': self.appSecret,
+            'tenantSign': self.tenantSign,
+            'timestamp': self.timestamp,
+            'signature': signature
+        }
+        return header
 
-# print(a)
-
-
-def make_inert_sql(db_name, table, _data):
-    _col = _data['columns']
-    _len = len(_col)
-    _col = tuple(_col)
-    _col = str(_col).replace("'", "`")
-    _char = '({len})'.format(len='%s,' * _len)[:-2] + ')'
-    _val = [tuple(_) for _ in _data['data']]
-    return f"replace INTO {db_name}.`{table}` {_col} VALUES {_char}", _val
-
-
-def insert_to_data(write_data, db_name, table):
-    _data = write_data.to_dict(orient='split')
-    _sql, _val = make_inert_sql(db_name, table, _data)
-    subsection_insert(_val)
-    # print(_sql, _val)
-
-
-def subsection_insert(_val, sub=1000):
-    _s, _e, _top = 0, sub, len(_val)
-    while _e < _top:
-        val_sub = _val[_s: _e]
-        print(val_sub)
-        _s += sub
-        _e += sub
-    val_sub = _val[_s: _top]
-    print(val_sub)
+    def get_customer_data(self, pagesize, page_num, *args, **kwargs):
+        cust_url = 'https://openapi.tanyibot.com/apiOpen/v1/customerPersonInfo/customerList'
+        header = self.make_header()
+        _poll = []
+        for _ in range(page_num):
+            cust_data = {'pageSize': pagesize, 'pageNum': _}
+            _date = json.dumps(cust_data)
+            cust = requests.get(cust_url, data=cust_data, headers=header)
+            one_page = cust.json()
+            print(one_page, len(one_page))
+            _poll += one_page['data']['content']
+            print(len(_poll))
+        return df(_poll)
 
 
-insert_to_data(a, 'db_name', 'tab_name')
+if __name__ == '__main__':
+    run = RequestsData()
+    run.get_customer_data(10, 1)

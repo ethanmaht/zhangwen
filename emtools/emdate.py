@@ -168,10 +168,40 @@ def date_sub_days(sub_days, _s_day=None):
     return datetime_format_code(e_day)
 
 
-def get_last_time_in_unit(_date, unit='month'):
-    func_dict = {
-        'month': 1,
-        'quarter': 2,
-        'year': 3
-    }
+def get_last_date_in_unit(_date, unit='month'):
+    dt_date = dt.datetime.strptime(_date, '%Y-%m-%d')
+    _y, _m = dt_date.year, dt_date.month
+    if unit == 'year':
+        _name = '_Y' + str(_y)[-2:]
+        return _name, '{Y}-01-01'.format(Y=_y + 1)
+    if unit == 'month':
+        _name = '_M' + str(_y)[-2:] + fixed_length(_m)
+        if _m == 12:
+            return _name, '{Y}-01-01'.format(Y=_y + 1)
+        else:
+            return _name, '{Y}-{M}-01'.format(Y=_y, M=_m + 1)
+    if unit == 'quarter':
+        if _m > 9:
+            _name = '_{Y}Q4'.format(Y=_y)
+            return _name, '{Y}-01-01'.format(Y=_y + 1)
+        if _m > 6:
+            _name = '_{Y}Q3'.format(Y=_y)
+            return _name, '{Y}-10-01'.format(Y=_y)
+        if _m > 3:
+            _name = '_{Y}Q2'.format(Y=_y)
+            return _name, '{Y}-07-01'.format(Y=_y)
+        _name = '_{Y}Q1'.format(Y=_y)
+        return _name, '{Y}-04-01'.format(Y=_y)
 
+
+def block_date_list(date, end_date=None, date_unit='quarter'):
+    if end_date:
+        end_date = datetime_format_code(end_date)
+    else:
+        end_date = datetime_format_code(dt.datetime.now())
+    date_block_list = []
+    while date <= end_date:
+        date_block_name, e_date = get_last_date_in_unit(date, date_unit)
+        date_block_list.append({'date_name': date_block_name, 's_date': date, 'e_date': e_date})
+        date = e_date
+    return date_block_list

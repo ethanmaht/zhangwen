@@ -2,6 +2,7 @@ from syn_monitor import syn_monitor_run
 from syn_monitor import sql_monitor
 from emtools import currency_means as cm
 from emtools import read_database as rd
+from emtools import emdate
 import datetime as dt
 import pandas as pd
 
@@ -56,14 +57,16 @@ def monitor_syn_tables(write_host, read_host, write_tab, read_tab, date, num):
 
 def comparison_tab_admin_book_val(market_host, write_dict, date, *args):
     conn = rd.connect_database_host(market_host['host'], market_host['user'], market_host['pw'])
+    rd.delete_table_data(conn, write_dict['db'], write_dict['tab'])
+    e_date = emdate.datetime_format_code(dt.datetime.now())
     left_tab = pd.read_sql(
-        sql_monitor.sql_comparison_admin_book_order_lift.format(date=date), conn
+        sql_monitor.sql_comparison_admin_book_order_lift.format(date=date, e_date=e_date), conn
     )
     order_tab = pd.read_sql(
-        sql_monitor.sql_comparison_admin_book_order_orders.format(date=date), conn
+        sql_monitor.sql_comparison_admin_book_order_orders.format(date=date, e_date=e_date), conn
     )
     user_tab = pd.read_sql(
-        sql_monitor.sql_comparison_admin_book_order_users.format(date=date), conn
+        sql_monitor.sql_comparison_admin_book_order_users.format(date=date, e_date=e_date), conn
     )
     left_tab = syn_monitor_run.data_comparison(left_tab, order_tab, 'date_day', ['order_times', 'order_users'])
     left_tab = syn_monitor_run.data_comparison(left_tab, user_tab, 'date_day', ['logon'])
