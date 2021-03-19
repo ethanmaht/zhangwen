@@ -41,9 +41,19 @@ def comparison_admin_book_order():
     work.direct_run_comparison(monitor_works.comparison_tab_admin_book_val)
 
 
+def one_book_orders():
+    work = syn_monitor_run.SynMonitor(
+        {'db': 'syn_monitor', 'tab': 'one_book', 'date_col': 'date_day'},
+        {'db': 'orders_log', 'tab': 'orders_log', 'date_col': 'createtime', 'date_type': 'stamp'}
+    )
+    work.s_date = '2021-03-07'
+    work.syn_step_run(monitor_works.comparison_by_book_id, process_num=32)
+
+
 if __name__ == '__main__':
     print('start work:')
     order_info_monitor()
     logon_info_monitor()
     # syn_table_day_nums_monitor()
     comparison_admin_book_order()
+    # one_book_orders()

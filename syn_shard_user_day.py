@@ -9,4 +9,4 @@ def syn_shard_user_day_work(s_date=None):
 
 
 if __name__ == '__main__':
-    syn_shard_user_day_work('2020-10-01')
+    syn_shard_user_day_work()

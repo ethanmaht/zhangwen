@@ -1,4 +1,5 @@
 import datetime as dt
+import time
 
 
 def fixed_length(_s, length=2, fixed="0", behind=None):
@@ -205,3 +206,9 @@ def block_date_list(date, end_date=None, date_unit='quarter'):
         date_block_list.append({'date_name': date_block_name, 's_date': date, 'e_date': e_date})
         date = e_date
     return date_block_list
+
+
+def date_to_stamp(date):
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+    un_time = time.mktime(date_time.timetuple())
+    return int(un_time)

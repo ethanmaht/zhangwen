@@ -150,7 +150,10 @@ def read_kd_log(read_conn_fig, write_conn_fig, write_db, write_tab, num, date=No
     read_conn = rd.connect_database_host(read_conn_fig)
     write_conn = rd.connect_database_vpn(write_conn_fig)
     if not date:
-        date = rd.read_last_date(write_conn, write_db, write_tab, 'createtime')
+        _before_yesterday = emdate.date_sub_days(2)
+        date_name = emdate.block_date_list(_before_yesterday, end_date)['date_name']
+        _last_tab = write_tab + date_name + '_' + str(num)
+        date = rd.read_last_date(write_conn, write_db, _last_tab, 'createtime')
     date_list = emdate.block_date_list(date, end_date)
     for _block in date_list:
         date_name, s_date, e_date = _block['date_name'], _block['s_date'], _block['e_date']

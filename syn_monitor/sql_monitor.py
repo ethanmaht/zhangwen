@@ -50,3 +50,9 @@ from syn_monitor.monitor_user_syn
 where date_day >= '{date}' and date_day < '{e_date}'
 GROUP BY date_day
 """
+
+sql_comparison_one_book = """
+SELECT *,date(FROM_UNIXTIME(createtime)) create_date
+from orders_log.orders_log_{num}
+where createtime >= UNIX_TIMESTAMP('{date}') and createtime < UNIX_TIMESTAMP('{e_date}') and book_id = {bookid}
+"""

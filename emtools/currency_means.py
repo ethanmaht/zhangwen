@@ -5,6 +5,7 @@ import threading
 import time
 from multiprocessing import Process
 from pandas import DataFrame as df
+import os
 
 
 def df_merge(df_list, on, how='left', fill_na=None):
@@ -179,3 +180,10 @@ def df_sort_col(_df, col_list, except_col=None):
         _col = _col + _df_col
     return _df[_col]
 
+
+def get_root_abs_path(project_name, add_self=None):
+    _path = os.path.split(os.path.realpath(__file__))[0]
+    root_abs_path = _path.split(project_name)[0]
+    if add_self:
+        root_abs_path = root_abs_path + project_name + '/'
+    return root_abs_path

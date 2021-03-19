@@ -155,13 +155,13 @@ def switch_job(db_name, conn_fig, size, process_num, date=None):
     :conn -> the databases connect.
     :return -> null run in this place
     """
-    # if db_name == 'happy_seven':
-    #     data_job.read_dict_table(conn_fig, 'datamarket', date)
+    if db_name == 'happy_seven':
+        data_job.read_dict_table(conn_fig, 'datamarket', date)
     if db_name == 'shard':
-        # data_job.read_user_and_order(conn_fig, size, date, process_num)
-        # data_job.read_data_user_day(conn_fig, size, date, process_num)
+        data_job.read_user_and_order(conn_fig, size, date, process_num)
+        data_job.read_data_user_day(conn_fig, size, date, process_num)
         syn_date_block_run(
-            data_job.read_kd_log, size, date, process_num=process_num,
+            data_job.read_kd_log, size, date, process_num=8,
             read_conn_fig=conn_fig, write_conn_fig='datamarket', write_db='log_block', write_tab='action_log'
         )
 
@@ -194,16 +194,15 @@ def read_last_date(conn, db_name, tab_name, date_type_name, is_list=None):
 
 def delete_last_date(conn, db_name, tab_name, date_type_name, date, end_date=None, date_type='date'):
     if date_type == 'stamp':
-        date = date_to_stamp(date)
+        date = emdate.date_to_stamp(date)
         if end_date:
-            end_date = date_to_stamp(end_date)
+            end_date = emdate.date_to_stamp(end_date)
     if end_date:
         del_sql = sql_code.sql_delete_date_section.format(
             type=date_type_name, db=db_name, tab=tab_name, date=date, end_date=end_date
         )
     else:
         del_sql = sql_code.sql_delete_last_date.format(type=date_type_name, db=db_name, tab=tab_name, date=date)
-    print(del_sql)
     cursor = conn.cursor()
     try:
         cursor.execute(del_sql)
@@ -238,9 +237,3 @@ def syn_date_block_run(func, size, date, process_num, step=1, **kwargs):
 def _block_num_list(size):
     _s, _e = size['start'], size['end'] + 1
     return [_ for _ in range(_s, _e)]
-
-
-def date_to_stamp(date):
-    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
-    un_time = time.mktime(date_time.timetuple())
-    return int(un_time)

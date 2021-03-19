@@ -5,6 +5,7 @@ from emtools import read_database as rd
 from emtools import emdate
 import datetime as dt
 import pandas as pd
+from logs import loger
 
 
 def monitor_order_table_date(write_host, read_host, write_tab, read_tab, date, num):
@@ -72,4 +73,17 @@ def comparison_tab_admin_book_val(market_host, write_dict, date, *args):
     left_tab = syn_monitor_run.data_comparison(left_tab, user_tab, 'date_day', ['logon'])
     rd.insert_to_data(left_tab, conn, write_dict['db'], write_dict['tab'])
     conn.close()
+
+
+@loger.logging_read
+def comparison_by_book_id(market_host, read_host, write_tab, read_tab, date, num):
+    print('======> is start to run {db}.{tab} - {num} ===> start time:'.format(
+        db=read_tab['db'], tab=read_tab['tab'], num=num), dt.datetime.now())
+    conn = rd.connect_database_host(market_host['host'], market_host['user'], market_host['pw'])
+    e_date = emdate.datetime_format_code(dt.datetime.now())
+    one_book_data = pd.read_sql(
+        sql_monitor.sql_comparison_one_book.format(date=date, e_date=e_date, num=num, bookid=10077894), conn
+    )
+    rd.insert_to_data(one_book_data, conn, write_tab['db'], write_tab['tab'])
+
 
