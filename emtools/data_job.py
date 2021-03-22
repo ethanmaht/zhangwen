@@ -4,9 +4,12 @@ from emtools import currency_means as cm
 from emtools import read_database as rd
 from emtools import emdate
 import datetime as dt
+from logs import loger
+import os
 
 
 # 同步动作数据 << 注册，订阅，充值，签到
+@loger.logging_read
 def read_data_user_day(conn_fig, size, date, process_num):
     _s, _e = size['start'], size['end'] + 1
     tars = [_ for _ in range(_s, _e)]
@@ -94,12 +97,7 @@ def user_and_order(read_conn_fig, write_conn_fig, date, referral_data, _):
     first_order = pd.read_sql(
         sql_code.sql_first_order_time.format(_num=_), read_conn,
     )
-    order_info = pd.read_sql(
-        sql_code.sql_order_info.format(_num=_, date=order_date), read_conn,
-    )
-    order_info = pd.merge(order_info, first_order, on='user_id', how='left')
-    order_info = order_info.fillna(0)
-    rd.insert_to_data(order_info, write_conn, write_order_db_name, write_order_tab_name)
+
     user_info = pd.read_sql(
         sql_code.sql_user_info.format(_num=_, date=user_date), read_conn
     )
@@ -107,11 +105,21 @@ def user_and_order(read_conn_fig, write_conn_fig, date, referral_data, _):
     user_info = pd.merge(user_info, first_order, on='user_id', how='left')
     user_info = user_info.fillna(0)
     rd.insert_to_data(user_info, write_conn, write_user_db_name, write_user_tab_name, key_name='user_id')
+
+    _user_info = user_info[['user_id', 'referral_book']]
+    order_info = pd.read_sql(
+        sql_code.sql_order_info.format(_num=_, date=order_date), read_conn,
+    )
+    order_info = pd.merge(order_info, first_order, on='user_id', how='left')
+    order_info = pd.merge(order_info, _user_info, on='user_id', how='left')
+    order_info = order_info.fillna(0)
+    rd.insert_to_data(order_info, write_conn, write_order_db_name, write_order_tab_name)
     read_conn.close()
     write_conn.close()
 
 
 # 同步维度表： 渠道，书，推广
+@loger.logging_read
 def read_dict_table(read_conn_fig, write_conn_fig, date):
     print('======> is work to read -*- read_dict_table -*- ===> start:', dt.datetime.now())
     write_db_name = 'market_read'
@@ -144,10 +152,14 @@ def read_dict_update(read_conn, write_conn, read_sql, write_db_name, write_tab_n
     rd.insert_to_data(data_info, write_conn, write_db_name, write_tab_name)
 
 
-def read_kd_log(read_conn_fig, write_conn_fig, write_db, write_tab, num, date=None, end_date=None):
+def read_kd_log(write_conn_fig, write_db, write_tab, num, date=None, end_date=None):
     print('======> is start to run {db}.{tab} - {num} ===> start time:'.format(
         db=write_db, tab=write_tab, num=num), dt.datetime.now())
-    read_conn = rd.connect_database_host(read_conn_fig)
+    read_conn_fig = rd.read_db_host(
+        (os.path.split(os.path.realpath(__file__))[0] + '/config.yml')
+    )
+    read_host_conn_fig = cm.pick_conn_host_by_num(num, read_conn_fig)
+    read_conn = rd.connect_database_direct(read_host_conn_fig)
     write_conn = rd.connect_database_vpn(write_conn_fig)
     if not date:
         _before_yesterday = emdate.date_sub_days(2)
@@ -157,7 +169,7 @@ def read_kd_log(read_conn_fig, write_conn_fig, write_db, write_tab, num, date=No
     date_list = emdate.block_date_list(date, end_date)
     for _block in date_list:
         date_name, s_date, e_date = _block['date_name'], _block['s_date'], _block['e_date']
-        block_data = _kd_log_read_data(read_conn, s_date, e_date, num)
+        block_data = _kd_log_read_data(read_conn, write_conn, s_date, e_date, num)
         write_tab_name = write_tab + date_name + '_' + str(num)
         rd.delete_last_date(write_conn, write_db, write_tab_name, 'createtime', s_date, e_date, date_type='stamp')
         rd.insert_to_data(block_data, write_conn, write_db, write_tab_name)
@@ -165,9 +177,9 @@ def read_kd_log(read_conn_fig, write_conn_fig, write_db, write_tab, num, date=No
     write_conn.close()
 
 
-def _kd_log_read_data(read_conn, s_date, e_date, num):
+def _kd_log_read_data(read_conn, write_conn, s_date, e_date, num):
     user_info = pd.read_sql(
-        sql_code.sql_user_info_kd_log.format(num=num), read_conn
+        sql_code.sql_user_info_kd_log.format(num=num), write_conn
     )
     order_log = pd.read_sql(
         sql_code.sql_order_log.format(s_date=s_date, e_date=e_date, num=num), read_conn

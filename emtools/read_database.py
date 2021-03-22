@@ -42,6 +42,14 @@ def connect_database_host(host, user='cps_select', passwd='KU4CsBwrVKpmXt@4yk&LB
     return conn
 
 
+def connect_database_direct(host_dict, port=3306):
+    conn = pymysql.connect(
+        host=host_dict['host'], port=port,
+        user=host_dict['user'], passwd=host_dict['pw'],
+    )
+    return conn
+
+
 class DataBaseWork:
 
     def __init__(self):
@@ -161,8 +169,8 @@ def switch_job(db_name, conn_fig, size, process_num, date=None):
         data_job.read_user_and_order(conn_fig, size, date, process_num)
         data_job.read_data_user_day(conn_fig, size, date, process_num)
         syn_date_block_run(
-            data_job.read_kd_log, size, date, process_num=8,
-            read_conn_fig=conn_fig, write_conn_fig='datamarket', write_db='log_block', write_tab='action_log'
+            data_job.read_kd_log, date, process_num=8,
+            write_conn_fig='datamarket', write_db='log_block', write_tab='action_log'
         )
 
 
@@ -222,16 +230,11 @@ def delete_table_data(conn, db_name, tab_name):
         print('delete_table_data: err', db_name, tab_name)
 
 
-def syn_date_block_run(func, size, date, process_num, step=1, **kwargs):
-    tars = _block_num_list(size)
-    if date:
-        cm.thread_work_kwargs(
-            func=func, date=date, tars=tars, process_num=process_num, step=step, **kwargs
-        )
-    else:
-        cm.thread_work_kwargs(
-            func=func, tars=tars, process_num=process_num, step=step, **kwargs
-        )
+def syn_date_block_run(func, date, process_num, **kwargs):
+    one_size = process_num // 4
+    cm.thread_work_conn(
+        func=func, date=date, one_size=one_size, **kwargs
+    )
 
 
 def _block_num_list(size):

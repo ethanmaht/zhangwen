@@ -6,6 +6,7 @@ import time
 from multiprocessing import Process
 from pandas import DataFrame as df
 import os
+import copy
 
 
 def df_merge(df_list, on, how='left', fill_na=None):
@@ -81,6 +82,44 @@ def thread_work_kwargs(func, tars, process_num=8, interval=0.03, step=None, **kw
         time.sleep(interval)
     for t in pool:
         t.join()
+
+
+def thread_work_conn(func, _split_list, one_size=2, interval=0.03, **kwarg):
+    if not _split_list:
+        _split_list = [128, 256, 334, 512]
+    split_plan = _make_split_plan_dict(_split_list, start_num=0)
+    surplus_num = 1
+    while surplus_num:
+        surplus_num = 0
+        for _con in range(len(_split_list)):
+            _run, _poll = _check_run_pooll_is_alive(split_plan, _con)
+            if len(_run) < one_size:
+                kwarg.update({'num': _poll.pop(0)})
+                _run.append(threading.Thread(target=func, kwargs=kwarg))
+                _run[-1].start()
+            surplus_num += len(_poll)
+        time.sleep(interval)
+
+
+def _check_run_pooll_is_alive(split_plan, _con):
+    run_pool = split_plan['run_{num}'.format(num=_con)]
+    wait_poll = split_plan['poll_{num}'.format(num=_con)]
+    for _t in run_pool:
+        if not _t.is_alive():
+            run_pool.remove(_t)
+    return run_pool, wait_poll
+
+
+def _make_split_plan_dict(conn_split, start_num=0) -> dict:
+    conn_poll = []
+    split_plan = {}
+    for _ in conn_split:
+        conn_poll.append([_ for _ in range(start_num, _)])
+        _s = _
+    conn_num = len(conn_poll)
+    for t in range(conn_num):
+        split_plan.update({'run_{num}'.format(num=t): [], 'poll_{num}'.format(num=t): conn_poll[t]})
+    return split_plan
 
 
 def thread_tool(s_num, e_num, ways, func, *args):
@@ -187,3 +226,12 @@ def get_root_abs_path(project_name, add_self=None):
     if add_self:
         root_abs_path = root_abs_path + project_name + '/'
     return root_abs_path
+
+
+def pick_conn_host_by_num(num, host_config):
+    _region = copy.deepcopy(host_config['region'])
+    _steps, _ = _region.pop(0), 0
+    while num >= _steps:
+        _steps = _region.pop(0)
+        _ += 1
+    return {'host': host_config['host'][_], 'user': host_config['user'], 'pw': host_config['pw']}

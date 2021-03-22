@@ -89,10 +89,10 @@ where createtime >= '{date}'
 """
 
 sql_user_info = """
-select id user_id,createtime,channel_id admin_id,sex,country,
+select id user_id,createtime,updatetime,channel_id admin_id,sex,country,
     province,city,isp,referral_id,referral_id_permanent,ext
 FROM cps_user_{_num}.user
-where createtime >= '{date}'
+where updatetime >= '{date}'
 """
 
 sql_dict_total_admin = """
@@ -121,8 +121,8 @@ FROM market_read.referral_info;
 """
 
 sql_user_info_kd_log = """
-SELECT id user_id,date(FROM_UNIXTIME(createtime)) logon_date,channel_id
-from cps_user_{num}.`user`
+SELECT user_id,date(FROM_UNIXTIME(createtime)) logon_date,admin_id channel_id,referral_book
+from user_info.user_info_{num}
 """
 
 sql_order_log = """
@@ -158,7 +158,7 @@ where createtime >= UNIX_TIMESTAMP('{s_date}') and createtime < UNIX_TIMESTAMP('
 analysis_first_order = """
 select date(from_unixtime(user_createtime)) logon_day,book_id,admin_id,
     date(from_unixtime(createtime)) order_day,count(distinct user_id) first_order_user,
-    count(user_id) first_order_times,sum(kandian/100) first_order_money,{num} tab_num
+    count(user_id) first_order_times,sum(money) first_order_money,{num} tab_num
 from orders_log.orders_log_{num}
 where state = 1 and deduct = 0 and first_time = createtime and date(from_unixtime(createtime)) >= '{date}'
 group by logon_day,book_id,admin_id,order_day;
@@ -167,7 +167,7 @@ group by logon_day,book_id,admin_id,order_day;
 analysis_repeat_order = """
 select date(from_unixtime(user_createtime)) logon_day,book_id,admin_id,
     date(from_unixtime(createtime)) order_day,count(distinct user_id) repeat_order_user,
-    count(user_id) repeat_order_times,sum(kandian/100) repeat_order_money,{num} tab_num
+    count(user_id) repeat_order_times,sum(money) repeat_order_money,{num} tab_num
 from orders_log.orders_log_{num}
 where state = 1 and deduct = 0 and first_time != createtime and date(from_unixtime(createtime)) >= '{date}'
 group by logon_day,book_id,admin_id,order_day;
@@ -186,7 +186,7 @@ group by logon_day,book_id,admin_id,order_day
 analysis_all_user_order = """
 select date(from_unixtime(user_createtime)) logon_day,book_id,admin_id,
     date(from_unixtime(createtime)) order_day,count(distinct user_id) order_user,
-    count(user_id) order_times,sum(kandian/100) order_money,{num} tab_num
+    count(user_id) order_times,sum(money) order_money,{num} tab_num
 from orders_log.orders_log_{num}
 where state = 1 and deduct = 0 and date(from_unixtime(createtime)) >= '{date}'
 group by logon_day,book_id,admin_id,order_day;
@@ -195,7 +195,7 @@ group by logon_day,book_id,admin_id,order_day;
 analysis_vip_order = """
 select date(from_unixtime(user_createtime)) logon_day,book_id,admin_id,
     date(from_unixtime(createtime)) order_day,count(distinct user_id) vip_order_user,
-    count(user_id) vip_order_times,sum(kandian/100) vip_order_money,{num} tab_num
+    count(user_id) vip_order_times,sum(money) vip_order_money,{num} tab_num
 from orders_log.orders_log_{num}
 where state = 1 and deduct = 0 and type=2 and date(from_unixtime(createtime)) >= '{date}'
 group by logon_day,book_id,admin_id,order_day;
@@ -207,6 +207,12 @@ select date(from_unixtime(createtime)) logon_day,referral_book book_id,admin_id,
 from user_info.user_info_{num}
 where date(from_unixtime(createtime)) >= '{date}'
 group by logon_day,book_id,admin_id,order_day
+"""
+
+analysis_logon_book_id = """
+select date(from_unixtime(createtime)) logon_day,referral_book book_id,admin_id,
+    date(from_unixtime(createtime)) order_day, count(*) logon_user,{num} tab_num
+from user_info.user_info_{num}
 """
 
 analysis_compress_order_logon_conversion = """

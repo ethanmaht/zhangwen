@@ -191,6 +191,7 @@ class RunCount:
             conn = rd.connect_database_host(self.host['host'], self.host['user'], self.host['pw'])
             _date = rd.read_last_date(conn, self.write_db, self.write_tab, date_type_name=self.date_col)
             conn.close()
+            self.s_date = _date
         if is_list:
             _date = emdate.date_list(_date, e_date=dt.datetime.now(), format_code=date_format)
             _date.sort()
