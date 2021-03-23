@@ -160,7 +160,8 @@ select date(from_unixtime(user_createtime)) logon_day,book_id,admin_id,
     date(from_unixtime(createtime)) order_day,count(distinct user_id) first_order_user,
     count(user_id) first_order_times,sum(money) first_order_money,{num} tab_num
 from orders_log.orders_log_{num}
-where state = 1 and deduct = 0 and first_time = createtime and date(from_unixtime(createtime)) >= '{date}'
+where state = 1 and deduct = 0 and first_time = createtime and referral_book = book_id
+    and date(from_unixtime(createtime)) >= '{date}'
 group by logon_day,book_id,admin_id,order_day;
 """
 
@@ -169,7 +170,8 @@ select date(from_unixtime(user_createtime)) logon_day,book_id,admin_id,
     date(from_unixtime(createtime)) order_day,count(distinct user_id) repeat_order_user,
     count(user_id) repeat_order_times,sum(money) repeat_order_money,{num} tab_num
 from orders_log.orders_log_{num}
-where state = 1 and deduct = 0 and first_time != createtime and date(from_unixtime(createtime)) >= '{date}'
+where state = 1 and deduct = 0 and first_time != createtime and referral_book = book_id 
+    and date(from_unixtime(createtime)) >= '{date}'
 group by logon_day,book_id,admin_id,order_day;
 """
 
@@ -178,7 +180,8 @@ SELECT logon_day,book_id,admin_id,order_day,count(DISTINCT user_id) first_repeat
 from (select date(from_unixtime(user_createtime)) logon_day,book_id,admin_id,
             date(from_unixtime(min(createtime))) order_day,user_id user_id
         from orders_log.orders_log_{num}
-        where state = 1 and deduct = 0 and first_time != createtime and date(from_unixtime(createtime)) >= '{date}'
+        where state = 1 and deduct = 0 and first_time != createtime and referral_book = book_id 
+            and date(from_unixtime(createtime)) >= '{date}'
         group by logon_day,book_id,admin_id,user_id) base 
 group by logon_day,book_id,admin_id,order_day
 """
@@ -197,7 +200,8 @@ select date(from_unixtime(user_createtime)) logon_day,book_id,admin_id,
     date(from_unixtime(createtime)) order_day,count(distinct user_id) vip_order_user,
     count(user_id) vip_order_times,sum(money) vip_order_money,{num} tab_num
 from orders_log.orders_log_{num}
-where state = 1 and deduct = 0 and type=2 and date(from_unixtime(createtime)) >= '{date}'
+where state = 1 and deduct = 0 and type=2 and referral_book = book_id 
+    and date(from_unixtime(createtime)) >= '{date}'
 group by logon_day,book_id,admin_id,order_day;
 """
 
@@ -227,6 +231,48 @@ select book_id,admin_id,order_day,logon_day,sum(logon_user) logon_user,
 from {db}.{tab}
 where order_day >= '{date}'
 group by book_id,admin_id,order_day,logon_day
+"""
+
+analysis_keep_action_by_date_block = """
+SELECT user_id,date(FROM_UNIXTIME(createtime)) action_date,book_id
+from (SELECT user_id,createtime,type,book_id
+        from log_block.action_log{date_code}_{num}
+        where type=1 and createtime >= UNIX_TIMESTAMP('{s_date}') and deduct = 0 and state = 1
+        union
+        SELECT user_id,createtime,type,book_id
+        from log_block.action_log{date_code}_{num}
+        where type=2 and createtime >= UNIX_TIMESTAMP('{s_date}') and deduct = 0 and state = 1
+        union
+        SELECT user_id,createtime,type,book_id
+        from log_block.action_log{date_code}_{num}
+        where type=5 and createtime >= UNIX_TIMESTAMP('{s_date}')
+) base
+GROUP BY user_id,action_date,book_id
+"""
+
+analysis_keep_logon_by_date_block = """
+SELECT user_id,date(FROM_UNIXTIME(createtime)) date_day,type,referral_book book_id
+from log_block.action_log{date_code}_{num}
+where type=0 and createtime >= UNIX_TIMESTAMP('{s_date}')
+GROUP BY user_id,date_day,type,referral_book
+"""
+
+analysis_keep_order_by_date_block = """
+SELECT user_id,date(FROM_UNIXTIME(createtime)) date_day,type,book_id
+from (SELECT user_id,createtime,type,book_id
+        from log_block.action_log{date_code}_{num}
+        where type=1 and createtime >= UNIX_TIMESTAMP('{s_date}') and deduct = 0 and state = 1
+        union
+        SELECT user_id,createtime,type,book_id
+        from log_block.action_log{date_code}_{num}
+        where type=2 and createtime >= UNIX_TIMESTAMP('{s_date}') and deduct = 0 and state = 1
+) base
+GROUP BY user_id,date_day,type,book_id
+"""
+
+
+"""
+************** -*- give up sql -*- **************
 """
 
 analysis_reason_for_save = """

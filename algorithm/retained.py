@@ -143,7 +143,8 @@ def count_keep_table_day_order(_data):
 
 class RunCount:
     def __init__(self, write_db, write_tab, date_col, extend='continue'):
-        self.host = {'host': '172.16.0.248', 'user': 'root', 'pw': 'Qiyue@123'}
+        # self.host = {'host': '172.16.0.248', 'user': 'root', 'pw': 'Qiyue@123'}
+        self.host = rd.connect_database_vpn('datamarket')
         self.s_date = None
         self.write_db = write_db
         self.write_tab = write_tab
@@ -162,6 +163,20 @@ class RunCount:
             cm.thread_work(
                 func, *args, self.host, self.write_db, self.write_tab, _day,
                 tars=tars, process_num=process_num, interval=interval, step=step
+            )
+
+    def step_run_kwargs(self, func, process_num=16, run_num=512, interval=0.03, step=1, **kwargs):
+        if isinstance(run_num, int):
+            tars = [_ for _ in range(run_num)]
+        else:
+            tars = run_num
+        tar_date_list = self.get_date()
+        for _day in tar_date_list:
+            print('****** Start to run: {d} - {tab} ******'.format(d=_day, tab=self.write_tab))
+            cm.thread_work_kwargs(
+                func=func, run_list=tars, read_config=self.host, db_name=self.write_db, tab_name=self.write_tab,
+                s_date=tar_date_list, date_col=self.date_col, process_num=process_num, interval=interval, step=step,
+                **kwargs
             )
 
     def direct_run(self, func, *args):
@@ -261,3 +276,45 @@ def make_sample_list(size, limit_max, limit_min=0):
         sample_list = list(set(sample_list))
     sample_list.sort()
     return sample_list
+
+
+def retained_three_index_by_user(read_config, db_name, tab_name, date_col, num, s_date=None):
+    s_date = emdate.date_sub_days(sub_days=31, _s_day=s_date)
+    date_list = emdate.block_date_list(s_date)
+    conn = rd.connect_database_vpn(read_config)
+    keep_data = _one_retained_three_index_by_user_run(conn, date_list, s_date, num)
+    rd.delete_last_date(conn, db_name, tab_name, date_col, s_date)
+    rd.subsection_insert_to_data(keep_data, conn,db_name, tab_name)
+    conn.close()
+
+
+def _one_retained_three_index_by_user_run(conn, date_list, s_date, num):
+    action = _read_one_num_data(
+        sql_code.analysis_keep_action_by_date_block, conn=conn, date_list=date_list, s_date=s_date, num=num
+    )
+    logon = _read_one_num_data(
+        sql_code.analysis_keep_logon_by_date_block, conn=conn, date_list=date_list, s_date=s_date, num=num
+    )
+    order = _read_one_num_data(
+        sql_code.analysis_keep_order_by_date_block, conn=conn, date_list=date_list, s_date=s_date, num=num
+    )
+    _logon_keep = pd.merge(logon, action, on=['user_id', 'book_id'], how='left')
+    logon_keep = _logon_keep.groupby(by=['date_day', 'action_date', 'book_id', 'type']).count().reset_index()
+    _order_keep = pd.merge(order, action, on=['user_id', 'book_id'], how='left')
+    order_keep = _order_keep.groupby(by=['date_day', 'action_date', 'book_id', 'type']).count().reset_index()
+    keep_data = pd.concat([logon_keep, order_keep])
+    keep_data['tab_num'] = num
+    keep_data['date_sub'] = keep_data.apply(lambda x: emdate.sub_date(x['date_day'], x['action_date']), axis=1)
+    return keep_data
+
+
+def _read_one_num_data(sql, conn, date_list, s_date, num):
+    df_list = []
+    for _date in date_list:
+        _df = pd.read_sql(
+            sql.format(date_code=_date['date_name'], num=num, s_date=s_date), conn
+        )
+        df_list.append(_df)
+    complete_data = pd.concat(df_list)
+    return complete_data
+

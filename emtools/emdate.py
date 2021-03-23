@@ -145,7 +145,7 @@ def month_week(_dt, natural=0):
     return (_day - month_s_wd) // 7 + 1
 
 
-def sub_date(s_date, e_date, types='day'):
+def sub_date(s_date, e_date, types='day') -> int:
     if isinstance(s_date, str):
         s_date = dt.datetime.strptime(s_date, '%Y-%m-%d')
     if isinstance(e_date, str):
@@ -163,6 +163,8 @@ def sub_date(s_date, e_date, types='day'):
 
 
 def date_sub_days(sub_days, _s_day=None):
+    if isinstance(_s_day, str):
+        _s_day = dt.datetime.strptime(_s_day, '%Y-%m-%d')
     if not _s_day:
         _s_day = dt.datetime.now()
     e_day = _s_day - dt.timedelta(days=sub_days)
@@ -195,7 +197,8 @@ def get_last_date_in_unit(_date, unit='month'):
         return _name, '{Y}-04-01'.format(Y=_y)
 
 
-def block_date_list(date, end_date=None, date_unit='quarter'):
+def block_date_list(date, end_date=None, date_unit='quarter', num=None):
+    date = ensure_date_type_is_date(date)
     if end_date:
         end_date = datetime_format_code(end_date)
     else:
@@ -212,3 +215,14 @@ def date_to_stamp(date):
     date_time = dt.datetime.strptime(date, '%Y-%m-%d')
     un_time = time.mktime(date_time.timetuple())
     return int(un_time)
+
+
+def ensure_date_type_is_date(_date, format_code=None):
+    if isinstance(_date, int):
+        time_local = time.strftime("%Y-%m-%d", time.localtime(_date))
+        return datetime_format_code(time_local, code=format_code)
+    if isinstance(_date, str):
+        if '-' not in _date:
+            time_local = time.strftime("%Y-%m-%d", time.localtime(int(_date)))
+            return datetime_format_code(time_local, code=format_code)
+        return _date

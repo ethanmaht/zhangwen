@@ -67,12 +67,12 @@ def thread_work(func, *args, tars, process_num=8, interval=0.03, step=None):
         t.join()
 
 
-def thread_work_kwargs(func, tars, process_num=8, interval=0.03, step=None, **kwarg):
+def thread_work_kwargs(func, run_list, process_num=8, interval=0.03, step=None, **kwarg):
     pool = []
     kwarg_dict = kwarg
-    while tars:
+    while run_list:
         if len(threading.enumerate()) <= process_num:
-            _one = tars.pop(0)
+            _one = run_list.pop(0)
             if step:
                 kwarg_dict.update({'num': _one})
                 pool.append(threading.Thread(target=func, kwargs=kwarg_dict))
@@ -84,24 +84,30 @@ def thread_work_kwargs(func, tars, process_num=8, interval=0.03, step=None, **kw
         t.join()
 
 
-def thread_work_conn(func, _split_list, one_size=2, interval=0.03, **kwarg):
+def thread_work_conn(func, _split_list=None, one_size=2, interval=0.03, **kwarg):
     if not _split_list:
-        _split_list = [128, 256, 334, 512]
+        _split_list = [128, 256, 384, 512]
     split_plan = _make_split_plan_dict(_split_list, start_num=0)
     surplus_num = 1
     while surplus_num:
         surplus_num = 0
         for _con in range(len(_split_list)):
-            _run, _poll = _check_run_pooll_is_alive(split_plan, _con)
+            _run, _poll = _check_run_poll_is_alive(split_plan, _con)
             if len(_run) < one_size:
-                kwarg.update({'num': _poll.pop(0)})
-                _run.append(threading.Thread(target=func, kwargs=kwarg))
-                _run[-1].start()
+                if _poll:
+                    kwarg.update({'num': _poll.pop(0)})
+                    _run.append(threading.Thread(target=func, kwargs=kwarg))
+                    _run[-1].start()
             surplus_num += len(_poll)
+            time.sleep(0.001)
         time.sleep(interval)
+    for _con in range(len(_split_list)):
+        _run, _poll = _check_run_poll_is_alive(split_plan, _con)
+        for _t in _run:
+            _t.join()
 
 
-def _check_run_pooll_is_alive(split_plan, _con):
+def _check_run_poll_is_alive(split_plan, _con):
     run_pool = split_plan['run_{num}'.format(num=_con)]
     wait_poll = split_plan['poll_{num}'.format(num=_con)]
     for _t in run_pool:
@@ -115,7 +121,7 @@ def _make_split_plan_dict(conn_split, start_num=0) -> dict:
     split_plan = {}
     for _ in conn_split:
         conn_poll.append([_ for _ in range(start_num, _)])
-        _s = _
+        start_num = _
     conn_num = len(conn_poll)
     for t in range(conn_num):
         split_plan.update({'run_{num}'.format(num=t): [], 'poll_{num}'.format(num=t): conn_poll[t]})

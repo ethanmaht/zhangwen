@@ -25,7 +25,9 @@ def format_db_name(db_name, _num):
 
 
 def connect_database_vpn(base_name):
-    _config = read_db_host('/home/datawork/emtools/config.yml')
+    file_path = os.path.split(os.path.realpath(__file__))[0] + '/config.yml'
+    # _config = read_db_host('/home/datawork/emtools/config.yml')
+    _config = read_db_host(file_path)
     _base = _config[base_name]
     conn = pymysql.connect(
         host=_base['host'], port=3306,
@@ -168,10 +170,6 @@ def switch_job(db_name, conn_fig, size, process_num, date=None):
     if db_name == 'shard':
         data_job.read_user_and_order(conn_fig, size, date, process_num)
         data_job.read_data_user_day(conn_fig, size, date, process_num)
-        syn_date_block_run(
-            data_job.read_kd_log, date, process_num=8,
-            write_conn_fig='datamarket', write_db='log_block', write_tab='action_log'
-        )
 
 
 def read_from_sql(sql, conn):
@@ -193,7 +191,10 @@ def create_table(conn, db_name, table_name, key_name):
 
 def read_last_date(conn, db_name, tab_name, date_type_name, is_list=None):
     sql = sql_code.sql_read_last_date.format(dtype=date_type_name, db=db_name, tab=tab_name)
-    last_date = pd.read_sql(sql, conn)['md'][0]
+    try:
+        last_date = pd.read_sql(sql, conn)['md'][0]
+    except:
+        last_date = '2020-10-01'
     if is_list:
         _today = dt.datetime.now()
         return emdate.date_list(last_date, _today)
@@ -205,18 +206,12 @@ def delete_last_date(conn, db_name, tab_name, date_type_name, date, end_date=Non
         date = emdate.date_to_stamp(date)
         if end_date:
             end_date = emdate.date_to_stamp(end_date)
-    if end_date:
-        del_sql = sql_code.sql_delete_date_section.format(
-            type=date_type_name, db=db_name, tab=tab_name, date=date, end_date=end_date
-        )
-    else:
-        del_sql = sql_code.sql_delete_last_date.format(type=date_type_name, db=db_name, tab=tab_name, date=date)
+    del_sql = sql_code.sql_delete_last_date.format(type=date_type_name, db=db_name, tab=tab_name, date=date)
     cursor = conn.cursor()
     try:
         cursor.execute(del_sql)
     except Exception:
         print("Table {db}.{tab} doesn't exist".format(db=db_name, tab=tab_name))
-
     conn.commit()
 
 

@@ -158,15 +158,15 @@ def read_kd_log(write_conn_fig, write_db, write_tab, num, date=None, end_date=No
     read_conn_fig = rd.read_db_host(
         (os.path.split(os.path.realpath(__file__))[0] + '/config.yml')
     )
-    read_host_conn_fig = cm.pick_conn_host_by_num(num, read_conn_fig)
+    read_host_conn_fig = cm.pick_conn_host_by_num(num, read_conn_fig['shart_host'])
     read_conn = rd.connect_database_direct(read_host_conn_fig)
     write_conn = rd.connect_database_vpn(write_conn_fig)
     if not date:
         _before_yesterday = emdate.date_sub_days(2)
-        date_name = emdate.block_date_list(_before_yesterday, end_date)['date_name']
+        date_name = emdate.block_date_list(_before_yesterday, end_date)[0]['date_name']
         _last_tab = write_tab + date_name + '_' + str(num)
         date = rd.read_last_date(write_conn, write_db, _last_tab, 'createtime')
-    date_list = emdate.block_date_list(date, end_date)
+    date_list = emdate.block_date_list(date, end_date, num=num)
     for _block in date_list:
         date_name, s_date, e_date = _block['date_name'], _block['s_date'], _block['e_date']
         block_data = _kd_log_read_data(read_conn, write_conn, s_date, e_date, num)

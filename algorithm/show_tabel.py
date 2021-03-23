@@ -11,7 +11,7 @@ def logon_admin_book_val(host, write_db, write_tab, date_col, date):
     _date = cm.df_pivot_table(
         _date,
         columns=['box'],
-        index=['商务', '公众号', '书名', '激活日期', '充值日期'],
+        index=['商务', '公众号', '书名', '激活日期'],
         values=['激活', '首充_用户', '首充_金额', '复充_用户', '首次_复充', '复充_笔', '复充_金额', 'vip用户', 'vip金额']
     )
     _date = cm.df_sort_col(
