@@ -1,0 +1,76 @@
+2021/03/24 14:03:48 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\python3\Lib\site-packages\pandas\io\sql.py", line 1697, in execute
+    cur.execute(*args, **kwargs)
+  File "D:\python3\Lib\site-packages\pymysql\cursors.py", line 148, in execute
+    result = self._query(query)
+  File "D:\python3\Lib\site-packages\pymysql\cursors.py", line 310, in _query
+    conn.query(q)
+  File "D:\python3\Lib\site-packages\pymysql\connections.py", line 548, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+  File "D:\python3\Lib\site-packages\pymysql\connections.py", line 775, in _read_query_result
+    result.read()
+  File "D:\python3\Lib\site-packages\pymysql\connections.py", line 1163, in read
+    self._read_result_packet(first_packet)
+  File "D:\python3\Lib\site-packages\pymysql\connections.py", line 1236, in _read_result_packet
+    self._read_rowdata_packet()
+  File "D:\python3\Lib\site-packages\pymysql\connections.py", line 1270, in _read_rowdata_packet
+    packet = self.connection._read_packet()
+  File "D:\python3\Lib\site-packages\pymysql\connections.py", line 711, in _read_packet
+    recv_data = self._read_bytes(bytes_to_read)
+  File "D:\python3\Lib\site-packages\pymysql\connections.py", line 748, in _read_bytes
+    raise err.OperationalError(
+pymysql.err.OperationalError: (2013, 'Lost connection to MySQL server during query')
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\python3\Lib\site-packages\pandas\io\sql.py", line 1701, in execute
+    self.con.rollback()
+  File "D:\python3\Lib\site-packages\pymysql\connections.py", line 479, in rollback
+    self._execute_command(COMMAND.COM_QUERY, "ROLLBACK")
+  File "D:\python3\Lib\site-packages\pymysql\connections.py", line 793, in _execute_command
+    raise err.InterfaceError(0, "")
+pymysql.err.InterfaceError: (0, '')
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 174, in read_kd_log
+    block_data = _kd_log_read_data(read_conn, write_conn, s_date, e_date, num)
+  File "D:\datawork\emtools\data_job.py", line 189, in _kd_log_read_data
+    consume_log = pd.read_sql(
+  File "D:\python3\Lib\site-packages\pandas\io\sql.py", line 484, in read_sql
+    return pandas_sql.read_query(
+  File "D:\python3\Lib\site-packages\pandas\io\sql.py", line 1743, in read_query
+    cursor = self.execute(*args)
+  File "D:\python3\Lib\site-packages\pandas\io\sql.py", line 1706, in execute
+    raise ex from inner_exc
+pandas.io.sql.DatabaseError: Execution failed on sql: 
+SELECT user_id,5 type,type state,book_id,chapter_id,kandian,free_kandian,createtime
+from cps_shard_263.consume
+where createtime >= UNIX_TIMESTAMP('2021-01-01') and createtime < UNIX_TIMESTAMP('2021-04-01')
+
+(2013, 'Lost connection to MySQL server during query')
+unable to rollback
+2021/03/24 14:04:26 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 165, in read_kd_log
+    write_conn = rd.connect_database_vpn(write_conn_fig)
+  File "D:\datawork\emtools\read_database.py", line 40, in connect_database_vpn
+    conn = pymysql.connect(
+  File "D:\python3\Lib\site-packages\pymysql\connections.py", line 353, in __init__
+    self.connect()
+  File "D:\python3\Lib\site-packages\pymysql\connections.py", line 633, in connect
+    self._request_authentication()
+  File "D:\python3\Lib\site-packages\pymysql\connections.py", line 907, in _request_authentication
+    auth_packet = self._read_packet()
+  File "D:\python3\Lib\site-packages\pymysql\connections.py", line 692, in _read_packet
+    packet_header = self._read_bytes(4)
+  File "D:\python3\Lib\site-packages\pymysql\connections.py", line 748, in _read_bytes
+    raise err.OperationalError(
+pymysql.err.OperationalError: (2013, 'Lost connection to MySQL server during query')

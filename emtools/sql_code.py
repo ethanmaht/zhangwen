@@ -53,10 +53,45 @@ from {db}.{tab}
 where date_day = '{date}'
 """
 
+sql_retain_date_day_num = """
+select * 
+from happy_seven.user_day_{num}
+where date_day = '{date}'
+"""
+
+sql_keep_user_admin_id = """
+select user_id,admin_id
+from user_info.user_info_{num}
+"""
+
+sql_keep_admin_id_name = """
+SELECT id admin_id,nickname,business_name
+from market_read.admin_info
+"""
+
 sql_retain_date_day_30 = """
 select user_id,date_day
 from {db}.{tab}
 where date_day >= '{s_date}' and date_day < '{e_date}'
+"""
+
+sql_retain_date_day_30_num = """
+select user_id,date_day
+from happy_seven.user_day_{num}
+where date_day >= '{s_date}' and date_day < '{e_date}'
+"""
+
+sql_keep_day_admin_count = """
+SELECT date_day,admin_id,
+    max(`year_month`) 'year_month', max(month_natural_week) month_natural_week,
+    sum(logon_keep) logon_keep,sum(logon_2) logon_2,sum(logon_3) logon_3,sum(logon_7) logon_7,
+    sum(logon_14) logon_14,sum(logon_30) logon_30,
+    sum(order_keep) order_keep,sum(order_2) order_2,sum(order_3) order_3,sum(order_7) order_7,
+    sum(order_14) order_14,sum(order_30) order_30,
+    sum(all_keep) all_keep,sum(act_2) act_2,sum(act_3) act_3,sum(act_7) act_7,sum(act_14) act_14,sum(act_30) act_30
+from {db}.{tab}
+where date_day >= '{date}'
+GROUP BY date_day,admin_id
 """
 
 sql_read_last_date = """
@@ -220,17 +255,13 @@ from user_info.user_info_{num}
 """
 
 analysis_compress_order_logon_conversion = """
-select book_id,admin_id,order_day,logon_day,sum(logon_user) logon_user,
-    sum(order_user) order_user, sum(order_times) order_times, sum(order_money) order_money, 
-    sum(first_order_user) first_order_user, sum(first_order_times) first_order_times, 
-        sum(first_order_money) first_order_money, 
-    sum(repeat_order_user) repeat_order_user, sum(repeat_order_times) repeat_order_times, 
-        sum(repeat_order_money) repeat_order_money, sum(first_repeat_order_user) first_repeat_order_user,
-    sum(vip_order_user) vip_order_user, sum(vip_order_times) vip_order_times, 
-        sum(vip_order_money) vip_order_money
+select book_id,admin_id,order_day,logon_day,logon_user,
+    order_user, order_times,order_money, 
+    first_order_user,first_order_times, first_order_money, 
+    repeat_order_user,repeat_order_times, repeat_order_money,first_repeat_order_user,
+    vip_order_user,vip_order_times, vip_order_money
 from {db}.{tab}
 where order_day >= '{date}'
-group by book_id,admin_id,order_day,logon_day
 """
 
 analysis_keep_action_by_date_block = """
@@ -270,6 +301,17 @@ from (SELECT user_id,createtime,type,book_id
 GROUP BY user_id,date_day,type,book_id
 """
 
+sql_retained_three_index_by_user_count = """
+SELECT date_day,book_id,date_sub,type,sum(user_id) user_id
+from {db}.{tab}
+where date_day >= '{date}'
+GROUP BY date_day,book_id,date_sub,type
+"""
+
+sql_retained_three_index_by_user_count_book_info = """
+SELECT id book_id,name book_name
+from market_read.book_info
+"""
 
 """
 ************** -*- give up sql -*- **************

@@ -6,6 +6,7 @@ from emtools import emdate
 import datetime as dt
 from logs import loger
 import os
+import time
 
 
 # 同步动作数据 << 注册，订阅，充值，签到
@@ -152,6 +153,7 @@ def read_dict_update(read_conn, write_conn, read_sql, write_db_name, write_tab_n
     rd.insert_to_data(data_info, write_conn, write_db_name, write_tab_name)
 
 
+@loger.logging_read
 def read_kd_log(write_conn_fig, write_db, write_tab, num, date=None, end_date=None):
     print('======> is start to run {db}.{tab} - {num} ===> start time:'.format(
         db=write_db, tab=write_tab, num=num), dt.datetime.now())

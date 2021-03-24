@@ -144,7 +144,7 @@ def count_keep_table_day_order(_data):
 class RunCount:
     def __init__(self, write_db, write_tab, date_col, extend='continue'):
         # self.host = {'host': '172.16.0.248', 'user': 'root', 'pw': 'Qiyue@123'}
-        self.host = rd.connect_database_vpn('datamarket')
+        self.host = rd.read_db_config('datamarket')
         self.s_date = None
         self.write_db = write_db
         self.write_tab = write_tab
@@ -165,7 +165,7 @@ class RunCount:
                 tars=tars, process_num=process_num, interval=interval, step=step
             )
 
-    def step_run_kwargs(self, func, process_num=16, run_num=512, interval=0.03, step=1, **kwargs):
+    def step_run_kwargs(self, func, process_num=16, run_num=512, interval=0.03, step=1, follow_func=None, **kwargs):
         if isinstance(run_num, int):
             tars = [_ for _ in range(run_num)]
         else:
@@ -175,9 +175,14 @@ class RunCount:
             print('****** Start to run: {d} - {tab} ******'.format(d=_day, tab=self.write_tab))
             cm.thread_work_kwargs(
                 func=func, run_list=tars, read_config=self.host, db_name=self.write_db, tab_name=self.write_tab,
-                s_date=tar_date_list, date_col=self.date_col, process_num=process_num, interval=interval, step=step,
+                s_date=_day, date_col=self.date_col, process_num=process_num, interval=interval, step=step,
                 **kwargs
             )
+            if follow_func:
+                follow_func(
+                    host=self.host, write_db=self.write_db, write_tab=self.write_tab,
+                    date_type_name=self.date_col, date=_day
+                )
 
     def direct_run(self, func, *args):
         if self.date_col:
@@ -192,6 +197,7 @@ class RunCount:
         tar_date_list = [0]
         if self.extend == 'list':
             tar_date_list = self.read_last_date()
+            self.delete_last_date(tar_date_list[0])
         if self.extend == 'continue':
             tar_date_list = self.read_last_date(is_list=0)
         if self.extend == 'delete':
@@ -203,6 +209,7 @@ class RunCount:
         if self.s_date:
             _date = self.s_date
         else:
+            print(self.host)
             conn = rd.connect_database_host(self.host['host'], self.host['user'], self.host['pw'])
             _date = rd.read_last_date(conn, self.write_db, self.write_tab, date_type_name=self.date_col)
             conn.close()
@@ -279,12 +286,16 @@ def make_sample_list(size, limit_max, limit_min=0):
 
 
 def retained_three_index_by_user(read_config, db_name, tab_name, date_col, num, s_date=None):
+    print('======> is start to run {db}.{tab} - {num} ===> start time:'.format(
+        db=db_name, tab=tab_name, num=num), dt.datetime.now())
+    if isinstance(s_date, list):
+        s_date = s_date[0]
     s_date = emdate.date_sub_days(sub_days=31, _s_day=s_date)
     date_list = emdate.block_date_list(s_date)
-    conn = rd.connect_database_vpn(read_config)
-    keep_data = _one_retained_three_index_by_user_run(conn, date_list, s_date, num)
-    rd.delete_last_date(conn, db_name, tab_name, date_col, s_date)
-    rd.subsection_insert_to_data(keep_data, conn,db_name, tab_name)
+    conn = rd.connect_database_host(read_config['host'], read_config['user'], read_config['pw'])
+    keep_data = _one_retained_three_index_by_user_run(conn=conn, date_list=date_list, s_date=s_date, num=num)
+    # rd.delete_last_date(conn, db_name, tab_name, date_col, s_date)
+    rd.insert_to_data(keep_data, conn, db_name, tab_name)
     conn.close()
 
 
@@ -304,7 +315,9 @@ def _one_retained_three_index_by_user_run(conn, date_list, s_date, num):
     order_keep = _order_keep.groupby(by=['date_day', 'action_date', 'book_id', 'type']).count().reset_index()
     keep_data = pd.concat([logon_keep, order_keep])
     keep_data['tab_num'] = num
+    keep_data['action_date'] = keep_data['action_date'].fillna('2000-01-01')
     keep_data['date_sub'] = keep_data.apply(lambda x: emdate.sub_date(x['date_day'], x['action_date']), axis=1)
+    keep_data = keep_data.loc[keep_data['date_sub'] >= 0, :]
     return keep_data
 
 
@@ -318,3 +331,113 @@ def _read_one_num_data(sql, conn, date_list, s_date, num):
     complete_data = pd.concat(df_list)
     return complete_data
 
+
+def count_keep_table_day_admin_run(read_config, db_name, tab_name, date_col, num, s_date):
+    print('======> is start to run {db}.{tab} - {num} ===> start time:'.format(
+        db=db_name, tab=tab_name, num=num), dt.datetime.now())
+    conn = rd.connect_database_host(read_config['host'], read_config['user'], read_config['pw'])
+    one_day_run(conn, db_name, tab_name, date_col, s_date, num)
+
+
+def one_day_run(conn, db_name, tab_name, date_col, date, num):
+    data_one = retain_date_day_admin(conn, date=date, num=num)
+    order_keep = _keep_table_day_admin_typ(data_one, 'order_success', 'order_keep')
+    order_keep.rename(
+        columns={'2': 'order_2', '3': 'order_3', '7': 'order_7', '14': 'order_14', '30': 'order_30'}, inplace=True
+    )
+    logon_keep = _keep_table_day_admin_typ(data_one, 'logon', 'logon_keep')
+    logon_keep.rename(
+        columns={'2': 'logon_2', '3': 'logon_3', '7': 'logon_7', '14': 'logon_14', '30': 'logon_30'}, inplace=True
+    )
+    act_keep = _keep_table_day_admin_typ(data_one, 'all', 'all_keep')
+    act_keep.rename(
+        columns={'2': 'act_2', '3': 'act_3', '7': 'act_7', '14': 'act_14', '30': 'act_30'}, inplace=True
+    )
+    one_day = pd.merge(act_keep, order_keep, on=['date_day', 'admin_id'], how='left')
+    one_day = pd.merge(one_day, logon_keep, on=['date_day', 'admin_id'], how='left')
+    one_day.fillna(0, inplace=True)
+    one_day['month_natural_week'] = one_day['date_day'].apply(
+        lambda x: emdate.datetime_format_code(x, code='{nmw}'))
+    one_day['year_month'] = one_day['date_day'].apply(
+        lambda x: emdate.datetime_format_code(x, code='{Y}-{M}'))
+    one_day['tab_num'] = num
+    rd.insert_to_data(one_day, conn, db_name, tab_name)
+    conn.close()
+
+
+def retain_date_day_admin(conn, date, num):
+    date_dict = emdate.date_num_dict(date, 30)
+    first_day, last_day = list(date_dict.keys())[0], list(date_dict.keys())[-1]
+    one_day = pd.read_sql(
+        sql_code.sql_retain_date_day_num.format(num=num, date=date), conn
+    )
+    day_30 = pd.read_sql(
+        sql_code.sql_retain_date_day_30_num.format(num=num, s_date=first_day, e_date=last_day), conn
+    )
+    user_info = pd.read_sql(
+        sql_code.sql_keep_user_admin_id.format(num=num), conn
+    )
+    day_30['user_id'].astype(int)
+    day_30.loc[:, '_'] = 1
+    day_30 = day_30.pivot_table(
+        index='user_id', columns='date_day', values='_', fill_value=0
+    ).reset_index()
+    day_30['user_id'] = day_30['user_id'].astype(int)
+    one_day['user_id'] = one_day['user_id'].astype(int)
+    user_info['user_id'] = user_info['user_id'].astype(int)
+    user_info['admin_id'] = user_info['admin_id'].astype(int)
+    one_day = pd.merge(one_day, day_30, on='user_id', how='left')
+    one_day = pd.merge(one_day, user_info, on='user_id', how='left')
+    one_day.rename(columns=date_dict, inplace=True)
+    one_day = cm.pad_col(one_day)
+    one_day.fillna(0, inplace=True)
+    return one_day
+
+
+def _keep_table_day_admin_typ(_data, col, typ_name):
+    if col == 'all':
+        _data.loc[:, typ_name] = 1
+        _data_one = _data[['date_day', 'admin_id', typ_name, '2', '3', '7', '14', '30']]
+        _data_one = _data_one.groupby(by=['date_day', 'admin_id']).sum().reset_index()
+    else:
+        _data[col] = _data[col].astype(int)
+        _data_one = _data.loc[_data[col] > 0, :]
+        _data_one.loc[:, typ_name] = 1
+        _data_one = _data_one[['date_day', 'admin_id', typ_name, '2', '3', '7', '14', '30']]
+        _data_one = _data_one.groupby(by=['date_day', 'admin_id']).sum().reset_index()
+    return _data_one
+
+
+def keep_day_admin_count(host, write_db, write_tab, date_type_name, date):
+    conn = rd.connect_database_host(host['host'], host['user'], host['pw'])
+    compress_date = pd.read_sql(
+        sql_code.sql_keep_day_admin_count.format(db=write_db, tab=write_tab, date=date), conn
+    )
+    admin_info = pd.read_sql(
+        sql_code.sql_keep_admin_id_name, conn
+    )
+    compress_date['admin_id'] = compress_date['admin_id'].astype(int)
+    admin_info['admin_id'] = admin_info['admin_id'].astype(int)
+    compress_date = pd.merge(compress_date, admin_info, on='admin_id', how='left')
+    compress_date = compress_date.fillna(0)
+    rd.delete_last_date(conn, write_db, write_tab, date_type_name, date)
+    rd.subsection_insert_to_data(compress_date, conn, write_db, write_tab)
+    conn.close()
+
+
+def retained_three_index_by_user_count(host, write_db, write_tab, date_type_name, date):
+    conn = rd.connect_database_host(host['host'], host['user'], host['pw'])
+    print(sql_code.sql_retained_three_index_by_user_count.format(db=write_db, tab=write_tab, date=date))
+    compress_date = pd.read_sql(
+        sql_code.sql_retained_three_index_by_user_count.format(db=write_db, tab=write_tab, date=date), conn
+    )
+    book_info = pd.read_sql(
+        sql_code.sql_retained_three_index_by_user_count_book_info, conn
+    )
+    compress_date['book_id'] = compress_date['book_id'].astype(int)
+    book_info['book_id'] = book_info['book_id'].astype(int)
+    compress_date = pd.merge(compress_date, book_info, on='book_id', how='left')
+    compress_date = compress_date.fillna(0)
+    rd.delete_last_date(conn, write_db, write_tab, date_type_name, date)
+    rd.subsection_insert_to_data(compress_date, conn, write_db, write_tab)
+    conn.close()

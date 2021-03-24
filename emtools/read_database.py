@@ -20,6 +20,14 @@ def read_db_host(file_path):
     return config
 
 
+def read_db_config(conn_name):
+    file_path = os.path.split(os.path.realpath(__file__))[0] + '/config.yml'
+    _file = open(file_path, 'r', encoding='utf-8')
+    cont = _file.read()
+    config = yaml.load(cont, Loader=yaml.FullLoader)
+    return config[conn_name]
+
+
 def format_db_name(db_name, _num):
     return "{db_name}_{_num}".format(db_name=db_name, _num=_num)
 
