@@ -165,12 +165,16 @@ class RunCount:
                 tars=tars, process_num=process_num, interval=interval, step=step
             )
 
-    def step_run_kwargs(self, func, process_num=16, run_num=512, interval=0.03, step=1, follow_func=None, **kwargs):
+    def step_run_kwargs(
+            self, func,
+            date_sub=None, process_num=16, run_num=512, interval=0.03, step=1, follow_func=None,
+            **kwargs
+    ):
         if isinstance(run_num, int):
             tars = [_ for _ in range(run_num)]
         else:
             tars = run_num
-        tar_date_list = self.get_date()
+        tar_date_list = self.get_date(date_sub=date_sub)
         for _day in tar_date_list:
             print('****** Start to run: {d} - {tab} ******'.format(d=_day, tab=self.write_tab))
             cm.thread_work_kwargs(
@@ -193,19 +197,19 @@ class RunCount:
             self.refresh_table()
         func(self.host, self.write_db, self.write_tab, self.date_col, tar_date_list, *args)
 
-    def get_date(self):
+    def get_date(self, date_sub=None):
         tar_date_list = [0]
         if self.extend == 'list':
-            tar_date_list = self.read_last_date()
+            tar_date_list = self.read_last_date(date_sub=date_sub)
             self.delete_last_date(tar_date_list[0])
         if self.extend == 'continue':
-            tar_date_list = self.read_last_date(is_list=0)
+            tar_date_list = self.read_last_date(is_list=0, date_sub=date_sub)
         if self.extend == 'delete':
-            tar_date_list = self.read_last_date(is_list=0)
+            tar_date_list = self.read_last_date(is_list=0, date_sub=date_sub)
             self.delete_last_date(tar_date_list)
         return tar_date_list
 
-    def read_last_date(self, is_list=1, date_format='{Y}-{M}-{D}'):
+    def read_last_date(self, is_list=1, date_sub=None, date_format='{Y}-{M}-{D}'):
         if self.s_date:
             _date = self.s_date
         else:
@@ -214,6 +218,8 @@ class RunCount:
             _date = rd.read_last_date(conn, self.write_db, self.write_tab, date_type_name=self.date_col)
             conn.close()
             self.s_date = _date
+        if date_sub:
+            _date = emdate.date_sub_days(date_sub, _date)
         if is_list:
             _date = emdate.date_list(_date, e_date=dt.datetime.now(), format_code=date_format)
             _date.sort()
@@ -290,11 +296,10 @@ def retained_three_index_by_user(read_config, db_name, tab_name, date_col, num, 
         db=db_name, tab=tab_name, num=num), dt.datetime.now())
     if isinstance(s_date, list):
         s_date = s_date[0]
-    s_date = emdate.date_sub_days(sub_days=31, _s_day=s_date)
     date_list = emdate.block_date_list(s_date)
     conn = rd.connect_database_host(read_config['host'], read_config['user'], read_config['pw'])
     keep_data = _one_retained_three_index_by_user_run(conn=conn, date_list=date_list, s_date=s_date, num=num)
-    # rd.delete_last_date(conn, db_name, tab_name, date_col, s_date)
+    keep_data = keep_data.fillna(0)
     rd.insert_to_data(keep_data, conn, db_name, tab_name)
     conn.close()
 
@@ -309,15 +314,22 @@ def _one_retained_three_index_by_user_run(conn, date_list, s_date, num):
     order = _read_one_num_data(
         sql_code.analysis_keep_order_by_date_block, conn=conn, date_list=date_list, s_date=s_date, num=num
     )
+    logon_num = logon.groupby(by=['date_day', 'book_id', 'type']).count().reset_index()
+    logon_num['date_sub'] = 0
     _logon_keep = pd.merge(logon, action, on=['user_id', 'book_id'], how='left')
-    logon_keep = _logon_keep.groupby(by=['date_day', 'action_date', 'book_id', 'type']).count().reset_index()
+    _logon_keep = _logon_keep.groupby(by=['date_day', 'action_date', 'book_id', 'type']).count().reset_index()
+
+    order_num = order.groupby(by=['date_day', 'book_id', 'type']).count().reset_index()
+    order_num['date_sub'] = 0
     _order_keep = pd.merge(order, action, on=['user_id', 'book_id'], how='left')
-    order_keep = _order_keep.groupby(by=['date_day', 'action_date', 'book_id', 'type']).count().reset_index()
-    keep_data = pd.concat([logon_keep, order_keep])
+    _order_keep = _order_keep.groupby(by=['date_day', 'action_date', 'book_id', 'type']).count().reset_index()
+
+    keep_data = pd.concat([_logon_keep, _order_keep])
+    keep_data['action_date'] = keep_data.apply(lambda x: cm.fill_na_by_col(x['date_day'], x['action_date']), axis=1)
     keep_data['tab_num'] = num
-    keep_data['action_date'] = keep_data['action_date'].fillna('2000-01-01')
     keep_data['date_sub'] = keep_data.apply(lambda x: emdate.sub_date(x['date_day'], x['action_date']), axis=1)
-    keep_data = keep_data.loc[keep_data['date_sub'] >= 0, :]
+    keep_data = keep_data.loc[keep_data['date_sub'] > 0, :]
+    keep_data = pd.concat([keep_data, order_num, logon_num])
     return keep_data
 
 
@@ -427,7 +439,6 @@ def keep_day_admin_count(host, write_db, write_tab, date_type_name, date):
 
 def retained_three_index_by_user_count(host, write_db, write_tab, date_type_name, date):
     conn = rd.connect_database_host(host['host'], host['user'], host['pw'])
-    print(sql_code.sql_retained_three_index_by_user_count.format(db=write_db, tab=write_tab, date=date))
     compress_date = pd.read_sql(
         sql_code.sql_retained_three_index_by_user_count.format(db=write_db, tab=write_tab, date=date), conn
     )
@@ -441,3 +452,26 @@ def retained_three_index_by_user_count(host, write_db, write_tab, date_type_name
     rd.delete_last_date(conn, write_db, write_tab, date_type_name, date)
     rd.subsection_insert_to_data(compress_date, conn, write_db, write_tab)
     conn.close()
+
+
+def retained_logon_compress_thirty_day(read_config, db_name, tab_name, date_col, num, s_date=None):
+    print('======> is start to run {db}.{tab} - {num} ===> start time:'.format(
+        db=db_name, tab=tab_name, num=num), dt.datetime.now())
+    if isinstance(s_date, list):
+        s_date = s_date[0]
+    date_list = emdate.block_date_list(s_date)
+    conn = rd.connect_database_host(read_config['host'], read_config['user'], read_config['pw'])
+    keep_data = _one_retained_logon_compress_thirty_day(conn=conn, date_list=date_list, s_date=s_date, num=num)
+    keep_data = keep_data.fillna(0)
+    rd.insert_to_data(keep_data, conn, db_name, tab_name)
+    conn.close()
+
+
+def _one_retained_logon_compress_thirty_day(conn, date_list, s_date, num):
+    action = _read_one_num_data(
+        sql_code.analysis_keep_action_by_date_block, conn=conn, date_list=date_list, s_date=s_date, num=num
+    )
+    logon = _read_one_num_data(
+        sql_code.analysis_keep_logon_by_date_block, conn=conn, date_list=date_list, s_date=s_date, num=num
+    )
+    return 0

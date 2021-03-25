@@ -216,6 +216,7 @@ def delete_last_date(conn, db_name, tab_name, date_type_name, date, end_date=Non
             end_date = emdate.date_to_stamp(end_date)
     del_sql = sql_code.sql_delete_last_date.format(type=date_type_name, db=db_name, tab=tab_name, date=date)
     cursor = conn.cursor()
+    print(sql_code.sql_delete_last_date.format(type=date_type_name, db=db_name, tab=tab_name, date=date))
     try:
         cursor.execute(del_sql)
     except Exception:

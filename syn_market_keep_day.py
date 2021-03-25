@@ -39,7 +39,11 @@ def syn_market_keep_day_by_order_consume(s_date=None):
         write_db='market_read', write_tab='keep_day_by_order_consume', date_col='date_day', extend='delete')
     if s_date:
         work.s_date = s_date
-    work.step_run_kwargs(retained.retained_three_index_by_user, follow_func=retained.retained_three_index_by_user_count)
+    work.step_run_kwargs(
+        func=retained.retained_three_index_by_user,
+        follow_func=retained.retained_three_index_by_user_count,
+        date_sub=31,
+    )
 
 
 if __name__ == '__main__':
@@ -47,5 +51,5 @@ if __name__ == '__main__':
     syn_market_keep_day()
     syn_admin_book_order()
     table_show_logon_admin_book_order('2020-06-01')
-    syn_market_keep_day_by_order_consume('2020-11-02')
+    syn_market_keep_day_by_order_consume()
     # syn_market_keep_day_admin()

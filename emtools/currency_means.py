@@ -241,3 +241,11 @@ def pick_conn_host_by_num(num, host_config):
         _steps = _region.pop(0)
         _ += 1
     return {'host': host_config['host'][_], 'user': host_config['user'], 'pw': host_config['pw']}
+
+
+def fill_na_by_col(fill_col, none_col):
+    if none_col == 'nan':
+        return fill_col
+    if isinstance(none_col, float):
+        return fill_col
+    return none_col

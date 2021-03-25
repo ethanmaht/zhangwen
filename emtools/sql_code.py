@@ -302,15 +302,69 @@ GROUP BY user_id,date_day,type,book_id
 """
 
 sql_retained_three_index_by_user_count = """
-SELECT date_day,book_id,date_sub,type,sum(user_id) user_id
+SELECT date_day,book_id,date_sub,action_date,type,sum(user_id) user_id
 from {db}.{tab}
 where date_day >= '{date}'
-GROUP BY date_day,book_id,date_sub,type
+GROUP BY date_day,book_id,date_sub,action_date,type
 """
 
 sql_retained_three_index_by_user_count_book_info = """
 SELECT id book_id,name book_name
 from market_read.book_info
+"""
+
+analysis_retained_logon_compress_thirty_day = """
+SELECT logon_date,date(FROM_UNIXTIME(createtime)) date_day,referral_book book_id,
+    channel_id,'激活用户数' type,count(DISTINCT user_id) times
+from log_block.action_log{date_code}_{num}
+where type = 0 and createtime >= UNIX_TIMESTAMP('{s_date}')
+GROUP BY logon_date,date_day,referral_book,channel_id
+union
+SELECT logon_date,date(FROM_UNIXTIME(createtime)) date_day,book_id,
+    channel_id,'订阅用户数' type,count(DISTINCT user_id) times
+from log_block.action_log{date_code}_{num}
+where type = 5 and createtime >= UNIX_TIMESTAMP('{s_date}') and referral_book = book_id
+GROUP BY logon_date,date_day,book_id,channel_id
+union
+SELECT logon_date,date(FROM_UNIXTIME(createtime)) date_day,book_id,channel_id,
+    '付费订阅用户' type,count(DISTINCT user_id) times
+from log_block.action_log{date_code}_{num} 
+where type = 5 and createtime >= UNIX_TIMESTAMP('{s_date}') and referral_book = book_id
+    and kandian > 0
+GROUP BY logon_date,date_day,book_id,channel_id
+union
+SELECT logon_date,date(FROM_UNIXTIME(createtime)) date_day,book_id,channel_id,'付费用户订阅章节' type,count(*) times
+from log_block.action_log{date_code}_{num}
+where type = 5 and createtime >= UNIX_TIMESTAMP('{s_date}') and referral_book = book_id
+    and kandian > 0
+GROUP BY logon_date,date_day,book_id,channel_id
+union
+SELECT logon_date,date(FROM_UNIXTIME(createtime)) date_day,book_id,
+    channel_id,'免费订阅用户' type,count(DISTINCT user_id) times
+from log_block.action_log{date_code}_{num}
+where type = 5 and createtime >= UNIX_TIMESTAMP('{s_date}') and referral_book = book_id
+    and free_kandian > 0
+GROUP BY logon_date,date_day,book_id,channel_id
+union
+SELECT logon_date,date(FROM_UNIXTIME(createtime)) date_day,book_id,channel_id,
+    '免费用户订阅章节' type,count(*) times
+from log_block.action_log{date_code}_{num}
+where type = 5 and createtime >= UNIX_TIMESTAMP('{s_date}') and referral_book = book_id
+    and free_kandian > 0
+GROUP BY logon_date,date_day,book_id,channel_id
+union
+SELECT logon_date,date(FROM_UNIXTIME(createtime)) date_day,book_id,channel_id,'vip订阅用户' type,
+    count(DISTINCT user_id) times
+from log_block.action_log{date_code}_{num}
+where type = 5 and createtime >= UNIX_TIMESTAMP('{s_date}') and referral_book = book_id
+    and free_kandian = 0 and kandian = 0
+GROUP BY logon_date,date_day,book_id,channel_id
+union
+SELECT logon_date,date(FROM_UNIXTIME(createtime)) date_day,book_id,channel_id,'vip用户订阅章节' type,count(*) times
+from log_block.action_log{date_code}_{num}
+where type = 5 and createtime >= UNIX_TIMESTAMP('{s_date}') and referral_book = book_id
+    and free_kandian = 0 and kandian = 0
+GROUP BY logon_date,date_day,book_id,channel_id
 """
 
 """
