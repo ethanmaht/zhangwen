@@ -17,5 +17,5 @@ def syn_date_block(s_date=None):
 
 
 if __name__ == '__main__':
-    syn_shard_user_day_work()
+    syn_shard_user_day_work('2021-03-16')
     syn_date_block()

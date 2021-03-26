@@ -469,9 +469,31 @@ def retained_logon_compress_thirty_day(read_config, db_name, tab_name, date_col,
 
 def _one_retained_logon_compress_thirty_day(conn, date_list, s_date, num):
     action = _read_one_num_data(
-        sql_code.analysis_keep_action_by_date_block, conn=conn, date_list=date_list, s_date=s_date, num=num
+        sql_code.analysis_retained_logon_compress_thirty_day, conn=conn, date_list=date_list, s_date=s_date, num=num
     )
-    logon = _read_one_num_data(
-        sql_code.analysis_keep_logon_by_date_block, conn=conn, date_list=date_list, s_date=s_date, num=num
+    action['tab_num'] = num
+    action['date_sub'] = action.apply(lambda x: emdate.sub_date(x['logon_date'], x['date_day']), axis=1)
+    return action
+
+
+def retained_logon_compress_thirty_day_count(host, write_db, write_tab, date_type_name, date):
+    conn = rd.connect_database_host(host['host'], host['user'], host['pw'])
+    compress_date = pd.read_sql(
+        sql_code.sql_retained_logon_compress_thirty_day_count.format(db=write_db, tab=write_tab, date=date), conn
     )
-    return 0
+    book_info = pd.read_sql(
+        sql_code.sql_retained_three_index_by_user_count_book_info, conn
+    )
+    admin_info = pd.read_sql(
+        sql_code.sql_retained_admin_info, conn
+    )
+    compress_date['book_id'] = compress_date['book_id'].astype(int)
+    book_info['book_id'] = book_info['book_id'].astype(int)
+    compress_date['channel_id'] = compress_date['channel_id'].astype(int)
+    admin_info['channel_id'] = admin_info['channel_id'].astype(int)
+    compress_date = pd.merge(compress_date, book_info, on='book_id', how='left')
+    compress_date = pd.merge(compress_date, admin_info, on='channel_id', how='left')
+    compress_date = compress_date.fillna(0)
+    rd.delete_last_date(conn, write_db, write_tab, date_type_name, date)
+    rd.subsection_insert_to_data(compress_date, conn, write_db, write_tab)
+    conn.close()

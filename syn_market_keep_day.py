@@ -46,10 +46,24 @@ def syn_market_keep_day_by_order_consume(s_date=None):
     )
 
 
+def syn_market_logon_compress_thirty_day(s_date=None):
+    work = retained.RunCount(
+        write_db='market_read', write_tab='logon_compress_thirty_day', date_col='logon_date', extend='delete')
+    if s_date:
+        work.s_date = s_date
+    work.step_run_kwargs(
+        func=retained.retained_logon_compress_thirty_day,
+        follow_func=retained.retained_logon_compress_thirty_day_count,
+        date_sub=31,
+        process_num=12
+    )
+
+
 if __name__ == '__main__':
     print('Start work:')
-    syn_market_keep_day()
+    syn_market_keep_day('2021-03-15')
     syn_admin_book_order()
     table_show_logon_admin_book_order('2020-06-01')
     syn_market_keep_day_by_order_consume()
+    syn_market_logon_compress_thirty_day()
     # syn_market_keep_day_admin()

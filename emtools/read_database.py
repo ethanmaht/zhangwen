@@ -12,8 +12,8 @@ import time
 
 
 def read_db_host(file_path):
-    file_path = os.path.split(os.path.realpath(__file__))[0] + '/config.yml'
-    # print('**************', file_path)
+    if not file_path:
+        file_path = os.path.split(os.path.realpath(__file__))[0] + '/config.yml'
     _file = open(file_path, 'r', encoding='utf-8')
     cont = _file.read()
     config = yaml.load(cont, Loader=yaml.FullLoader)
@@ -63,7 +63,7 @@ def connect_database_direct(host_dict, port=3306):
 class DataBaseWork:
 
     def __init__(self):
-        self.data_list = read_db_host('/home/datawork/emtools/config.yml')['database_host']
+        self.data_list = read_db_host(os.path.split(os.path.realpath(__file__))[0] + '/config.yml')['database_host']
         self.size = {}
         self.host = ''
         self.date = None
@@ -219,7 +219,7 @@ def delete_last_date(conn, db_name, tab_name, date_type_name, date, end_date=Non
     print(sql_code.sql_delete_last_date.format(type=date_type_name, db=db_name, tab=tab_name, date=date))
     try:
         cursor.execute(del_sql)
-    except Exception:
+    except Exception as e:
         print("Table {db}.{tab} doesn't exist".format(db=db_name, tab=tab_name))
     conn.commit()
 
