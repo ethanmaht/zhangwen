@@ -139,8 +139,13 @@ FROM cps.admin a
 
 sql_dict_total_book = """
 SELECT id,book_category_id,name,real_read_num,author,state,sex,price,is_finish,free_chapter_num,first_chapter_id,
-    last_chapter_id,read_num,is_cp,cp_name,book_recharge 
+    last_chapter_id,read_num,is_cp,cp_name,book_recharge,createtime,updatetime
 FROM cps.book;
+"""
+
+sql_book_channel_price = """
+SELECT *
+from cps.book_channel_price
 """
 
 sql_dict_update_referral = """
@@ -158,6 +163,28 @@ FROM market_read.referral_info;
 sql_user_info_kd_log = """
 SELECT user_id,date(FROM_UNIXTIME(createtime)) logon_date,admin_id channel_id,referral_book
 from user_info.user_info_{num}
+"""
+
+sql_book_channel_price_local = """
+SELECT admin_id channel_id,book_id,channel_free_chapter_num,channel_price
+from market_read.book_channel_price
+"""
+
+sql_book_price_local = """
+SELECT id book_id,price,free_chapter_num,last_chapter_id % 100000 last_chapter_id,
+    createtime book_create,updatetime book_update,is_finish
+from market_read.book_info
+"""
+
+sql_recently_cread_data = """
+SELECT id,user_id,book_id,chapter_id % 100000 chapter_id,createtime,updatetime,user_type
+from cps_shard_{num}.user_recently_read
+where updatetime >= UNIX_TIMESTAMP('{s_date}')
+"""
+
+sql_lase_date_user_recently_read_data = """
+SELECT date(FROM_UNIXTIME(max(updatetime))) md
+from user_read.user_read_{num}
 """
 
 sql_order_log = """
@@ -323,6 +350,40 @@ from market_read.book_info
 sql_retained_admin_info = """
 SELECT id channel_id,nickname,business_name
 from market_read.admin_info
+"""
+
+sql_book_admin_read = """
+SELECT book_id,channel_id,last_chapter_id,is_finish,start_date,count(*) start_book,
+sum(over_free) over_free, sum(over_100) over_100,sum(over_200) over_200, sum(over_300) over_300,
+sum(over_500) over_500,sum(over_750) over_750,sum(over_1000) over_1000,sum(over_2000) over_2000,
+sum(over_book) over_book
+from(
+    SELECT book_id,channel_id,last_chapter_id,is_finish,logon_date,
+        date(FROM_UNIXTIME(book_create)) book_create,date(FROM_UNIXTIME(createtime)) start_date,
+        if(chapter_id>free_chapter,1,0) over_free,if(chapter_id>=100,1,0) over_100,
+        if(chapter_id>=200,1,0) over_200,if(chapter_id>=300,1,0) over_300,if(chapter_id>=500,1,0) over_500,
+        if(chapter_id>=750,1,0) over_750,if(chapter_id>=1000,1,0) over_1000,if(chapter_id>=2000,1,0) over_2000,
+        if(chapter_id=last_chapter_id,1,0) over_book
+    from (
+        SELECT book_id,channel_id,is_finish,createtime,updatetime,book_create,logon_date,
+            if(channel_free_chapter_num<>0,channel_free_chapter_num,
+            if(free_chapter_num<>0,free_chapter_num,15)) free_chapter,
+            last_chapter_id,chapter_id
+        from user_read_{num} where createtime >= UNIX_TIMESTAMP('{date}')
+    ) base
+) box
+GROUP BY book_id,channel_id,last_chapter_id,is_finish,start_date
+"""
+
+sql_book_admin_read_count = """
+SELECT book_id,channel_id,last_chapter_id,is_finish,start_date,count(*) start_book,
+    sum(over_free) over_free,sum(over_free) / count(*) over_free_p, sum(over_100) over_100,sum(over_100) / count(*) over_100_p, 
+    sum(over_200) over_200, sum(over_200) / count(*) over_200_p, sum(over_300) over_300, sum(over_300) / count(*) over_300_p, 
+    sum(over_500) over_500, sum(over_500) / count(*) over_500_p, sum(over_750) over_750, sum(over_750) / count(*) over_750_p,
+    sum(over_1000) over_1000,sum(over_1000) / count(*) over_1000_p, sum(over_2000) over_2000,sum(over_2000) / count(*) over_2000_p, 
+    sum(over_book) over_book,sum(over_book) / count(*) over_book_p
+from {db}.{tab}
+GROUP BY book_id,channel_id,last_chapter_id,is_finish,start_date
 """
 
 analysis_retained_logon_compress_thirty_day = """

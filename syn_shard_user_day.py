@@ -16,6 +16,14 @@ def syn_date_block(s_date=None):
         )
 
 
+def syn_read_user_recently_read(s_date=None):
+    rd.syn_date_block_run(
+            data_job.read_user_recently_read, s_date, process_num=8,
+            write_conn_fig='datamarket', write_db='user_read', write_tab='user_read'
+        )
+
+
 if __name__ == '__main__':
-    syn_shard_user_day_work('2021-03-16')
+    syn_shard_user_day_work()
     syn_date_block()
+    syn_read_user_recently_read()

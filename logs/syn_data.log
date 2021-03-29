@@ -74,3 +74,2082 @@ Traceback (most recent call last):
   File "D:\python3\Lib\site-packages\pymysql\connections.py", line 748, in _read_bytes
     raise err.OperationalError(
 pymysql.err.OperationalError: (2013, 'Lost connection to MySQL server during query')
+2021/03/29 13:31:33 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 125, in read_dict_table
+    read_dict_all(read_conn, write_conn, sql_code.sql_book_channel_price, write_db_name, 'book_channel_price')
+  File "D:\datawork\emtools\data_job.py", line 137, in read_dict_all
+    rd.insert_to_data(data_info, write_conn, write_db_name, write_tab_name)
+  File "D:\datawork\emtools\read_database.py", line 130, in insert_to_data
+    cursor.executemany(_sql, _val)
+  File "D:\python3\Lib\site-packages\pymysql\cursors.py", line 173, in executemany
+    return self._do_execute_many(
+  File "D:\python3\Lib\site-packages\pymysql\cursors.py", line 211, in _do_execute_many
+    rows += self.execute(sql + postfix)
+  File "D:\python3\Lib\site-packages\pymysql\cursors.py", line 148, in execute
+    result = self._query(query)
+  File "D:\python3\Lib\site-packages\pymysql\cursors.py", line 310, in _query
+    conn.query(q)
+  File "D:\python3\Lib\site-packages\pymysql\connections.py", line 548, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+  File "D:\python3\Lib\site-packages\pymysql\connections.py", line 775, in _read_query_result
+    result.read()
+  File "D:\python3\Lib\site-packages\pymysql\connections.py", line 1156, in read
+    first_packet = self.connection._read_packet()
+  File "D:\python3\Lib\site-packages\pymysql\connections.py", line 725, in _read_packet
+    packet.raise_for_error()
+  File "D:\python3\Lib\site-packages\pymysql\protocol.py", line 221, in raise_for_error
+    err.raise_mysql_exception(self._data)
+  File "D:\python3\Lib\site-packages\pymysql\err.py", line 143, in raise_mysql_exception
+    raise errorclass(errno, errval)
+pymysql.err.DataError: (1406, "Data too long for column 'remark' at row 1")
+2021/03/29 13:33:13 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 125, in read_dict_table
+    read_dict_all(read_conn, write_conn, sql_code.sql_book_channel_price, write_db_name, 'book_channel_price')
+  File "D:\datawork\emtools\data_job.py", line 137, in read_dict_all
+    rd.insert_to_data(data_info, write_conn, write_db_name, write_tab_name)
+  File "D:\datawork\emtools\read_database.py", line 130, in insert_to_data
+    cursor.executemany(_sql, _val)
+  File "D:\python3\Lib\site-packages\pymysql\cursors.py", line 173, in executemany
+    return self._do_execute_many(
+  File "D:\python3\Lib\site-packages\pymysql\cursors.py", line 211, in _do_execute_many
+    rows += self.execute(sql + postfix)
+  File "D:\python3\Lib\site-packages\pymysql\cursors.py", line 148, in execute
+    result = self._query(query)
+  File "D:\python3\Lib\site-packages\pymysql\cursors.py", line 310, in _query
+    conn.query(q)
+  File "D:\python3\Lib\site-packages\pymysql\connections.py", line 548, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+  File "D:\python3\Lib\site-packages\pymysql\connections.py", line 775, in _read_query_result
+    result.read()
+  File "D:\python3\Lib\site-packages\pymysql\connections.py", line 1156, in read
+    first_packet = self.connection._read_packet()
+  File "D:\python3\Lib\site-packages\pymysql\connections.py", line 725, in _read_packet
+    packet.raise_for_error()
+  File "D:\python3\Lib\site-packages\pymysql\protocol.py", line 221, in raise_for_error
+    err.raise_mysql_exception(self._data)
+  File "D:\python3\Lib\site-packages\pymysql\err.py", line 143, in raise_mysql_exception
+    raise errorclass(errno, errval)
+pymysql.err.DataError: (1406, "Data too long for column 'remark' at row 1")
+2021/03/29 13:34:47 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 125, in read_dict_table
+    read_dict_all(read_conn, write_conn, sql_code.sql_book_channel_price, write_db_name, 'book_channel_price')
+  File "D:\datawork\emtools\data_job.py", line 137, in read_dict_all
+    rd.insert_to_data(data_info, write_conn, write_db_name, write_tab_name)
+  File "D:\datawork\emtools\read_database.py", line 130, in insert_to_data
+    cursor.executemany(_sql, _val)
+  File "D:\python3\Lib\site-packages\pymysql\cursors.py", line 173, in executemany
+    return self._do_execute_many(
+  File "D:\python3\Lib\site-packages\pymysql\cursors.py", line 211, in _do_execute_many
+    rows += self.execute(sql + postfix)
+  File "D:\python3\Lib\site-packages\pymysql\cursors.py", line 148, in execute
+    result = self._query(query)
+  File "D:\python3\Lib\site-packages\pymysql\cursors.py", line 310, in _query
+    conn.query(q)
+  File "D:\python3\Lib\site-packages\pymysql\connections.py", line 548, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+  File "D:\python3\Lib\site-packages\pymysql\connections.py", line 775, in _read_query_result
+    result.read()
+  File "D:\python3\Lib\site-packages\pymysql\connections.py", line 1156, in read
+    first_packet = self.connection._read_packet()
+  File "D:\python3\Lib\site-packages\pymysql\connections.py", line 725, in _read_packet
+    packet.raise_for_error()
+  File "D:\python3\Lib\site-packages\pymysql\protocol.py", line 221, in raise_for_error
+    err.raise_mysql_exception(self._data)
+  File "D:\python3\Lib\site-packages\pymysql\err.py", line 143, in raise_mysql_exception
+    raise errorclass(errno, errval)
+pymysql.err.DataError: (1406, "Data too long for column 'remark' at row 1")
+2021/03/29 13:35:59 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 125, in read_dict_table
+    read_dict_all(read_conn, write_conn, sql_code.sql_book_channel_price, write_db_name, 'book_channel_price')
+  File "D:\datawork\emtools\data_job.py", line 139, in read_dict_all
+    rd.insert_to_data(data_info, write_conn, write_db_name, write_tab_name)
+  File "D:\datawork\emtools\read_database.py", line 130, in insert_to_data
+    cursor.executemany(_sql, _val)
+  File "D:\python3\Lib\site-packages\pymysql\cursors.py", line 173, in executemany
+    return self._do_execute_many(
+  File "D:\python3\Lib\site-packages\pymysql\cursors.py", line 211, in _do_execute_many
+    rows += self.execute(sql + postfix)
+  File "D:\python3\Lib\site-packages\pymysql\cursors.py", line 148, in execute
+    result = self._query(query)
+  File "D:\python3\Lib\site-packages\pymysql\cursors.py", line 310, in _query
+    conn.query(q)
+  File "D:\python3\Lib\site-packages\pymysql\connections.py", line 548, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+  File "D:\python3\Lib\site-packages\pymysql\connections.py", line 775, in _read_query_result
+    result.read()
+  File "D:\python3\Lib\site-packages\pymysql\connections.py", line 1156, in read
+    first_packet = self.connection._read_packet()
+  File "D:\python3\Lib\site-packages\pymysql\connections.py", line 725, in _read_packet
+    packet.raise_for_error()
+  File "D:\python3\Lib\site-packages\pymysql\protocol.py", line 221, in raise_for_error
+    err.raise_mysql_exception(self._data)
+  File "D:\python3\Lib\site-packages\pymysql\err.py", line 143, in raise_mysql_exception
+    raise errorclass(errno, errval)
+pymysql.err.DataError: (1406, "Data too long for column 'remark' at row 1")
+2021/03/29 13:36:34 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 126, in read_dict_table
+    read_dict_all(read_conn, write_conn, sql_code.sql_book_channel_price, write_db_name, 'book_channel_price')
+  File "D:\datawork\emtools\data_job.py", line 140, in read_dict_all
+    rd.insert_to_data(data_info, write_conn, write_db_name, write_tab_name)
+  File "D:\datawork\emtools\read_database.py", line 130, in insert_to_data
+    cursor.executemany(_sql, _val)
+  File "D:\python3\Lib\site-packages\pymysql\cursors.py", line 173, in executemany
+    return self._do_execute_many(
+  File "D:\python3\Lib\site-packages\pymysql\cursors.py", line 211, in _do_execute_many
+    rows += self.execute(sql + postfix)
+  File "D:\python3\Lib\site-packages\pymysql\cursors.py", line 148, in execute
+    result = self._query(query)
+  File "D:\python3\Lib\site-packages\pymysql\cursors.py", line 310, in _query
+    conn.query(q)
+  File "D:\python3\Lib\site-packages\pymysql\connections.py", line 548, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+  File "D:\python3\Lib\site-packages\pymysql\connections.py", line 775, in _read_query_result
+    result.read()
+  File "D:\python3\Lib\site-packages\pymysql\connections.py", line 1156, in read
+    first_packet = self.connection._read_packet()
+  File "D:\python3\Lib\site-packages\pymysql\connections.py", line 725, in _read_packet
+    packet.raise_for_error()
+  File "D:\python3\Lib\site-packages\pymysql\protocol.py", line 221, in raise_for_error
+    err.raise_mysql_exception(self._data)
+  File "D:\python3\Lib\site-packages\pymysql\err.py", line 143, in raise_mysql_exception
+    raise errorclass(errno, errval)
+pymysql.err.DataError: (1406, "Data too long for column 'remark' at row 1")
+2021/03/29 13:38:13 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 125, in read_dict_table
+    read_dict_all(read_conn, write_conn, sql_code.sql_book_channel_price, write_db_name, 'book_channel_price')
+  File "D:\datawork\emtools\data_job.py", line 140, in read_dict_all
+    rd.insert_to_data(data_info, write_conn, write_db_name, write_tab_name)
+  File "D:\datawork\emtools\read_database.py", line 130, in insert_to_data
+    cursor.executemany(_sql, _val)
+  File "D:\python3\Lib\site-packages\pymysql\cursors.py", line 173, in executemany
+    return self._do_execute_many(
+  File "D:\python3\Lib\site-packages\pymysql\cursors.py", line 211, in _do_execute_many
+    rows += self.execute(sql + postfix)
+  File "D:\python3\Lib\site-packages\pymysql\cursors.py", line 148, in execute
+    result = self._query(query)
+  File "D:\python3\Lib\site-packages\pymysql\cursors.py", line 310, in _query
+    conn.query(q)
+  File "D:\python3\Lib\site-packages\pymysql\connections.py", line 548, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+  File "D:\python3\Lib\site-packages\pymysql\connections.py", line 775, in _read_query_result
+    result.read()
+  File "D:\python3\Lib\site-packages\pymysql\connections.py", line 1156, in read
+    first_packet = self.connection._read_packet()
+  File "D:\python3\Lib\site-packages\pymysql\connections.py", line 725, in _read_packet
+    packet.raise_for_error()
+  File "D:\python3\Lib\site-packages\pymysql\protocol.py", line 221, in raise_for_error
+    err.raise_mysql_exception(self._data)
+  File "D:\python3\Lib\site-packages\pymysql\err.py", line 143, in raise_mysql_exception
+    raise errorclass(errno, errval)
+pymysql.err.DataError: (1406, "Data too long for column 'remark' at row 1")
+2021/03/29 13:41:23 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 125, in read_dict_table
+    read_dict_all(read_conn, write_conn, sql_code.sql_book_channel_price, write_db_name, 'book_channel_price')
+  File "D:\datawork\emtools\data_job.py", line 139, in read_dict_all
+    rd.insert_to_data(data_info, write_conn, write_db_name, write_tab_name)
+  File "D:\datawork\emtools\read_database.py", line 133, in insert_to_data
+    cursor.executemany(_sql, _val)
+  File "D:\python3\Lib\site-packages\pymysql\cursors.py", line 173, in executemany
+    return self._do_execute_many(
+  File "D:\python3\Lib\site-packages\pymysql\cursors.py", line 211, in _do_execute_many
+    rows += self.execute(sql + postfix)
+  File "D:\python3\Lib\site-packages\pymysql\cursors.py", line 148, in execute
+    result = self._query(query)
+  File "D:\python3\Lib\site-packages\pymysql\cursors.py", line 310, in _query
+    conn.query(q)
+  File "D:\python3\Lib\site-packages\pymysql\connections.py", line 548, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+  File "D:\python3\Lib\site-packages\pymysql\connections.py", line 775, in _read_query_result
+    result.read()
+  File "D:\python3\Lib\site-packages\pymysql\connections.py", line 1156, in read
+    first_packet = self.connection._read_packet()
+  File "D:\python3\Lib\site-packages\pymysql\connections.py", line 725, in _read_packet
+    packet.raise_for_error()
+  File "D:\python3\Lib\site-packages\pymysql\protocol.py", line 221, in raise_for_error
+    err.raise_mysql_exception(self._data)
+  File "D:\python3\Lib\site-packages\pymysql\err.py", line 143, in raise_mysql_exception
+    raise errorclass(errno, errval)
+pymysql.err.DataError: (1406, "Data too long for column 'remark' at row 1")
+2021/03/29 13:42:15 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 125, in read_dict_table
+    read_dict_all(read_conn, write_conn, sql_code.sql_book_channel_price, write_db_name, 'book_channel_price')
+  File "D:\datawork\emtools\data_job.py", line 139, in read_dict_all
+    rd.insert_to_data(data_info, write_conn, write_db_name, write_tab_name)
+  File "D:\datawork\emtools\read_database.py", line 134, in insert_to_data
+    cursor.executemany(_sql, _val)
+  File "D:\python3\Lib\site-packages\pymysql\cursors.py", line 173, in executemany
+    return self._do_execute_many(
+  File "D:\python3\Lib\site-packages\pymysql\cursors.py", line 211, in _do_execute_many
+    rows += self.execute(sql + postfix)
+  File "D:\python3\Lib\site-packages\pymysql\cursors.py", line 148, in execute
+    result = self._query(query)
+  File "D:\python3\Lib\site-packages\pymysql\cursors.py", line 310, in _query
+    conn.query(q)
+  File "D:\python3\Lib\site-packages\pymysql\connections.py", line 548, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+  File "D:\python3\Lib\site-packages\pymysql\connections.py", line 775, in _read_query_result
+    result.read()
+  File "D:\python3\Lib\site-packages\pymysql\connections.py", line 1156, in read
+    first_packet = self.connection._read_packet()
+  File "D:\python3\Lib\site-packages\pymysql\connections.py", line 725, in _read_packet
+    packet.raise_for_error()
+  File "D:\python3\Lib\site-packages\pymysql\protocol.py", line 221, in raise_for_error
+    err.raise_mysql_exception(self._data)
+  File "D:\python3\Lib\site-packages\pymysql\err.py", line 143, in raise_mysql_exception
+    raise errorclass(errno, errval)
+pymysql.err.DataError: (1406, "Data too long for column 'remark' at row 1")
+2021/03/29 13:44:35 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\python3\Lib\site-packages\pandas\core\ops\array_ops.py", line 142, in _na_arithmetic_op
+    result = expressions.evaluate(op, left, right)
+  File "D:\python3\Lib\site-packages\pandas\core\computation\expressions.py", line 235, in evaluate
+    return _evaluate(op, op_str, a, b)  # type: ignore[misc]
+  File "D:\python3\Lib\site-packages\pandas\core\computation\expressions.py", line 69, in _evaluate_standard
+    return op(a, b)
+  File "D:\python3\Lib\site-packages\pandas\core\ops\roperator.py", line 9, in radd
+    return right + left
+numpy.core._exceptions._UFuncNoLoopError: ufunc 'add' did not contain a loop with signature matching types (dtype('S32'), dtype('S32')) -> dtype('S32')
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 123, in read_dict_table
+    read_dict_all(read_conn, write_conn, sql_code.sql_dict_total_admin, write_db_name, 'admin_info')
+  File "D:\datawork\emtools\data_job.py", line 139, in read_dict_all
+    rd.insert_to_data(data_info, write_conn, write_db_name, write_tab_name)
+  File "D:\datawork\emtools\read_database.py", line 134, in insert_to_data
+    cursor.execute(write_data)
+  File "D:\python3\Lib\site-packages\pymysql\cursors.py", line 148, in execute
+    result = self._query(query)
+  File "D:\python3\Lib\site-packages\pymysql\cursors.py", line 310, in _query
+    conn.query(q)
+  File "D:\python3\Lib\site-packages\pymysql\connections.py", line 547, in query
+    self._execute_command(COMMAND.COM_QUERY, sql)
+  File "D:\python3\Lib\site-packages\pymysql\connections.py", line 813, in _execute_command
+    packet = prelude + sql[: packet_size - 1]
+  File "D:\python3\Lib\site-packages\pandas\core\ops\common.py", line 65, in new_method
+    return method(self, other)
+  File "D:\python3\Lib\site-packages\pandas\core\arraylike.py", line 93, in __radd__
+    return self._arith_method(other, roperator.radd)
+  File "D:\python3\Lib\site-packages\pandas\core\frame.py", line 5979, in _arith_method
+    new_data = self._dispatch_frame_op(other, op, axis=axis)
+  File "D:\python3\Lib\site-packages\pandas\core\frame.py", line 6005, in _dispatch_frame_op
+    bm = self._mgr.apply(array_op, right=right)
+  File "D:\python3\Lib\site-packages\pandas\core\internals\managers.py", line 425, in apply
+    applied = b.apply(f, **kwargs)
+  File "D:\python3\Lib\site-packages\pandas\core\internals\blocks.py", line 378, in apply
+    result = func(self.values, **kwargs)
+  File "D:\python3\Lib\site-packages\pandas\core\ops\array_ops.py", line 189, in arithmetic_op
+    res_values = _na_arithmetic_op(lvalues, rvalues, op)
+  File "D:\python3\Lib\site-packages\pandas\core\ops\array_ops.py", line 149, in _na_arithmetic_op
+    result = _masked_arith_op(left, right, op)
+  File "D:\python3\Lib\site-packages\pandas\core\ops\array_ops.py", line 111, in _masked_arith_op
+    result[mask] = op(xrav[mask], y)
+  File "D:\python3\Lib\site-packages\pandas\core\ops\roperator.py", line 9, in radd
+    return right + left
+numpy.core._exceptions._UFuncNoLoopError: ufunc 'add' did not contain a loop with signature matching types (dtype('S32'), dtype('S32')) -> dtype('S32')
+2021/03/29 13:45:36 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 125, in read_dict_table
+    read_dict_all(read_conn, write_conn, sql_code.sql_book_channel_price, write_db_name, 'book_channel_price')
+  File "D:\datawork\emtools\data_job.py", line 139, in read_dict_all
+    rd.insert_to_data(data_info, write_conn, write_db_name, write_tab_name)
+  File "D:\datawork\emtools\read_database.py", line 130, in insert_to_data
+    cursor.executemany(_sql, _val)
+  File "D:\python3\Lib\site-packages\pymysql\cursors.py", line 173, in executemany
+    return self._do_execute_many(
+  File "D:\python3\Lib\site-packages\pymysql\cursors.py", line 211, in _do_execute_many
+    rows += self.execute(sql + postfix)
+  File "D:\python3\Lib\site-packages\pymysql\cursors.py", line 148, in execute
+    result = self._query(query)
+  File "D:\python3\Lib\site-packages\pymysql\cursors.py", line 310, in _query
+    conn.query(q)
+  File "D:\python3\Lib\site-packages\pymysql\connections.py", line 548, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+  File "D:\python3\Lib\site-packages\pymysql\connections.py", line 775, in _read_query_result
+    result.read()
+  File "D:\python3\Lib\site-packages\pymysql\connections.py", line 1156, in read
+    first_packet = self.connection._read_packet()
+  File "D:\python3\Lib\site-packages\pymysql\connections.py", line 725, in _read_packet
+    packet.raise_for_error()
+  File "D:\python3\Lib\site-packages\pymysql\protocol.py", line 221, in raise_for_error
+    err.raise_mysql_exception(self._data)
+  File "D:\python3\Lib\site-packages\pymysql\err.py", line 143, in raise_mysql_exception
+    raise errorclass(errno, errval)
+pymysql.err.DataError: (1406, "Data too long for column 'remark' at row 1")
+2021/03/29 16:26:00 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\python3\Lib\site-packages\pandas\io\sql.py", line 1697, in execute
+    cur.execute(*args, **kwargs)
+  File "D:\python3\Lib\site-packages\pymysql\cursors.py", line 148, in execute
+    result = self._query(query)
+  File "D:\python3\Lib\site-packages\pymysql\cursors.py", line 310, in _query
+    conn.query(q)
+  File "D:\python3\Lib\site-packages\pymysql\connections.py", line 548, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+  File "D:\python3\Lib\site-packages\pymysql\connections.py", line 775, in _read_query_result
+    result.read()
+  File "D:\python3\Lib\site-packages\pymysql\connections.py", line 1163, in read
+    self._read_result_packet(first_packet)
+  File "D:\python3\Lib\site-packages\pymysql\connections.py", line 1236, in _read_result_packet
+    self._read_rowdata_packet()
+  File "D:\python3\Lib\site-packages\pymysql\connections.py", line 1270, in _read_rowdata_packet
+    packet = self.connection._read_packet()
+  File "D:\python3\Lib\site-packages\pymysql\connections.py", line 711, in _read_packet
+    recv_data = self._read_bytes(bytes_to_read)
+  File "D:\python3\Lib\site-packages\pymysql\connections.py", line 748, in _read_bytes
+    raise err.OperationalError(
+pymysql.err.OperationalError: (2013, 'Lost connection to MySQL server during query')
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\python3\Lib\site-packages\pandas\io\sql.py", line 1701, in execute
+    self.con.rollback()
+  File "D:\python3\Lib\site-packages\pymysql\connections.py", line 479, in rollback
+    self._execute_command(COMMAND.COM_QUERY, "ROLLBACK")
+  File "D:\python3\Lib\site-packages\pymysql\connections.py", line 793, in _execute_command
+    raise err.InterfaceError(0, "")
+pymysql.err.InterfaceError: (0, '')
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 213, in read_user_recently_read
+    block_data = _user_recently_read_data(read_conn, write_conn, date, num)
+  File "D:\datawork\emtools\data_job.py", line 229, in _user_recently_read_data
+    recently_read_data = pd.read_sql(
+  File "D:\python3\Lib\site-packages\pandas\io\sql.py", line 484, in read_sql
+    return pandas_sql.read_query(
+  File "D:\python3\Lib\site-packages\pandas\io\sql.py", line 1743, in read_query
+    cursor = self.execute(*args)
+  File "D:\python3\Lib\site-packages\pandas\io\sql.py", line 1706, in execute
+    raise ex from inner_exc
+pandas.io.sql.DatabaseError: Execution failed on sql: 
+SELECT id,user_id,book_id,chapter_id % 100000 chapter_id,createtime,updatetime,user_type
+from cps_shard_293.user_recently_read
+where updatetime >= UNIX_TIMESTAMP('2019-01-01')
+
+(2013, 'Lost connection to MySQL server during query')
+unable to rollback
+2021/03/29 16:26:28 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 210, in read_user_recently_read
+    write_conn = rd.connect_database_vpn(write_conn_fig)
+  File "D:\datawork\emtools\read_database.py", line 40, in connect_database_vpn
+    conn = pymysql.connect(
+  File "D:\python3\Lib\site-packages\pymysql\connections.py", line 353, in __init__
+    self.connect()
+  File "D:\python3\Lib\site-packages\pymysql\connections.py", line 633, in connect
+    self._request_authentication()
+  File "D:\python3\Lib\site-packages\pymysql\connections.py", line 907, in _request_authentication
+    auth_packet = self._read_packet()
+  File "D:\python3\Lib\site-packages\pymysql\connections.py", line 692, in _read_packet
+    packet_header = self._read_bytes(4)
+  File "D:\python3\Lib\site-packages\pymysql\connections.py", line 748, in _read_bytes
+    raise err.OperationalError(
+pymysql.err.OperationalError: (2013, 'Lost connection to MySQL server during query')
+2021/03/29 17:08:31 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:08:31 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:08:31 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:08:31 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:08:49 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:08:52 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:08:52 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:08:53 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:09:09 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:09:13 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:09:14 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:09:14 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:09:28 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:09:34 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:09:35 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:09:35 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:09:49 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:09:55 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:09:56 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:09:58 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:10:12 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:10:21 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:10:28 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:10:28 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:12:05 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:12:14 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:12:18 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:12:23 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:12:24 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:12:26 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:12:26 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:12:26 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:12:27 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:12:27 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:12:27 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:12:28 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:12:28 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:12:29 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:12:29 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:12:30 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:13:31 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:13:42 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:13:42 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:13:50 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:13:51 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:13:51 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:13:53 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:13:53 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:13:53 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:13:54 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:13:54 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:13:55 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:13:55 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:13:55 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:13:56 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:13:56 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:14:58 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:15:08 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:15:09 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:15:17 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:15:18 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:15:18 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:15:20 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:15:20 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:15:20 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:15:20 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:15:21 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:15:22 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:15:22 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:15:22 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:15:23 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:15:24 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:16:24 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:16:35 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:16:35 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:16:44 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:16:44 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:16:45 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:16:46 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:16:46 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:16:46 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:16:47 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:16:48 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:16:48 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:16:48 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:16:49 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:16:50 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:16:50 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:17:52 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:18:03 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:18:05 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:18:10 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:18:12 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:18:12 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:18:13 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:18:13 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:18:14 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:18:15 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:18:15 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:18:15 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:18:16 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:18:17 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:18:17 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:18:18 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:19:19 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:19:30 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:19:31 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:19:36 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:19:37 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:19:38 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:19:39 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:19:39 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:19:40 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:19:40 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:19:42 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:19:43 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:19:43 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:19:43 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:19:44 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:19:45 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:20:46 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:20:56 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:20:59 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:21:03 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:21:04 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:21:05 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:21:06 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:21:07 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:21:07 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:21:08 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:21:08 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:21:09 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:21:10 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:21:10 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:21:11 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:21:12 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:22:12 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:22:23 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:22:23 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:22:28 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:22:30 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:22:32 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:22:33 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:22:33 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:22:33 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:22:34 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:22:35 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:22:35 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:22:36 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:22:36 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:22:37 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date
+2021/03/29 17:22:38 - root - ERROR - 17 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 8, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\emtools\data_job.py", line 215, in read_user_recently_read
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+  File "D:\datawork\emtools\read_database.py", line 214, in delete_last_date
+    date = emdate.date_to_stamp(date)
+  File "D:\datawork\emtools\emdate.py", line 215, in date_to_stamp
+    date_time = dt.datetime.strptime(date, '%Y-%m-%d')
+TypeError: strptime() argument 1 must be str, not datetime.date

@@ -24,9 +24,6 @@ def read_data_user_day(conn_fig, size, date, process_num):
 
 
 def one_user_day(read_conn_fig, write_conn_fig, date, _):
-    # if _ != 47:
-    #     print('is has do ', _)
-    #     return 0
     print('======> is work to read -*- one_user_day -*- ===> num:{num} start '.format(num=_), dt.datetime.now())
     read_conn = rd.connect_database_host(read_conn_fig)
     write_conn = rd.connect_database_vpn(write_conn_fig)
@@ -81,9 +78,6 @@ def read_user_and_order(conn_fig, size, date, process_num):
 
 def user_and_order(read_conn_fig, write_conn_fig, date, referral_data, _):
     print('======> is work to read -*- user_and_order -*- ===> num:{num} start '.format(num=_), dt.datetime.now())
-    # if _ < 128:
-    #     print('is has do ', _)
-    #     return 0
     read_conn = rd.connect_database_host(read_conn_fig)
     write_conn = rd.connect_database_vpn(write_conn_fig)
     write_user_db_name = 'user_info'
@@ -128,6 +122,7 @@ def read_dict_table(read_conn_fig, write_conn_fig, date):
     write_conn = rd.connect_database_vpn(write_conn_fig)
     read_dict_all(read_conn, write_conn, sql_code.sql_dict_total_admin, write_db_name, 'admin_info')
     read_dict_all(read_conn, write_conn, sql_code.sql_dict_total_book, write_db_name, 'book_info')
+    read_dict_all(read_conn, write_conn, sql_code.sql_book_channel_price, write_db_name, 'book_channel_price')
     read_dict_update(read_conn, write_conn, sql_code.sql_dict_update_referral, write_db_name, 'referral_info', date)
     read_conn.close()
     write_conn.close()
@@ -201,3 +196,63 @@ def _kd_log_read_data(read_conn, write_conn, s_date, e_date, num):
     _log_info = pd.merge(_log, user_info, on='user_id', how='left')
     _log_info.fillna(0, inplace=True)
     return _log_info
+
+
+# @loger.logging_read
+def read_user_recently_read(write_conn_fig, write_db, write_tab, num, date=None, end_date=None):
+    print('======> is start to run {db}.{tab} - {num} ===> start time:'.format(
+        db=write_db, tab=write_tab, num=num), dt.datetime.now())
+    read_conn_fig = rd.read_db_host(
+        (os.path.split(os.path.realpath(__file__))[0] + '/config.yml')
+    )
+    read_host_conn_fig = cm.pick_conn_host_by_num(num, read_conn_fig['shart_host'])
+    read_conn = rd.connect_database_direct(read_host_conn_fig)
+    write_conn = rd.connect_database_vpn(write_conn_fig)
+    if not date:
+        date = read_lase_date_user_recently_read_data(write_conn, num)
+    block_data = _user_recently_read_data(read_conn, write_conn, date, num)
+    write_tab_name = write_tab + '_' + str(num)
+    rd.delete_last_date(write_conn, write_db, write_tab_name, date_type_name='updatetime', date=date, date_type='stamp')
+    rd.insert_to_data(block_data, write_conn, write_db, write_tab_name)
+
+
+def _user_recently_read_data(read_conn, write_conn, s_date, num):
+    user_info = pd.read_sql(
+        sql_code.sql_user_info_kd_log.format(num=num), write_conn
+    )
+    book_channel_price = pd.read_sql(
+        sql_code.sql_book_channel_price_local.format(num=num), write_conn
+    )
+    book_price = pd.read_sql(
+        sql_code.sql_book_price_local, write_conn
+    )
+    recently_read_data = pd.read_sql(
+        sql_code.sql_recently_cread_data.format(s_date=s_date, num=num), read_conn
+    )
+
+    recently_read_data['book_id'] = recently_read_data['book_id'].astype(int)
+    recently_read_data['user_id'] = recently_read_data['user_id'].astype(int)
+
+    book_channel_price['book_id'] = book_channel_price['book_id'].astype(int)
+    book_channel_price['channel_id'] = book_channel_price['channel_id'].astype(int)
+
+    user_info['user_id'] = user_info['user_id'].astype(int)
+    user_info['channel_id'] = user_info['channel_id'].astype(int)
+
+    book_price['book_id'] = book_price['book_id'].astype(int)
+
+    recently_read_data = pd.merge(recently_read_data, user_info, on='user_id', how='left')
+    recently_read_data = pd.merge(recently_read_data, book_channel_price, on=['book_id', 'channel_id'], how='left')
+    recently_read_data = pd.merge(recently_read_data, book_price, on='book_id', how='left')
+    recently_read_data = recently_read_data.fillna(0)
+    return recently_read_data
+
+
+def read_lase_date_user_recently_read_data(write_conn, num):
+    try:
+        s_date = pd.read_sql(
+            sql_code.sql_lase_date_user_recently_read_data.format(num=num), write_conn
+        )['md'][0]
+    except:
+        s_date = '2019-01-01'
+    return s_date

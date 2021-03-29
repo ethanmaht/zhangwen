@@ -14,7 +14,11 @@ def syn_market_keep_day_admin(s_date=None):
     work = retained.RunCount('market_read', 'market_keep_day_admin', 'date_day', extend='list')
     if s_date:
         work.s_date = s_date
-    work.step_run_kwargs(retained.count_keep_table_day_admin_run, follow_func=retained.keep_day_admin_count)
+    work.step_run_kwargs(
+        retained.count_keep_table_day_admin_run,
+        follow_func=retained.keep_day_admin_count,
+        process_num=32
+    )
 
 
 def syn_admin_book_order(s_date=None):
@@ -59,11 +63,25 @@ def syn_market_logon_compress_thirty_day(s_date=None):
     )
 
 
+def syn_market_book_admin_read_situation(s_date=None):
+    work = retained.RunCount(
+        write_db='market_read', write_tab='book_admin_read_situation', date_col='start_date', extend='delete')
+    if s_date:
+        work.s_date = s_date
+    work.step_run_kwargs(
+        func=retained.chart_book_admin_read,
+        follow_func=retained.chart_book_admin_read_count,
+        date_sub=31,
+        process_num=12
+    )
+
+
 if __name__ == '__main__':
     print('Start work:')
-    syn_market_keep_day('2021-03-15')
+    syn_market_keep_day()
     syn_admin_book_order()
     table_show_logon_admin_book_order('2020-06-01')
     syn_market_keep_day_by_order_consume()
     syn_market_logon_compress_thirty_day()
-    # syn_market_keep_day_admin()
+    syn_market_book_admin_read_situation()
+    # syn_market_keep_day_admin()  # 带渠道和书的留存数据
