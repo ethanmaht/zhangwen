@@ -17,7 +17,7 @@ def syn_market_keep_day_admin(s_date=None):
     work.step_run_kwargs(
         retained.count_keep_table_day_admin_run,
         follow_func=retained.keep_day_admin_count,
-        process_num=32
+        process_num=16
     )
 
 
@@ -71,8 +71,8 @@ def syn_market_book_admin_read_situation(s_date=None):
     work.step_run_kwargs(
         func=retained.chart_book_admin_read,
         follow_func=retained.chart_book_admin_read_count,
-        date_sub=31,
-        process_num=12
+        date_sub=90,
+        process_num=16
     )
 
 
@@ -84,4 +84,4 @@ if __name__ == '__main__':
     syn_market_keep_day_by_order_consume()
     syn_market_logon_compress_thirty_day()
     syn_market_book_admin_read_situation()
-    # syn_market_keep_day_admin()  # 带渠道和书的留存数据
+    # syn_market_keep_day_admin('2021-03-07')  # 带渠道和书的留存数据

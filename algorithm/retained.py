@@ -170,13 +170,13 @@ class RunCount:
             date_sub=None, process_num=16, run_num=512, interval=0.03, step=1, follow_func=None,
             **kwargs
     ):
-        if isinstance(run_num, int):
-            tars = [_ for _ in range(run_num)]
-        else:
-            tars = run_num
         tar_date_list = self.get_date(date_sub=date_sub)
         for _day in tar_date_list:
             print('****** Start to run: {d} - {tab} ******'.format(d=_day, tab=self.write_tab))
+            if isinstance(run_num, int):
+                tars = [_ for _ in range(run_num)]
+            else:
+                tars = run_num
             cm.thread_work_kwargs(
                 func=func, run_list=tars, read_config=self.host, db_name=self.write_db, tab_name=self.write_tab,
                 s_date=_day, date_col=self.date_col, process_num=process_num, interval=interval, step=step,

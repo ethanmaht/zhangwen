@@ -212,6 +212,8 @@ def block_date_list(date, end_date=None, date_unit='quarter', num=None):
 
 
 def date_to_stamp(date):
+    if not isinstance(date, str):
+        date = str(date)
     date_time = dt.datetime.strptime(date, '%Y-%m-%d')
     un_time = time.mktime(date_time.timetuple())
     return int(un_time)
@@ -226,3 +228,9 @@ def ensure_date_type_is_date(_date, format_code=None):
             time_local = time.strftime("%Y-%m-%d", time.localtime(int(_date)))
             return datetime_format_code(time_local, code=format_code)
         return _date
+
+
+def ensure_date_type_is_stamp(_date):
+    if isinstance(_date, int):
+        return _date
+    return date_to_stamp(_date)

@@ -80,3 +80,19 @@ shart_host:
   pw:
     KU4CsBwrVKpmXt@4yk&LBDuI
 
+
+shard_host_sound:
+  region:
+    - 128
+    - 256
+    - 384
+    - 512
+  host:
+    - rm-2ze4zx9c2rqq4w57835910.mysql.rds.aliyuncs.com
+    - rm-2zet7n7n10ltd4z2335910.mysql.rds.aliyuncs.com
+    - rm-2ze316i87m9n6g8i735910.mysql.rds.aliyuncs.com
+    - rm-2ze83554plz232cju35910.mysql.rds.aliyuncs.com
+  user:
+    mahongtao
+  pw:
+    Qiyue@321

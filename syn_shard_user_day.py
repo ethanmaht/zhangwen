@@ -23,7 +23,15 @@ def syn_read_user_recently_read(s_date=None):
         )
 
 
+def syn_happy_seven_sound_shard_work(s_date=None):
+    rd.syn_date_block_run(
+            func=data_job.syn_happy_seven_sound_shard, date=s_date, process_num=8,
+            write_conn_fig='datamarket', write_db='sound', write_tab_list=['user', 'orders']
+        )
+
+
 if __name__ == '__main__':
     syn_shard_user_day_work()
     syn_date_block()
     syn_read_user_recently_read()
+    syn_happy_seven_sound_shard_work()
