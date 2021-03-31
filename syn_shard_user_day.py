@@ -1,5 +1,6 @@
 from emtools import read_database as rd
 from emtools import data_job
+from es_worker import es_tool
 
 
 def syn_shard_user_day_work(s_date=None):
@@ -26,8 +27,10 @@ def syn_read_user_recently_read(s_date=None):
 def syn_happy_seven_sound_shard_work(s_date=None):
     rd.syn_date_block_run(
             func=data_job.syn_happy_seven_sound_shard, date=s_date, process_num=8,
-            write_conn_fig='datamarket', write_db='sound', write_tab_list=['user', 'orders']
+            write_conn_fig='datamarket', write_db='sound',
+            write_tab_list=['user', 'orders']
         )
+    data_job.syn_happy_seven_sound_cps('datamarket', 'sound')
 
 
 if __name__ == '__main__':
@@ -35,3 +38,4 @@ if __name__ == '__main__':
     syn_date_block()
     syn_read_user_recently_read()
     syn_happy_seven_sound_shard_work()
+    es_tool.run_read_ex_loop(sub_days=3, size=10000, write_conn_fig='datamarket', write_db='sound', tab='es_log')

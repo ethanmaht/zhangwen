@@ -290,3 +290,29 @@ def _one_happy_seven_sound_shard(read_conn, write_conn, read_sql, write_db, writ
     )
     one_data.fillna(0, inplace=True)
     rd.insert_to_data(one_data, write_conn, write_db, write_tab)
+
+
+def syn_happy_seven_sound_cps(write_conn_fig, write_db):
+    sql_dict = {
+        'book': sql_code.sql_dict_total_book,
+        'admin': sql_code.sql_dict_total_admin,
+        'referral': sql_code.sql_dict_update_referral_sound,
+        'channel_price': sql_code.sql_book_channel_price,
+        'podcast_episodes': sql_code.sql_podcast_episodes,
+        'podcasts': sql_code.sql_podcasts,
+    }
+    read_conn_fig = rd.read_db_host(
+        (os.path.split(os.path.realpath(__file__))[0] + '/config.yml')
+    )
+    read_conn = rd.connect_database_direct(read_conn_fig['cps_host_sound'])
+    write_conn = rd.connect_database_vpn(write_conn_fig)
+    for tab in sql_dict.keys():
+        print('======> is start to run {db}.{tab} - dict ===> start time:'.format(
+            db=write_db, tab=tab), dt.datetime.now())
+        one_data = pd.read_sql(
+            sql_dict[tab], read_conn
+        )
+        one_data.fillna(0, inplace=True)
+        rd.insert_to_data(one_data, write_conn, write_db, tab)
+    read_conn.close()
+    write_conn.close()

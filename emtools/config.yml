@@ -96,3 +96,12 @@ shard_host_sound:
     mahongtao
   pw:
     Qiyue@321
+
+
+cps_host_sound:
+  host:
+    rm-2ze987sywd87ish4b35910.mysql.rds.aliyuncs.com
+  user:
+    mahongtao
+  pw:
+    Qiyue@321

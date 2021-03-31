@@ -124,7 +124,7 @@ where createtime >= '{date}'
 """
 
 sql_user_info = """
-select id user_id,createtime,updatetime,channel_id admin_id,sex,country,
+select id user_id,createtime,updatetime,channel_id admin_id,sex,country,is_subscribe,
     province,city,isp,referral_id,referral_id_permanent,ext
 FROM cps_user_{_num}.user
 where updatetime >= '{date}'
@@ -139,7 +139,7 @@ FROM cps.admin a
 
 sql_dict_total_book = """
 SELECT id,book_category_id,name,real_read_num,author,state,sex,price,is_finish,free_chapter_num,first_chapter_id,
-    last_chapter_id,read_num,is_cp,cp_name,book_recharge,createtime,updatetime
+    last_chapter_id,read_num,is_cp,cp_name,book_recharge,createtime,updatetime,chapter_num
 FROM cps.book;
 """
 
@@ -148,11 +148,27 @@ SELECT *
 from cps.book_channel_price
 """
 
+sql_podcast_episodes = """
+SELECT id,podcast_id book_id,origin_id,sequence chapter_id,duration,created_at,updated_at,deleted_at
+from cps.podcast_episodes
+"""
+
+sql_podcasts = """
+SELECT *
+from cps.podcasts
+"""
+
 sql_dict_update_referral = """
 SELECT id,book_id,chapter_id,admin_id,chapter_name,cost,type,uv,follow,unfollow_num,net_follow_num,
     guide_chapter_idx,incr_num,money,orders_num,createtime,updatetime,state 
 FROM cps.referral 
 where updatetime >= '{date}';
+"""
+
+sql_dict_update_referral_sound = """
+SELECT id,book_id,chapter_id,admin_id,chapter_name,cost,type,uv,follow,unfollow_num,net_follow_num,
+    guide_chapter_idx,incr_num,money,orders_num,createtime,updatetime,state 
+FROM cps.referral 
 """
 
 sql_referral_dict = """
