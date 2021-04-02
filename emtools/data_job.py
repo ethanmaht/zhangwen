@@ -316,3 +316,45 @@ def syn_happy_seven_sound_cps(write_conn_fig, write_db):
         rd.insert_to_data(one_data, write_conn, write_db, tab)
     read_conn.close()
     write_conn.close()
+
+
+def syn_happy_seven_sound_shard_num(write_conn_fig, write_db, write_tab_list, num, date=None, end_date=None):
+    if not end_date:
+        end_date = emdate.datetime_format_code(dt.datetime.now())
+    sql_dict = {
+        'consume': sql_code.sql_consume_log,
+        'sign': sql_code.sql_sign_log,
+    }
+    if not date:
+        date = emdate.date_sub_days(sub_days=2)
+    read_conn_fig = rd.read_db_host(
+        (os.path.split(os.path.realpath(__file__))[0] + '/config.yml')
+    )
+    read_host_conn_fig = cm.pick_conn_host_by_num(num, read_conn_fig['shard_host_sound'])
+    read_conn = rd.connect_database_direct(read_host_conn_fig)
+    write_conn = rd.connect_database_vpn(write_conn_fig)
+    for tab in write_tab_list:
+        print('======> is start to run {db}.{tab} - {num} ===> start time:'.format(
+            db=write_db, tab=tab, num=num), dt.datetime.now())
+        one_sql = sql_dict[tab]
+        rd.delete_last_date_num(
+            conn=write_conn, db_name=write_db, tab_name=tab, date_type_name='createtime',
+            date=date, num_type_name='num', num=num, date_type='stamp'
+        )
+        _one_happy_seven_sound_shard_num(
+            read_conn=read_conn, write_conn=write_conn, read_sql=one_sql,
+            write_db=write_db, write_tab=tab, num=num, s_date=date, e_date=end_date
+        )
+    read_conn.close()
+    write_conn.close()
+
+
+def _one_happy_seven_sound_shard_num(read_conn, write_conn, read_sql, write_db, write_tab, num, s_date, e_date):
+    s_date = emdate.ensure_date_type_is_stamp(s_date)
+    one_data = pd.read_sql(
+        read_sql.format(s_date=s_date, num=num, e_date=e_date), read_conn
+    )
+    print(one_data.index.size)
+    one_data.fillna(0, inplace=True)
+    one_data['num'] = num
+    rd.insert_to_data(one_data, write_conn, write_db, write_tab)

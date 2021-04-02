@@ -71,6 +71,7 @@ def comparison_tab_admin_book_val(market_host, write_dict, date, *args):
     )
     left_tab = syn_monitor_run.data_comparison(left_tab, order_tab, 'date_day', ['order_times', 'order_users'])
     left_tab = syn_monitor_run.data_comparison(left_tab, user_tab, 'date_day', ['logon'])
+    left_tab = left_tab.fillna(0)
     rd.insert_to_data(left_tab, conn, write_dict['db'], write_dict['tab'])
     conn.close()
 
@@ -84,6 +85,7 @@ def comparison_by_book_id(market_host, read_host, write_tab, read_tab, date, num
     one_book_data = pd.read_sql(
         sql_monitor.sql_comparison_one_book.format(date=date, e_date=e_date, num=num, bookid=10077894), conn
     )
+    one_book_data = one_book_data.fillna(0)
     rd.insert_to_data(one_book_data, conn, write_tab['db'], write_tab['tab'])
 
 

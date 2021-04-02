@@ -1,6 +1,7 @@
 from algorithm import retained
 from algorithm import show_tabel
 import time
+from es_worker import ec_market
 
 
 def syn_market_keep_day(s_date=None):
@@ -40,7 +41,8 @@ def table_show_logon_admin_book_order(s_date=None):
 
 def syn_market_keep_day_by_order_consume(s_date=None):
     work = retained.RunCount(
-        write_db='market_read', write_tab='keep_day_by_order_consume', date_col='date_day', extend='delete')
+        write_db='market_read', write_tab='keep_day_by_order_consume', date_col='date_day', extend='delete'
+    )
     if s_date:
         work.s_date = s_date
     work.step_run_kwargs(
@@ -52,7 +54,8 @@ def syn_market_keep_day_by_order_consume(s_date=None):
 
 def syn_market_logon_compress_thirty_day(s_date=None):
     work = retained.RunCount(
-        write_db='market_read', write_tab='logon_compress_thirty_day', date_col='logon_date', extend='delete')
+        write_db='market_read', write_tab='logon_compress_thirty_day', date_col='logon_date', extend='delete'
+    )
     if s_date:
         work.s_date = s_date
     work.step_run_kwargs(
@@ -65,7 +68,8 @@ def syn_market_logon_compress_thirty_day(s_date=None):
 
 def syn_market_book_admin_read_situation(s_date=None):
     work = retained.RunCount(
-        write_db='market_read', write_tab='book_admin_read_situation', date_col='start_date', extend='delete')
+        write_db='market_read', write_tab='book_admin_read_situation', date_col='start_date', extend='delete'
+    )
     if s_date:
         work.s_date = s_date
     work.step_run_kwargs(
@@ -76,12 +80,37 @@ def syn_market_book_admin_read_situation(s_date=None):
     )
 
 
+def sound_market_book_count(s_date):
+    work = retained.RunCount(
+        write_db='sound', write_tab='market_book_count', date_col='logon_day', extend='delete'
+    )
+    if s_date:
+        work.s_date = s_date
+    work.direct_run_kwargs(
+        func=ec_market.sound_book_admin_count,
+    )
+
+
+def sound_market_chapter_count(s_date):
+    work = retained.RunCount(
+        write_db='sound', write_tab='market_chapter_count', date_col='date_day', extend='delete'
+    )
+    if s_date:
+        work.s_date = s_date
+    work.direct_run_kwargs(
+        func=ec_market.sound_chapter_admin_count,
+    )
+
+
 if __name__ == '__main__':
     print('Start work:')
-    syn_market_keep_day()
-    syn_admin_book_order()
-    table_show_logon_admin_book_order('2020-06-01')
-    syn_market_keep_day_by_order_consume()
-    syn_market_logon_compress_thirty_day()
-    syn_market_book_admin_read_situation()
+    syn_market_keep_day()  # 老留存
+    syn_admin_book_order()  # 书籍分销
+    table_show_logon_admin_book_order('2020-06-01')  # 书籍分销 展示
+    syn_market_keep_day_by_order_consume()  # 新留存 订阅和充值
+    syn_market_logon_compress_thirty_day()  # 注册后30日的订阅
+    syn_market_book_admin_read_situation()  # 跟读率
+    sound_market_book_count('2020-04-01')  # 有声book数据
+    sound_market_chapter_count('2020-04-01')  # 有声chapter数据
+
     # syn_market_keep_day_admin('2021-03-07')  # 带渠道和书的留存数据

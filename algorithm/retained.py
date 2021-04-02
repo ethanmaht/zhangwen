@@ -197,6 +197,18 @@ class RunCount:
             self.refresh_table()
         func(self.host, self.write_db, self.write_tab, self.date_col, tar_date_list, *args)
 
+    def direct_run_kwargs(self, func, **kwargs):
+        if self.date_col:
+            tar_date_list = self.get_date()[0]
+        else:
+            tar_date_list = self.s_date
+        if self.refresh:
+            self.refresh_table()
+        func(
+            read_config=self.host, write_db=self.write_db, write_tab=self.write_tab,
+            date_col=self.date_col, s_date=tar_date_list, **kwargs
+        )
+
     def get_date(self, date_sub=None):
         tar_date_list = [0]
         if self.extend == 'list':

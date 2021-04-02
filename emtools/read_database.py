@@ -224,6 +224,22 @@ def delete_last_date(conn, db_name, tab_name, date_type_name, date, end_date=Non
     conn.commit()
 
 
+def delete_last_date_num(
+        conn, db_name, tab_name, date_type_name, date, num_type_name, num, date_type='date'
+):
+    if date_type == 'stamp':
+        date = emdate.date_to_stamp(date)
+    del_sql = sql_code.sql_delete_last_date_num.format(
+        type=date_type_name, db=db_name, tab=tab_name, date=date, num_type=num_type_name, num=num
+    )
+    cursor = conn.cursor()
+    try:
+        cursor.execute(del_sql)
+    except Exception as e:
+        print("Table {db}.{tab} doesn't exist".format(db=db_name, tab=tab_name))
+    conn.commit()
+
+
 def delete_table_data(conn, db_name, tab_name):
     del_sql = sql_code.sql_delete_table_data.format(db=db_name, tab=tab_name)
     cursor = conn.cursor()

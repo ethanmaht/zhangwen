@@ -102,6 +102,10 @@ sql_delete_last_date = """
 delete from {db}.{tab} where {type} >= '{date}'
 """
 
+sql_delete_last_date_num = """
+delete from {db}.{tab} where {type} >= '{date}' and {num_type} = {num}
+"""
+
 sql_delete_date_section = """
 delete from {db}.{tab} where {type} >= '{date}' and {type} < '{date}'
 """
@@ -469,6 +473,80 @@ from log_block.action_log{date_code}_{num}
 where type = 5 and logon_date >= '{s_date}' and referral_book = book_id
     and free_kandian = 0 and kandian = 0
 GROUP BY logon_date,date_day,book_id,channel_id
+"""
+
+sound_user_log = """
+SELECT date(FROM_UNIXTIME(createtime)) logon_day,user_id,1 logon_user,is_subscribe,referral_id_permanent
+from sound.`user` 
+where createtime >= UNIX_TIMESTAMP('{s_date}')
+"""
+
+sount_order_log = """
+SELECT user_id,count(*) order_times,1 order_users
+from sound.orders
+where state = 1 and benefit = 0 and createtime >= UNIX_TIMESTAMP('{s_date}')
+GROUP BY user_id
+"""
+
+sound_referral_info = """
+SELECT r.id referral_id_permanent,r.admin_id,a.business_name,a.nickname,b.`name` logon_book,c.channel_free_chapter_num
+from sound.referral r
+left join sound.admin a on a.id = r.admin_id
+left join sound.book b on b.id = r.book_id
+left join sound.channel_price c on c.admin_id = r.admin_id and c.book_id = r.book_id
+"""
+
+sound_keep = """
+SELECT logon_day,user_id,1 keep
+from (
+    SELECT date(date_add(time, interval -1 day)) logon_day,uid user_id
+    from sound.es_log l
+    where time >= '{s_date}'
+    union
+    SELECT date(date_add(FROM_UNIXTIME(createtime), interval -1 day)) logon_day,user_id
+    from sound.consume
+    where createtime >= UNIX_TIMESTAMP('{s_date}')
+    union
+    SELECT date(date_add(FROM_UNIXTIME(createtime), interval -1 day)) logon_day,user_id
+    from sound.sign
+    where createtime >= UNIX_TIMESTAMP('{s_date}')
+) base
+GROUP BY logon_day,user_id
+"""
+
+sound_chapter_pv_uv = """
+SELECT base.*,o.order_pv,o.order_uv,pp.pay_page_uv,c.channel_free_chapter_num,
+    if(c.channel_free_chapter_num*1>=base.chapter_num*1,'免费','收费') 受否免费,
+    a.business_name,a.nickname,b.name book_name
+from (
+    SELECT date(time) date_day,l.book_id,l.chapter_id,pe.chapter_id chapter_num,
+        l.admin_id,count(*) pv,count(DISTINCT uid) uv
+    from sound.es_log l
+    left join sound.podcasts p on l.book_id = p.id
+    left join sound.podcast_episodes pe on p.origin_id = pe.book_id and l.chapter_id = pe.id
+    where l.book_id > 0 and l.chapter_id > 0 and time > '{s_date}'
+    GROUP BY l.book_id,l.chapter_id,pe.chapter_id,l.admin_id,date_day
+) base
+left join (
+    SELECT date(time) date_day,l.book_id,l.chapter_id,admin_id,count(DISTINCT uid) pay_page_uv
+    from sound.es_log l
+    where l.book_id > 0 and l.chapter_id > 0 and page like '%/index/recharge/pay%'
+    GROUP BY date_day,l.book_id,l.chapter_id,admin_id
+) pp on base.date_day = pp.date_day and base.book_id = pp.book_id 
+    and base.chapter_id = pp.chapter_id and base.admin_id = pp.admin_id
+left join (
+    SELECT date(FROM_UNIXTIME(createtime)) date_day,chapter_id,admin_id,book_id,
+        count(*) order_pv,count(DISTINCT user_id) order_uv
+    from sound.`orders`
+    GROUP BY chapter_id,admin_id,book_id,date_day
+) o on base.date_day = o.date_day and base.book_id = o.book_id 
+    and base.chapter_id = o.chapter_id and base.admin_id = o.admin_id
+left join (
+    SELECT c.book_id,c.admin_id,c.channel_free_chapter_num
+    from sound.channel_price c
+) c on c.book_id = base.book_id and base.admin_id = c.admin_id
+left join sound.admin a on a.id = base.admin_id
+left join sound.book b on b.id = base.book_id
 """
 
 
