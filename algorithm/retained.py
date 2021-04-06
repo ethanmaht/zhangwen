@@ -401,7 +401,7 @@ def retain_date_day_admin(conn, date, num):
     user_info = pd.read_sql(
         sql_code.sql_keep_user_admin_id.format(num=num), conn
     )
-    day_30['user_id'].astype(int)
+    day_30['user_id'] = day_30['user_id'].astype(int)
     day_30.loc[:, '_'] = 1
     day_30 = day_30.pivot_table(
         index='user_id', columns='date_day', values='_', fill_value=0
@@ -447,6 +447,48 @@ def keep_day_admin_count(host, write_db, write_tab, date_type_name, date):
     rd.delete_last_date(conn, write_db, write_tab, date_type_name, date)
     rd.subsection_insert_to_data(compress_date, conn, write_db, write_tab)
     conn.close()
+
+
+def user_keep_admin_run(read_config, db_name, tab_name, date_col, num, s_date):
+    print('======> is start to run {db}.{tab} - {num} ===> start time:'.format(
+        db=db_name, tab=tab_name, num=num), dt.datetime.now())
+    conn = rd.connect_database_host(read_config['host'], read_config['user'], read_config['pw'])
+    user_keep_admin(conn, db_name, tab_name, date_col, s_date, num)
+    conn.close()
+
+
+def user_keep_admin(conn, db_name, tab_name, date_col, date, num, keep_pool=None):
+    date_list = emdate.block_date_list(date)
+    sql = sql_code.sql_keep_book_admin_date_num
+    one_num_data = rd.read_date_block(conn, sql, date_list, num)
+    one_num_data = merge_keep_day_data(one_num_data, keep_pool)
+    one_num_data.to_csv(r'C:\Users\111\Desktop\files\test_{num}.csv'.format(num=num))
+    one_num_data_count = one_num_data.groupby(
+        by=['date_day', 'channel_id', 'book_id', 'type']
+    ).sum().reset_index()
+    one_num_data_count['tab_num'] = num
+    rd.insert_to_data(one_num_data_count, conn, db_name, tab_name)
+
+
+def merge_keep_day_data(df_data, keep_pool=None):
+    if not keep_pool:
+        keep_pool = [2, 3, 7, 14, 30]
+    df_data['date_day'] = df_data['date_day'].apply(lambda x: emdate.datetime_format_code(x))
+    df_data['user_id'].astype(int)
+    for _day_sub in keep_pool:
+        mid_keep = df_data[['date_day', 'user_id']]
+        mid_keep = mid_keep.drop_duplicates()
+        mid_keep = mid_keep.reset_index().drop(columns='index')
+        mid_keep.loc[:, 'keep'] = 1
+        _sub = _day_sub - 1
+        mid_keep['date_day'] = mid_keep.apply(lambda x: emdate.date_sub_days(_sub, x['date_day']), axis=1)
+        df_data = pd.merge(df_data, mid_keep, on=['date_day', 'user_id'], how='left')
+        df_data.rename(columns={'keep': 'keep_{_day}'.format(_day=_day_sub)}, inplace=True)
+    return df_data
+
+
+def keep_one_num_data_count(df_data):
+    df_data = df_data.groupby()
 
 
 def retained_three_index_by_user_count(host, write_db, write_tab, date_type_name, date):

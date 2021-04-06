@@ -22,6 +22,18 @@ def syn_market_keep_day_admin(s_date=None):
     )
 
 
+def syn_market_keep_day_admin_new(s_date=None):
+    work = retained.RunCount('market_read', 'market_keep_day_admin_test_2', 'date_day', extend='delete')
+    if s_date:
+        work.s_date = s_date
+    work.step_run_kwargs(
+        retained.user_keep_admin_run,
+        # follow_func=retained.keep_day_admin_count,
+        date_sub=31,
+        process_num=12
+    )
+
+
 def syn_admin_book_order(s_date=None):
     work = retained.RunCount('market_read', 'order_logon_conversion', 'order_day', extend='delete')
     if s_date:
@@ -113,4 +125,4 @@ if __name__ == '__main__':
     sound_market_book_count('2020-04-01')  # 有声book数据
     sound_market_chapter_count('2020-04-01')  # 有声chapter数据
 
-    # syn_market_keep_day_admin('2021-03-07')  # 带渠道和书的留存数据
+    syn_market_keep_day_admin_new()  # 带渠道和书的留存数据

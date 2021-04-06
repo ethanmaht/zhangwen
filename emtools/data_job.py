@@ -354,7 +354,7 @@ def _one_happy_seven_sound_shard_num(read_conn, write_conn, read_sql, write_db, 
     one_data = pd.read_sql(
         read_sql.format(s_date=s_date, num=num, e_date=e_date), read_conn
     )
-    print(one_data.index.size)
+    # print(one_data.index.size)
     one_data.fillna(0, inplace=True)
     one_data['num'] = num
     rd.insert_to_data(one_data, write_conn, write_db, write_tab)

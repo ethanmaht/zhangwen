@@ -260,3 +260,15 @@ def syn_date_block_run(func, date, process_num, **kwargs):
 def _block_num_list(size):
     _s, _e = size['start'], size['end'] + 1
     return [_ for _ in range(_s, _e)]
+
+
+def read_date_block(conn, sql, date_list, num):
+    _re_data = []
+    for _block in date_list:
+        date_name, s_date, e_date = _block['date_name'], _block['s_date'], _block['e_date']
+        one_num_data_block = pd.read_sql(
+            sql.format(s_date=s_date, block=date_name, num=num), conn
+        )
+        _re_data.append(one_num_data_block)
+    re_data = pd.concat(_re_data)
+    return re_data

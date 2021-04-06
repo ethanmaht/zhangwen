@@ -81,6 +81,29 @@ from happy_seven.user_day_{num}
 where date_day >= '{s_date}' and date_day < '{e_date}'
 """
 
+sql_retain_keep_admin_date_num = """
+select *
+from happy_seven.user_day_{num}
+where date_day >= '{s_date}'
+"""
+
+sql_keep_book_admin_date_num = """
+SELECT FROM_UNIXTIME(createtime) date_day,'logon' type,user_id,book_id,channel_id,1 nums
+from log_block.action_log{block}_{num}
+where type=0 and createtime >= UNIX_TIMESTAMP('{s_date}')
+GROUP BY date_day,user_id,book_id,channel_id
+union
+SELECT FROM_UNIXTIME(createtime) date_day,'order' type,user_id,book_id,channel_id,1 nums
+from log_block.action_log{block}_{num}
+where (type=1 or type=2) and createtime >= UNIX_TIMESTAMP('{s_date}')
+GROUP BY date_day,user_id,book_id,channel_id
+union
+SELECT FROM_UNIXTIME(createtime) date_day,'all' type,user_id,book_id,channel_id,1 nums
+from log_block.action_log{block}_{num}
+where createtime >= UNIX_TIMESTAMP('{s_date}')
+GROUP BY date_day,user_id,book_id,channel_id
+"""
+
 sql_keep_day_admin_count = """
 SELECT date_day,admin_id,
     max(`year_month`) 'year_month', max(month_natural_week) month_natural_week,
@@ -482,7 +505,7 @@ where createtime >= UNIX_TIMESTAMP('{s_date}')
 """
 
 sount_order_log = """
-SELECT user_id,count(*) order_times,1 order_users
+SELECT user_id,count(*) order_times,sum(money) money,1 order_users
 from sound.orders
 where state = 1 and benefit = 0 and createtime >= UNIX_TIMESTAMP('{s_date}')
 GROUP BY user_id

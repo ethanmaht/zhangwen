@@ -31,7 +31,7 @@ def sound_book_admin_count(read_config, write_db, write_tab, date_col, s_date):
     sound_data = sound_data.fillna(0)
     sound_data = sound_data.groupby(
         by=['logon_day', 'business_name', 'nickname', 'logon_book', 'channel_free_chapter_num']
-    )['is_subscribe', 'logon_user', 'order_users', 'order_times', 'keep'].sum().reset_index()
+    )['is_subscribe', 'logon_user', 'order_users', 'order_times', 'keep', 'money'].sum().reset_index()
     sound_data = sound_data.fillna(0)
 
     rd.insert_to_data(sound_data, conn, write_db, write_tab)
