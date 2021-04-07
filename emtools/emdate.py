@@ -74,15 +74,12 @@ def datetime_format_code(_dt, repair=1, code='{Y}-{M}-{D}'):
     if repair:
         _month = fixed_length(_dt.month, )
         _day = fixed_length(_dt.day, )
-        _hour = fixed_length(_dt.hour)
-        _minute = fixed_length(_dt.minute)
-        _second = fixed_length(_dt.second)
     else:
-        _month, _day, _hour, _minute, _second = _dt.month, _dt.day, _dt.hour, _dt.minute, _dt.second
+        _month, _day = _dt.month, _dt.day
     wd, mw, nmw = _dt.weekday(), month_week(_dt), month_week(_dt, natural=1)
     yw, nyw = year_week(_dt), year_week(_dt, natural=1)
     return code.format(
-        Y=_year, M=_month, D=_day, h=_hour, m=_minute, s=_second, wd=wd, mw=mw, nmw=nmw, yw=yw, nyw=nyw
+        Y=_year, M=_month, D=_day, wd=wd, mw=mw, nmw=nmw, yw=yw, nyw=nyw
     )
 
 
@@ -129,7 +126,8 @@ def date_list(s_date, e_date=None, num=None, format_code=None, direction=0):
 
 def year_week(_dt, natural=0):
     year_s = dt.datetime(_dt.year, 1, 1)
-    _day = (_dt - year_s).days
+    year_e = dt.datetime(_dt.year, _dt.month, _dt.day)
+    _day = (year_e - year_s).days
     if natural:
         return _day // 7 + 1
     year_s_wd = dt.datetime(_dt.year, 1, 1).weekday()
@@ -138,7 +136,8 @@ def year_week(_dt, natural=0):
 
 def month_week(_dt, natural=0):
     month_s = dt.datetime(_dt.year, _dt.month, 1)
-    _day = (_dt - month_s).days
+    month_e = dt.datetime(_dt.year, _dt.month, _dt.day)
+    _day = (month_e - month_s).days
     if natural:
         return _day // 7 + 1
     month_s_wd = dt.datetime(_dt.year, _dt.month, 1).weekday()

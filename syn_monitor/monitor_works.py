@@ -89,3 +89,35 @@ def comparison_by_book_id(market_host, read_host, write_tab, read_tab, date, num
     rd.insert_to_data(one_book_data, conn, write_tab['db'], write_tab['tab'])
 
 
+def comparison_by_one_sql(market_host, read_host, write_tab, read_tab, date, num):
+    print('======> is start to run {db}.{tab} - {num} ===> start time:'.format(
+        db=read_tab['db'], tab=read_tab['tab'], num=num), dt.datetime.now())
+    conn = rd.connect_database_host(market_host['host'], market_host['user'], market_host['pw'])
+    # sql = """
+    # SELECT user_id,date(FROM_UNIXTIME(createtime)) date_day,type,referral_book book_id
+    # from log_block.action_log_2021Q2_{num}
+    # where type=0 and createtime >= UNIX_TIMESTAMP('{date}')
+    #     and createtime < UNIX_TIMESTAMP('{e_date}') and referral_book = 10077522
+    # GROUP BY user_id,date_day,type,referral_book
+    # """
+    # sql = """
+    # SELECT user_id,referral_book,FROM_UNIXTIME(createtime) date_day
+    # from user_read.user_read_{num} where createtime >= UNIX_TIMESTAMP('{date}') and referral_book = 10077522
+    # """
+    sql = """
+            SELECT a.referral_book book_id,a.channel_id,a.is_finish,a.createtime,a.updatetime,book_create,logon_date,
+            CAST(if(a.channel_free_chapter_num<>0,a.channel_free_chapter_num,
+            if(a.free_chapter_num<>0,a.free_chapter_num,15)) AS SIGNED) free_chapter,
+            CAST(b.chapter_num AS SIGNED) last_chapter_id,CAST(chapter_id AS SIGNED) chapter_id
+        from user_read.user_read_{num} a
+        left join market_read.book_info b on b.id = a.referral_book
+        where a.createtime >= UNIX_TIMESTAMP('{date}') and a.referral_book = 10077522
+    """
+    e_date = emdate.datetime_format_code(dt.datetime.now())
+    one_book_data = pd.read_sql(
+        sql.format(date=date, e_date=e_date, num=num, bookid=10077894), conn
+    )
+    one_book_data = one_book_data.fillna(0)
+    rd.insert_to_data(one_book_data, conn, write_tab['db'], write_tab['tab'])
+
+

@@ -39,7 +39,7 @@ class SynMonitor:
                 tars=tars, process_num=process_num, interval=interval, step=step
             )
 
-    def syn_step_run(self, func, process_num=16, run_num=512, interval=0.03, step=1, *args):
+    def syn_step_run(self, func, process_num=16, run_num=512, interval=0.03, step=1, *args, **kwargs):
         if isinstance(run_num, int):
             tars = [_ for _ in range(run_num)]
         else:

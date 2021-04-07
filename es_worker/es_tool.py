@@ -5,8 +5,8 @@ from elasticsearch import Elasticsearch
 from emtools import read_database as rd
 
 
-def connect_es(sub_day, size=10000, s_num=0):
-    es_host = 'http://192.168.1.221'
+def connect_es(sub_day, index, host='http://192.168.1.221', size=10000, s_num=0):
+    es_host = host
     es = Elasticsearch(hosts=es_host, port=9200, timeout=15000)
     body = {
         "query":
@@ -27,7 +27,7 @@ def connect_es(sub_day, size=10000, s_num=0):
             },
         "from": s_num, "size": size, "sort": [], "aggs": {}
     }
-    res = es.search(index="logstash-qiyue-sound-access*", body=body)
+    res = es.search(index=index, body=body)
     data = res['hits']['hits']
     data = draw_date_from_es_to_df(data)
     return data
@@ -37,6 +37,11 @@ def draw_date_from_es_to_df(one_day, ):
     dict_pool = []
     for _one in one_day:
         body = _one['_source']
+        try:
+            if body['tag'] != 701:
+                continue
+        except:
+            continue
         try:
             user_from = body['map']['from']
         except:
@@ -64,9 +69,9 @@ def draw_date_from_es_to_df(one_day, ):
     return df(dict_pool)
 
 
-def run_read_ex_loop(sub_days, size, write_conn_fig, write_db, tab):
+def run_read_ex_loop(sub_days, size, write_conn_fig, write_db, tab, index="logstash-qiyue-sound-access*"):
     start_page, all_data = 0, []
-    re_data = connect_es(sub_days, size=size, s_num=start_page)
+    re_data = connect_es(sub_days, size=size, s_num=start_page, index=index)
     _size = re_data.index.size
     all_data.append(re_data)
     while _size >= size:

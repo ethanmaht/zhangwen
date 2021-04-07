@@ -46,14 +46,25 @@ def one_book_orders():
         {'db': 'syn_monitor', 'tab': 'one_book', 'date_col': 'date_day'},
         {'db': 'orders_log', 'tab': 'orders_log', 'date_col': 'createtime', 'date_type': 'stamp'}
     )
-    work.s_date = '2021-03-07'
+    work.s_date = '2021-04-01'
     work.syn_step_run(monitor_works.comparison_by_book_id, process_num=32)
+
+
+def one_book_sql():
+    work = syn_monitor_run.SynMonitor(
+        {'db': 'syn_monitor', 'tab': 'one_book_read', 'date_col': 'date_day'},
+        {'db': 'orders_log', 'tab': 'orders_log', 'date_col': 'createtime', 'date_type': 'stamp'}
+    )
+    work.s_date = '2021-04-01'
+    work.syn_step_run(monitor_works.comparison_by_one_sql, process_num=32)
 
 
 if __name__ == '__main__':
     print('start work:')
-    order_info_monitor()
-    logon_info_monitor()
-    # syn_table_day_nums_monitor()
-    comparison_admin_book_order()
+    # order_info_monitor()
+    # logon_info_monitor()
+    # comparison_admin_book_order()
+
     # one_book_orders()
+    one_book_sql()
+    # syn_table_day_nums_monitor()

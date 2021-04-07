@@ -23,13 +23,13 @@ def syn_market_keep_day_admin(s_date=None):
 
 
 def syn_market_keep_day_admin_new(s_date=None):
-    work = retained.RunCount('market_read', 'market_keep_day_admin_test_2', 'date_day', extend='delete')
+    work = retained.RunCount('market_read', 'market_keep_day_admin_test', 'date_day', extend='delete')
     if s_date:
         work.s_date = s_date
     work.step_run_kwargs(
         retained.user_keep_admin_run,
-        # follow_func=retained.keep_day_admin_count,
-        date_sub=31,
+        follow_func=retained.user_keep_admin_count,
+        # date_sub=31,
         process_num=12
     )
 
@@ -118,11 +118,11 @@ if __name__ == '__main__':
     print('Start work:')
     syn_market_keep_day()  # 老留存
     syn_admin_book_order()  # 书籍分销
-    table_show_logon_admin_book_order('2020-06-01')  # 书籍分销 展示
+    table_show_logon_admin_book_order('2020-06-01')  # 书籍分销 展示 -> .1h
     syn_market_keep_day_by_order_consume()  # 新留存 订阅和充值
     syn_market_logon_compress_thirty_day()  # 注册后30日的订阅
-    syn_market_book_admin_read_situation()  # 跟读率
-    sound_market_book_count('2020-04-01')  # 有声book数据
-    sound_market_chapter_count('2020-04-01')  # 有声chapter数据
+    syn_market_book_admin_read_situation()  # 跟读率 -> .3h
+    sound_market_book_count('2020-04-01')  # 有声book数据 -> .1h
+    sound_market_chapter_count('2020-04-01')  # 有声chapter数据 -> .1h
 
-    syn_market_keep_day_admin_new()  # 带渠道和书的留存数据
+    # syn_market_keep_day_admin_new('2021-03-01')  # 带渠道和书的留存数据 -> 3h

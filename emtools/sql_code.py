@@ -69,6 +69,11 @@ SELECT id admin_id,nickname,business_name
 from market_read.admin_info
 """
 
+sql_keep_book_id_name = """
+SELECT id book_id,name book_name
+from market_read.book_info
+"""
+
 sql_retain_date_day_30 = """
 select user_id,date_day
 from {db}.{tab}
@@ -88,17 +93,17 @@ where date_day >= '{s_date}'
 """
 
 sql_keep_book_admin_date_num = """
-SELECT FROM_UNIXTIME(createtime) date_day,'logon' type,user_id,book_id,channel_id,1 nums
+SELECT date(FROM_UNIXTIME(createtime)) date_day,'logon' type,user_id,book_id,channel_id,1 nums
 from log_block.action_log{block}_{num}
 where type=0 and createtime >= UNIX_TIMESTAMP('{s_date}')
 GROUP BY date_day,user_id,book_id,channel_id
 union
-SELECT FROM_UNIXTIME(createtime) date_day,'order' type,user_id,book_id,channel_id,1 nums
+SELECT date(FROM_UNIXTIME(createtime)) date_day,'order' type,user_id,book_id,channel_id,1 nums
 from log_block.action_log{block}_{num}
 where (type=1 or type=2) and createtime >= UNIX_TIMESTAMP('{s_date}')
 GROUP BY date_day,user_id,book_id,channel_id
 union
-SELECT FROM_UNIXTIME(createtime) date_day,'all' type,user_id,book_id,channel_id,1 nums
+SELECT date(FROM_UNIXTIME(createtime)) date_day,'all' type,user_id,book_id,channel_id,1 nums
 from log_block.action_log{block}_{num}
 where createtime >= UNIX_TIMESTAMP('{s_date}')
 GROUP BY date_day,user_id,book_id,channel_id
@@ -115,6 +120,14 @@ SELECT date_day,admin_id,
 from {db}.{tab}
 where date_day >= '{date}'
 GROUP BY date_day,admin_id
+"""
+
+sql_keep_book_admin_count = """
+SELECT date_day,book_id,channel_id,type,
+    sum(nums) nums,sum(keep_2) keep_2,sum(keep_3) keep_3,sum(keep_7) keep_7,sum(keep_14) keep_14,sum(keep_30) keep_30
+from {db}.{tab}
+where date_day > '{date}'
+GROUP BY date_day,book_id,channel_id,type
 """
 
 sql_read_last_date = """
@@ -417,18 +430,20 @@ from(
         if(chapter_id>=750,1,0) over_750,if(chapter_id>=1000,1,0) over_1000,if(chapter_id>=2000,1,0) over_2000,
         if(chapter_id=last_chapter_id,1,0) over_book
     from (
-        SELECT book_id,channel_id,is_finish,createtime,updatetime,book_create,logon_date,
-            CAST(if(channel_free_chapter_num<>0,channel_free_chapter_num,
-            if(free_chapter_num<>0,free_chapter_num,15)) AS SIGNED) free_chapter,
-            CAST(last_chapter_id AS SIGNED) last_chapter_id,CAST(chapter_id AS SIGNED) chapter_id
-        from user_read.user_read_{num} where createtime >= UNIX_TIMESTAMP('{date}')
+        SELECT a.referral_book book_id,a.channel_id,b.is_finish,a.createtime,a.updatetime,book_create,logon_date,
+            CAST(if(a.channel_free_chapter_num<>0,a.channel_free_chapter_num,
+            if(a.free_chapter_num<>0,a.free_chapter_num,15)) AS SIGNED) free_chapter,
+            CAST(b.chapter_num AS SIGNED) last_chapter_id,CAST(chapter_id AS SIGNED) chapter_id
+        from user_read.user_read_{num} a
+        left join market_read.book_info b on b.id = a.referral_book
+        where a.createtime >= UNIX_TIMESTAMP('{date}')
     ) base
 ) box
 GROUP BY book_id,channel_id,last_chapter_id,is_finish,start_date
 """
 
 sql_book_admin_read_count = """
-SELECT book_id,channel_id,last_chapter_id,is_finish,start_date,count(*) start_book,
+SELECT book_id,channel_id,last_chapter_id,is_finish,start_date,sum(start_book) start_book,
     sum(over_free) over_free,sum(over_free) / count(*) over_free_p, 
     sum(over_100) over_100,sum(over_100) / count(*) over_100_p, 
     sum(over_200) over_200, sum(over_200) / count(*) over_200_p, 

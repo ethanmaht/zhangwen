@@ -44,5 +44,10 @@ if __name__ == '__main__':
     syn_read_user_recently_read()  # 跟读数据同步
     syn_happy_seven_sound_shard_work('2020-01-1')  # 有声的数据库同步
     es_tool.run_read_ex_loop(
-        sub_days=3, size=10000, write_conn_fig='datamarket', write_db='sound', tab='es_log'
+        sub_days=10, size=10000, write_conn_fig='datamarket', write_db='sound', tab='es_log'
     )  # 有声的es同步
+
+    # es_tool.run_read_ex_loop(
+    #     sub_days=1, size=10000, write_conn_fig='datamarket', write_db='happy_seven_es_log', tab='access_log',
+    #     index='logstash-qiyue-accesslog*'
+    # )  # 七悦的es同步

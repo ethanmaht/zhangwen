@@ -462,7 +462,6 @@ def user_keep_admin(conn, db_name, tab_name, date_col, date, num, keep_pool=None
     sql = sql_code.sql_keep_book_admin_date_num
     one_num_data = rd.read_date_block(conn, sql, date_list, num)
     one_num_data = merge_keep_day_data(one_num_data, keep_pool)
-    one_num_data.to_csv(r'C:\Users\111\Desktop\files\test_{num}.csv'.format(num=num))
     one_num_data_count = one_num_data.groupby(
         by=['date_day', 'channel_id', 'book_id', 'type']
     ).sum().reset_index()
@@ -476,19 +475,43 @@ def merge_keep_day_data(df_data, keep_pool=None):
     df_data['date_day'] = df_data['date_day'].apply(lambda x: emdate.datetime_format_code(x))
     df_data['user_id'].astype(int)
     for _day_sub in keep_pool:
-        mid_keep = df_data[['date_day', 'user_id']]
+        mid_keep = df_data[['date_day', 'user_id', 'channel_id', 'book_id']]
         mid_keep = mid_keep.drop_duplicates()
         mid_keep = mid_keep.reset_index().drop(columns='index')
         mid_keep.loc[:, 'keep'] = 1
         _sub = _day_sub - 1
         mid_keep['date_day'] = mid_keep.apply(lambda x: emdate.date_sub_days(_sub, x['date_day']), axis=1)
-        df_data = pd.merge(df_data, mid_keep, on=['date_day', 'user_id'], how='left')
+        df_data = pd.merge(df_data, mid_keep, on=['date_day', 'user_id', 'channel_id', 'book_id'], how='left')
         df_data.rename(columns={'keep': 'keep_{_day}'.format(_day=_day_sub)}, inplace=True)
     return df_data
 
 
-def keep_one_num_data_count(df_data):
-    df_data = df_data.groupby()
+def user_keep_admin_count(host, write_db, write_tab, date_type_name, date):
+    conn = rd.connect_database_host(host['host'], host['user'], host['pw'])
+    count_date = pd.read_sql(
+        sql_code.sql_keep_book_admin_count.format(db=write_db, tab=write_tab, date=date), conn
+    )
+    admin_info = pd.read_sql(
+        sql_code.sql_keep_admin_id_name, conn
+    )
+    book_info = pd.read_sql(
+        sql_code.sql_keep_book_id_name, conn
+    )
+    count_date['channel_id'] = count_date['channel_id'].astype(int)
+    admin_info['admin_id'] = admin_info['admin_id'].astype(int)
+
+    count_date['book_id'] = count_date['book_id'].astype(int)
+    book_info['book_id'] = book_info['book_id'].astype(int)
+
+    all_date = pd.merge(count_date, admin_info, left_on='channel_id', right_on='admin_id', how='left')
+    all_date = pd.merge(all_date, book_info, on='book_id', how='left')
+
+    all_date.fillna(0, inplace=True)
+
+    rd.delete_last_date(conn, write_db, write_tab, date_type_name, date)
+    rd.subsection_insert_to_data(all_date, conn, write_db, write_tab)
+
+    conn.close()
 
 
 def retained_three_index_by_user_count(host, write_db, write_tab, date_type_name, date):
