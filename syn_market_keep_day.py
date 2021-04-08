@@ -124,5 +124,4 @@ if __name__ == '__main__':
     syn_market_book_admin_read_situation()  # 跟读率 -> .3h
     sound_market_book_count('2020-04-01')  # 有声book数据 -> .1h
     sound_market_chapter_count('2020-04-01')  # 有声chapter数据 -> .1h
-
-    # syn_market_keep_day_admin_new('2021-03-01')  # 带渠道和书的留存数据 -> 3h
+    syn_market_keep_day_admin_new()  # 带渠道和书的留存数据 -> 3h

@@ -170,6 +170,13 @@ def date_sub_days(sub_days, _s_day=None):
     return datetime_format_code(e_day)
 
 
+def date_sub_days_stamp(sub_days, _s_day=None):
+    if isinstance(_s_day, str):
+        _s_day = int(_s_day)
+    _s_day = _s_day - (sub_days * 24 * 60 * 60)
+    return _s_day
+
+
 def get_last_date_in_unit(_date, unit='month'):
     dt_date = dt.datetime.strptime(_date, '%Y-%m-%d')
     _y, _m = dt_date.year, dt_date.month

@@ -185,7 +185,8 @@ class RunCount:
             if follow_func:
                 follow_func(
                     host=self.host, write_db=self.write_db, write_tab=self.write_tab,
-                    date_type_name=self.date_col, date=_day
+                    date_type_name=self.date_col, date=_day,
+                    **kwargs
                 )
 
     def direct_run(self, func, *args):
@@ -577,10 +578,10 @@ def retained_logon_compress_thirty_day_count(host, write_db, write_tab, date_typ
 
 
 def chart_book_admin_read(read_config, db_name, tab_name, date_col, num, s_date=None):
-    print('======> is start to run {db}.{tab} - {num} ===> start time:'.format(
-        db=db_name, tab=tab_name, num=num), dt.datetime.now())
     if isinstance(s_date, list):
         s_date = s_date[0]
+    print('======> is start to run {db}.{tab} - {num} - {date} ===> start time:'.format(
+        db=db_name, tab=tab_name, date=s_date, num=num), dt.datetime.now())
     conn = rd.connect_database_host(read_config['host'], read_config['user'], read_config['pw'])
     read_data = pd.read_sql(
         sql_code.sql_book_admin_read.format(date=s_date, num=num), conn
@@ -592,6 +593,8 @@ def chart_book_admin_read(read_config, db_name, tab_name, date_col, num, s_date=
 
 
 def chart_book_admin_read_count(host, write_db, write_tab, date_type_name, date):
+    print('======> is start to run {db}.{tab} - count - {date} ===> start time:'.format(
+        db=write_db, tab=write_tab, date=date), dt.datetime.now())
     conn = rd.connect_database_host(host['host'], host['user'], host['pw'])
     read_date = pd.read_sql(
         sql_code.sql_book_admin_read_count.format(db=write_db, tab=write_tab, date=date), conn

@@ -7,6 +7,7 @@ def syn_shard_user_day_work(s_date=None):
     shard_user_day_work = rd.DataBaseWork()
     if s_date:
         shard_user_day_work.date = s_date
+    shard_user_day_work.date_sub = 7
     shard_user_day_work.loop_all_database()
 
 
@@ -41,7 +42,7 @@ def syn_happy_seven_sound_shard_work(s_date=None):
 if __name__ == '__main__':
     syn_shard_user_day_work()  # 基础数据同步
     syn_date_block()  # 动作日志分时间块记录
-    syn_read_user_recently_read()  # 跟读数据同步
+    syn_read_user_recently_read('2021-04-01')  # 跟读数据同步
     syn_happy_seven_sound_shard_work('2020-01-1')  # 有声的数据库同步
     es_tool.run_read_ex_loop(
         sub_days=10, size=10000, write_conn_fig='datamarket', write_db='sound', tab='es_log'

@@ -67,7 +67,8 @@ class DataBaseWork:
         self.size = {}
         self.host = ''
         self.date = None
-        self.process_num = 16
+        self.process_num = 8
+        self.date_sub = 0
 
     def loop_all_database(self):
         for _db in self.data_list:
@@ -83,7 +84,7 @@ class DataBaseWork:
             self.no_size_conn(_db)
 
     def no_size_conn(self, db_name, size=None):
-        switch_job(db_name, self.host, size, self.process_num, self.date)
+        switch_job(db_name, self.host, size, self.process_num, self.date, self.date_sub)
 
 
 def chick_col(conn, db_name, table, _col):
@@ -159,7 +160,7 @@ def _data_executemany(conn, _sql, _val):
     conn.commit()
 
 
-def switch_job(db_name, conn_fig, size, process_num, date=None):
+def switch_job(db_name, conn_fig, size, process_num, date=None, date_sub=None):
     """
     this place is to add work, that we want to run.
     Examples:
@@ -176,8 +177,8 @@ def switch_job(db_name, conn_fig, size, process_num, date=None):
     if db_name == 'happy_seven':
         data_job.read_dict_table(conn_fig, 'datamarket', date)
     if db_name == 'shard':
-        data_job.read_user_and_order(conn_fig, size, date, process_num)
-        data_job.read_data_user_day(conn_fig, size, date, process_num)
+        data_job.read_user_and_order(conn_fig, size, date, process_num, date_sub)
+        data_job.read_data_user_day(conn_fig, size, date, process_num, date_sub)
 
 
 def read_from_sql(sql, conn):
@@ -202,7 +203,7 @@ def read_last_date(conn, db_name, tab_name, date_type_name, is_list=None):
     try:
         last_date = pd.read_sql(sql, conn)['md'][0]
     except:
-        last_date = '2020-10-01'
+        last_date = 0
     if is_list:
         _today = dt.datetime.now()
         return emdate.date_list(last_date, _today)

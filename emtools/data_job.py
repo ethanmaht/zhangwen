@@ -11,19 +11,22 @@ import time
 
 # 同步动作数据 << 注册，订阅，充值，签到
 @loger.logging_read
-def read_data_user_day(conn_fig, size, date, process_num):
+def read_data_user_day(conn_fig, size, date, process_num, date_sub=None):
     _s, _e = size['start'], size['end'] + 1
     tars = [_ for _ in range(_s, _e)]
     if date:
         cm.thread_work(
-            one_user_day, conn_fig, 'datamarket', date, tars=tars, process_num=process_num, interval=0.03, step=1
+            one_user_day, conn_fig, 'datamarket', date, process_num,
+            tars=tars, process_num=process_num, interval=0.03, step=1
         )
     else:
         cm.thread_work(
-            one_user_day, conn_fig, 'datamarket', None, tars=tars, process_num=process_num, interval=0.03, step=1)
+            one_user_day, conn_fig, 'datamarket', None, process_num,
+            tars=tars, process_num=process_num, interval=0.03, step=1
+        )
 
 
-def one_user_day(read_conn_fig, write_conn_fig, date, _):
+def one_user_day(read_conn_fig, write_conn_fig, date, date_sub, _):
     print('======> is work to read -*- one_user_day -*- ===> num:{num} start '.format(num=_), dt.datetime.now())
     read_conn = rd.connect_database_host(read_conn_fig)
     write_conn = rd.connect_database_vpn(write_conn_fig)
@@ -33,7 +36,9 @@ def one_user_day(read_conn_fig, write_conn_fig, date, _):
         try:
             date = rd.read_last_date(write_conn, write_db_name, write_table_name, 'date_day')
         except:
-            date = 1
+            date = '2019-01-01'
+    if date_sub:
+        date = emdate.date_sub_days(date_sub, date)
     user_consume_day = pd.read_sql(
         sql_code.sql_user_consume_day.format(_num=_, date=date), read_conn,
     )
@@ -58,25 +63,25 @@ def one_user_day(read_conn_fig, write_conn_fig, date, _):
 
 
 # 同步用户和订单数据： 用户 << 首次订单，渠道来源，内容来源
-def read_user_and_order(conn_fig, size, date, process_num):
+def read_user_and_order(conn_fig, size, date, process_num, date_sub=None):
     _s, _e = size['start'], size['end'] + 1
     write_conn = rd.connect_database_vpn('datamarket')
     referral_data = pd.read_sql(sql_code.sql_referral_dict, write_conn)
     tars = [_ for _ in range(_s, _e)]
     if date:
         cm.thread_work(
-            user_and_order, conn_fig, 'datamarket', date, referral_data,
+            user_and_order, conn_fig, 'datamarket', date, referral_data, date_sub,
             tars=tars, process_num=process_num, interval=0.03, step=1
         )
     else:
         cm.thread_work(
-            user_and_order, conn_fig, 'datamarket', None, referral_data,
+            user_and_order, conn_fig, 'datamarket', None, referral_data, date_sub,
             tars=tars, process_num=process_num, interval=0.03, step=1
         )
     write_conn.close()
 
 
-def user_and_order(read_conn_fig, write_conn_fig, date, referral_data, _):
+def user_and_order(read_conn_fig, write_conn_fig, date, referral_data, date_sub, _):
     print('======> is work to read -*- user_and_order -*- ===> num:{num} start '.format(num=_), dt.datetime.now())
     read_conn = rd.connect_database_host(read_conn_fig)
     write_conn = rd.connect_database_vpn(write_conn_fig)
@@ -89,6 +94,9 @@ def user_and_order(read_conn_fig, write_conn_fig, date, referral_data, _):
         order_date = rd.read_last_date(write_conn, write_order_db_name, write_order_tab_name, 'updatetime')
     else:
         user_date, order_date = date, date
+    if date_sub:
+        user_date = emdate.date_sub_days_stamp(date_sub, user_date)
+        order_date = emdate.date_sub_days_stamp(date_sub, order_date)
     first_order = pd.read_sql(
         sql_code.sql_first_order_time.format(_num=_), read_conn,
     )
@@ -227,7 +235,7 @@ def _user_recently_read_data(read_conn, write_conn, s_date, num):
         sql_code.sql_book_price_local, write_conn
     )
     recently_read_data = pd.read_sql(
-        sql_code.sql_recently_cread_data.format(s_date=s_date, num=num), read_conn
+        sql_code.sql_recently_read_data.format(s_date=s_date, num=num), read_conn
     )
 
     recently_read_data['book_id'] = recently_read_data['book_id'].astype(int)

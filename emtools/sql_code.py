@@ -235,7 +235,7 @@ SELECT id book_id,price,free_chapter_num,
 from market_read.book_info
 """
 
-sql_recently_cread_data = """
+sql_recently_read_data = """
 SELECT id,user_id,book_id,
     if((LENGTH(chapter_id)=11 or LENGTH(chapter_id)=14), chapter_id div 10,chapter_id) % 10000 chapter_id,
     createtime,updatetime,user_type
@@ -430,12 +430,12 @@ from(
         if(chapter_id>=750,1,0) over_750,if(chapter_id>=1000,1,0) over_1000,if(chapter_id>=2000,1,0) over_2000,
         if(chapter_id=last_chapter_id,1,0) over_book
     from (
-        SELECT a.referral_book book_id,a.channel_id,b.is_finish,a.createtime,a.updatetime,book_create,logon_date,
+        SELECT a.book_id,a.channel_id,b.is_finish,a.createtime,a.updatetime,book_create,logon_date,
             CAST(if(a.channel_free_chapter_num<>0,a.channel_free_chapter_num,
             if(a.free_chapter_num<>0,a.free_chapter_num,15)) AS SIGNED) free_chapter,
             CAST(b.chapter_num AS SIGNED) last_chapter_id,CAST(chapter_id AS SIGNED) chapter_id
         from user_read.user_read_{num} a
-        left join market_read.book_info b on b.id = a.referral_book
+        left join market_read.book_info b on b.id = a.book_id
         where a.createtime >= UNIX_TIMESTAMP('{date}')
     ) base
 ) box
@@ -444,15 +444,15 @@ GROUP BY book_id,channel_id,last_chapter_id,is_finish,start_date
 
 sql_book_admin_read_count = """
 SELECT book_id,channel_id,last_chapter_id,is_finish,start_date,sum(start_book) start_book,
-    sum(over_free) over_free,sum(over_free) / count(*) over_free_p, 
-    sum(over_100) over_100,sum(over_100) / count(*) over_100_p, 
-    sum(over_200) over_200, sum(over_200) / count(*) over_200_p, 
-    sum(over_300) over_300, sum(over_300) / count(*) over_300_p, 
-    sum(over_500) over_500, sum(over_500) / count(*) over_500_p, 
-    sum(over_750) over_750, sum(over_750) / count(*) over_750_p,
-    sum(over_1000) over_1000,sum(over_1000) / count(*) over_1000_p, 
-    sum(over_2000) over_2000,sum(over_2000) / count(*) over_2000_p, 
-    sum(over_book) over_book,sum(over_book) / count(*) over_book_p
+    sum(over_free) over_free,sum(over_free) / sum(start_book) over_free_p, 
+    sum(over_100) over_100,sum(over_100) / sum(start_book) over_100_p, 
+    sum(over_200) over_200, sum(over_200) / sum(start_book) over_200_p, 
+    sum(over_300) over_300, sum(over_300) / sum(start_book) over_300_p, 
+    sum(over_500) over_500, sum(over_500) / sum(start_book) over_500_p, 
+    sum(over_750) over_750, sum(over_750) / sum(start_book) over_750_p,
+    sum(over_1000) over_1000,sum(over_1000) / sum(start_book) over_1000_p, 
+    sum(over_2000) over_2000,sum(over_2000) / sum(start_book) over_2000_p, 
+    sum(over_book) over_book,sum(over_book) / sum(start_book) over_book_p
 from {db}.{tab}
 GROUP BY book_id,channel_id,last_chapter_id,is_finish,start_date
 """
@@ -562,7 +562,7 @@ from (
     from sound.es_log l
     left join sound.podcasts p on l.book_id = p.id
     left join sound.podcast_episodes pe on p.origin_id = pe.book_id and l.chapter_id = pe.id
-    where l.book_id > 0 and l.chapter_id > 0 and time > '{s_date}'
+    where l.book_id > 0 and l.chapter_id > 0 and time > '{s_date}' and page = '/index/book/chapter'
     GROUP BY l.book_id,l.chapter_id,pe.chapter_id,l.admin_id,date_day
 ) base
 left join (
