@@ -54,6 +54,11 @@ def draw_date_from_es_to_df(one_day, ):
             chapter_id = body['map']['chapter_id']
         except:
             chapter_id = '0'
+        if chapter_id == '0':
+            try:
+                chapter_id = body['map']['sid']
+            except:
+                chapter_id = '0'
         df_data = {
             'admin_id': body['admin_id'],
             'page': body['page'],

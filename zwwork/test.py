@@ -2,12 +2,10 @@ import time
 from pandas import DataFrame as df
 from algorithm import retained
 from es_worker import ec_market
+from emtools import emdate
 
 
-a = df({'k': [0, 1], 'v': ['2', '3']})
+a = emdate.FunctionTimer()
 
-a['v'].astype(float)
-
-print(a)
-
-
+time.sleep(1)
+a.time_spot()

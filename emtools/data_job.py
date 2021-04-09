@@ -366,3 +366,41 @@ def _one_happy_seven_sound_shard_num(read_conn, write_conn, read_sql, write_db, 
     one_data.fillna(0, inplace=True)
     one_data['num'] = num
     rd.insert_to_data(one_data, write_conn, write_db, write_tab)
+
+
+def read_sign_order_read(write_conn_fig, write_db, write_tab, num, date=None, end_date=None):
+    print('======> is start to run {db}.{tab} - {num} ===> start time:'.format(
+        db=write_db, tab=write_tab, num=num), dt.datetime.now())
+    read_conn_fig = rd.read_db_host(
+        (os.path.split(os.path.realpath(__file__))[0] + '/config.yml')
+    )
+    read_host_conn_fig = cm.pick_conn_host_by_num(num, read_conn_fig['shart_host'])
+    read_conn = rd.connect_database_direct(read_host_conn_fig)
+    write_conn = rd.connect_database_vpn(write_conn_fig)
+    if not date:
+        date = '2021-03-18'
+    if not end_date:
+        end_date = emdate.datetime_format_code(dt.datetime.now())
+    block_data = _read_one_sign_order_read(read_conn, s_date=date, num=num, e_date=end_date)
+    rd.delete_table_data(write_conn, write_db, write_tab)
+    rd.insert_to_data(block_data, write_conn, write_db, write_tab)
+
+
+def _read_one_sign_order_read(read_conn, s_date, num, e_date):
+    sign_data = pd.read_sql(
+        sql_code.sql_user_sign_count.format(s_date=s_date, num=num, e_date=e_date), read_conn
+    )
+    order_data = pd.read_sql(
+        sql_code.sql_order_count.format(s_date=s_date, num=num, e_date=e_date), read_conn
+    )
+    user_info = pd.read_sql(
+        sql_code.sql_user_id_channel.format(s_date=s_date, num=num, e_date=e_date), read_conn
+    )
+    sign_data['user_id'] = sign_data['user_id'].astype(int)
+    order_data['user_id'] = order_data['user_id'].astype(int)
+    user_info['user_id'] = user_info['user_id'].astype(int)
+
+    re_date = pd.merge(sign_data, order_data, on='user_id', how='outer')
+    re_date = pd.merge(re_date, user_info, on='user_id', how='left')
+    re_date.fillna(0, inplace=True)
+    return re_date

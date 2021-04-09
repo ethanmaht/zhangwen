@@ -207,13 +207,17 @@ def df_pivot_table(_df, columns, index, values, agg_func='sum', fill_na=0):
     )
     df_val = df(date_pivot.values)
     df_col = []
+
     for _col in date_pivot.columns:
         df_col.append(list_name_splicing(list(_col)))
+
     df_val.columns = df_col
     index_val = df([_ for _ in date_pivot.index])
     index_val.columns = index
+
     pivot_table = pd.concat([index_val, df_val], axis=1)
     pivot_table = pivot_table.fillna(fill_na)
+
     return pivot_table
 
 

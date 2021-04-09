@@ -240,3 +240,17 @@ def ensure_date_type_is_stamp(_date):
     if isinstance(_date, int):
         return _date
     return date_to_stamp(_date)
+
+
+class FunctionTimer:
+    def __init__(self):
+        self.time_start = dt.datetime.now()
+
+    def time_start(self):
+        self.time_start = dt.datetime.now()
+        print('start time is:', self.time_start)
+
+    def time_spot(self):
+        _spot = dt.datetime.now()
+        user_time = _spot - self.time_start
+        print('has use time:', user_time.seconds, 'seconds')

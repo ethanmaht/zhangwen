@@ -29,7 +29,7 @@ def syn_market_keep_day_admin_new(s_date=None):
     work.step_run_kwargs(
         retained.user_keep_admin_run,
         follow_func=retained.user_keep_admin_count,
-        # date_sub=31,
+        date_sub=31,
         process_num=12
     )
 
@@ -80,13 +80,13 @@ def syn_market_logon_compress_thirty_day(s_date=None):
 
 def syn_market_book_admin_read_situation(s_date=None):
     work = retained.RunCount(
-        write_db='market_read', write_tab='book_admin_read_situation', date_col='start_date', extend='delete'
+        write_db='market_read', write_tab='book_admin_read_situation_30', date_col='start_date', extend='delete'
     )
     if s_date:
         work.s_date = s_date
     work.step_run_kwargs(
-        func=retained.chart_book_admin_read,
-        follow_func=retained.chart_book_admin_read_count,
+        func=retained.chart_book_admin_read_30,
+        follow_func=retained.chart_book_admin_read_count_30,
         date_sub=90,
         process_num=16
     )

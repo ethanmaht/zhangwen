@@ -93,10 +93,10 @@ where date_day >= '{s_date}'
 """
 
 sql_keep_book_admin_date_num = """
-SELECT date(FROM_UNIXTIME(createtime)) date_day,'logon' type,user_id,book_id,channel_id,1 nums
+SELECT date(FROM_UNIXTIME(createtime)) date_day,'logon' type,user_id,referral_book book_id,channel_id,1 nums
 from log_block.action_log{block}_{num}
 where type=0 and createtime >= UNIX_TIMESTAMP('{s_date}')
-GROUP BY date_day,user_id,book_id,channel_id
+GROUP BY date_day,user_id,referral_book,channel_id
 union
 SELECT date(FROM_UNIXTIME(createtime)) date_day,'order' type,user_id,book_id,channel_id,1 nums
 from log_block.action_log{block}_{num}
@@ -180,7 +180,21 @@ FROM cps.admin a
 sql_dict_total_book = """
 SELECT id,book_category_id,name,real_read_num,author,state,sex,price,is_finish,free_chapter_num,first_chapter_id,
     last_chapter_id,read_num,is_cp,cp_name,book_recharge,createtime,updatetime,chapter_num
-FROM cps.book;
+FROM cps.book
+where id < 10000000
+union
+SELECT b.id,book_category_id,name,real_read_num,author,state,sex,price,is_finish,free_chapter_num,first_chapter_id,
+    last_chapter_id,read_num,is_cp,cp_name,book_recharge,createtime,updatetime,b_r.chapter_num
+from cps.book b
+left join (
+    SELECT id + 10000000 id,
+    if(
+    (LENGTH(last_chapter_id)=11 or LENGTH(last_chapter_id)=14), 
+    last_chapter_id div 10,
+    last_chapter_id) % 10000 chapter_num
+    from cps.book where id < 10000000
+) b_r on b.id = b_r.id
+where b.id > 10000000
 """
 
 sql_book_channel_price = """
@@ -272,6 +286,24 @@ from cps_shard_{num}.sign
 where createtime >= UNIX_TIMESTAMP('{s_date}') and createtime < UNIX_TIMESTAMP('{e_date}')
 """
 
+sql_user_sign_count = """
+SELECT uid user_id,sum(kandian) sign_kd,sum(box) sign_box,max(day) continuity
+from cps_shard_{num}.sign
+where createtime >= UNIX_TIMESTAMP('{s_date}') and createtime < UNIX_TIMESTAMP('{e_date}')
+GROUP BY uid
+"""
+
+sql_order_count = """
+SELECT user_id,sum(if(state=0,1,0)) fail_order,sum(state) pay_order,sum(if(state=0,money,0)) order_money
+from cps_user_{num}.orders
+where deduct = '0' and createtime >= UNIX_TIMESTAMP('{s_date}') and createtime < UNIX_TIMESTAMP('{e_date}')
+GROUP BY user_id
+"""
+
+sql_user_id_channel = """
+SELECT id user_id,channel_id
+from cps_user_{num}.user
+"""
 
 """
 ========================= -*- analysis_sql -*- =========================
@@ -442,6 +474,36 @@ from(
 GROUP BY book_id,channel_id,last_chapter_id,is_finish,start_date
 """
 
+sql_book_admin_read_step_30 = """
+SELECT book_id,channel_id,last_chapter_id,is_finish,start_date,count(*) start_book,
+sum(over_free) over_free, sum(over_30) over_30,sum(over_60) over_60, sum(over_90) over_90,
+sum(over_120) over_120,sum(over_150) over_150,sum(over_180) over_180,sum(over_210) over_210,
+sum(over_240) over_240,sum(over_270) over_270,sum(over_300) over_300,sum(over_400) over_400,
+sum(over_500) over_500,sum(over_600) over_600,sum(over_700) over_700,sum(over_800) over_800,
+sum(over_1000) over_1000,sum(over_book) over_book
+from(
+    SELECT book_id,channel_id,last_chapter_id,is_finish,logon_date,
+        date(FROM_UNIXTIME(book_create)) book_create,date(FROM_UNIXTIME(createtime)) start_date,
+        if(chapter_id>=free_chapter,1,0) over_free,if(chapter_id>=30,1,0) over_30,
+        if(chapter_id>=60,1,0) over_60,if(chapter_id>=90,1,0) over_90,if(chapter_id>=120,1,0) over_120,
+        if(chapter_id>=150,1,0) over_150,if(chapter_id>=180,1,0) over_180,if(chapter_id>=210,1,0) over_210,
+        if(chapter_id>=240,1,0) over_240,if(chapter_id>=270,1,0) over_270,if(chapter_id>=300,1,0) over_300,
+        if(chapter_id>=400,1,0) over_400,if(chapter_id>=500,1,0) over_500,if(chapter_id>=600,1,0) over_600,
+        if(chapter_id>=700,1,0) over_700,if(chapter_id>=800,1,0) over_800,if(chapter_id>=1000,1,0) over_1000,
+        if(chapter_id=last_chapter_id,1,0) over_book
+    from (
+        SELECT a.book_id,a.channel_id,b.is_finish,a.createtime,a.updatetime,book_create,logon_date,
+            CAST(if(a.channel_free_chapter_num<>0,a.channel_free_chapter_num,
+            if(a.free_chapter_num<>0,a.free_chapter_num,15)) AS SIGNED) free_chapter,
+            CAST(b.chapter_num AS SIGNED) last_chapter_id,CAST(chapter_id AS SIGNED) chapter_id
+        from user_read.user_read_{num} a
+        left join market_read.book_info b on b.id = a.book_id
+        where a.createtime >= UNIX_TIMESTAMP('{date}')
+    ) base
+) box
+GROUP BY book_id,channel_id,last_chapter_id,is_finish,start_date
+"""
+
 sql_book_admin_read_count = """
 SELECT book_id,channel_id,last_chapter_id,is_finish,start_date,sum(start_book) start_book,
     sum(over_free) over_free,sum(over_free) / sum(start_book) over_free_p, 
@@ -453,6 +515,18 @@ SELECT book_id,channel_id,last_chapter_id,is_finish,start_date,sum(start_book) s
     sum(over_1000) over_1000,sum(over_1000) / sum(start_book) over_1000_p, 
     sum(over_2000) over_2000,sum(over_2000) / sum(start_book) over_2000_p, 
     sum(over_book) over_book,sum(over_book) / sum(start_book) over_book_p
+from {db}.{tab}
+GROUP BY book_id,channel_id,last_chapter_id,is_finish,start_date
+"""
+
+sql_book_admin_read_count_30 = """
+SELECT book_id,channel_id,last_chapter_id,is_finish,start_date,sum(start_book) start_book,
+    sum(over_free) over_free,sum(over_30) over_30,sum(over_60) over_60, 
+    sum(over_90) over_90, sum(over_120) over_120, sum(over_150) over_150, 
+    sum(over_180) over_180, sum(over_210) over_210, sum(over_240) over_240, 
+    sum(over_270) over_270, sum(over_300) over_300, sum(over_400) over_400, 
+    sum(over_500) over_500, sum(over_600) over_600, sum(over_700) over_700, 
+    sum(over_800) over_800,sum(over_1000) over_1000,sum(over_book) over_book
 from {db}.{tab}
 GROUP BY book_id,channel_id,last_chapter_id,is_finish,start_date
 """
@@ -522,7 +596,7 @@ where createtime >= UNIX_TIMESTAMP('{s_date}')
 sount_order_log = """
 SELECT user_id,count(*) order_times,sum(money) money,1 order_users
 from sound.orders
-where state = 1 and benefit = 0 and createtime >= UNIX_TIMESTAMP('{s_date}')
+where state = 1 and deduct = 0 and createtime >= UNIX_TIMESTAMP('{s_date}')
 GROUP BY user_id
 """
 
