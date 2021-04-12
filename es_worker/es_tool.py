@@ -54,11 +54,10 @@ def draw_date_from_es_to_df(one_day, ):
             chapter_id = body['map']['chapter_id']
         except:
             chapter_id = '0'
-        if chapter_id == '0':
-            try:
-                chapter_id = body['map']['sid']
-            except:
-                chapter_id = '0'
+        try:
+            sid = body['map']['sid']
+        except:
+            sid = '0'
         df_data = {
             'admin_id': body['admin_id'],
             'page': body['page'],
@@ -69,6 +68,7 @@ def draw_date_from_es_to_df(one_day, ):
             'user_from': user_from,
             'book_id': book_id,
             'chapter_id': chapter_id,
+            'sid': sid,
         }
         dict_pool.append(df_data)
     return df(dict_pool)
@@ -81,7 +81,7 @@ def run_read_ex_loop(sub_days, size, write_conn_fig, write_db, tab, index="logst
     all_data.append(re_data)
     while _size >= size:
         start_page += size
-        re_data = connect_es(sub_days, size=size, s_num=start_page)
+        re_data = connect_es(sub_days, index=index, size=size, s_num=start_page)
         _size = re_data.index.size
         all_data.append(re_data)
     all_data = pd.concat(all_data)

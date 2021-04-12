@@ -294,7 +294,7 @@ GROUP BY uid
 """
 
 sql_order_count = """
-SELECT user_id,sum(if(state=0,1,0)) fail_order,sum(state) pay_order,sum(if(state=0,money,0)) order_money
+SELECT user_id,sum(if(state='0',1,0)) fail_order,sum(if(state='1',1,0)) pay_order,sum(if(state='1',money,0)) order_money
 from cps_user_{num}.orders
 where deduct = '0' and createtime >= UNIX_TIMESTAMP('{s_date}') and createtime < UNIX_TIMESTAMP('{e_date}')
 GROUP BY user_id
@@ -631,12 +631,22 @@ SELECT base.*,o.order_pv,o.order_uv,pp.pay_page_uv,c.channel_free_chapter_num,
     if(c.channel_free_chapter_num*1>=base.chapter_num*1,'免费','收费') 受否免费,
     a.business_name,a.nickname,b.name book_name
 from (
-    SELECT date(time) date_day,l.book_id,l.chapter_id,pe.chapter_id chapter_num,
-        l.admin_id,count(*) pv,count(DISTINCT uid) uv
+    SELECT date(l.time) date_day,l.book_id,l.chapter_id,pe.chapter_id chapter_num,
+        l.admin_id,count(*) pv,count(DISTINCT l.uid) uv
+    from (
+    SELECT l.time,if(s.user_sid = 1,l.sid,l.chapter_id) chapter_id,l.book_id,l.admin_id,l.uid
     from sound.es_log l
+    left join (
+        SELECT book_id,uid,min(time) time,1 user_sid
+        from sound.es_log
+        where sid > 0
+        GROUP BY book_id,uid
+    ) s on s.book_id = l.book_id and s.uid = l.uid and s.time = l.time
+    where page = '/index/book/chapter'
+    ) l
     left join sound.podcasts p on l.book_id = p.id
     left join sound.podcast_episodes pe on p.origin_id = pe.book_id and l.chapter_id = pe.id
-    where l.book_id > 0 and l.chapter_id > 0 and time > '{s_date}' and page = '/index/book/chapter'
+    where l.book_id > 0 and l.chapter_id > 0 and l.time > '{s_date}'
     GROUP BY l.book_id,l.chapter_id,pe.chapter_id,l.admin_id,date_day
 ) base
 left join (
@@ -659,6 +669,21 @@ left join (
 ) c on c.book_id = base.book_id and base.admin_id = c.admin_id
 left join sound.admin a on a.id = base.admin_id
 left join sound.book b on b.id = base.book_id
+"""
+
+sql_user_order_portrait = """
+SELECT isp,province,city,sex,y_m,monet_box,order_times,type,sum(money) order_money,
+    sum(order_times) order_count,count(DISTINCT user_id) ordre_users
+from (
+SELECT o.money monet_box,DATE_FORMAT(FROM_UNIXTIME(u.createtime),'%Y-%m') y_m,user_id,
+    count(*) order_times,sum(money) money,u.sex,u.province,u.city,u.isp,type
+from cps_user_{num}.orders o
+left join cps_user_{num}.`user` u on u.id = o.user_id
+where o.deduct = '0' and o.state = '1' 
+    and o.createtime >= UNIX_TIMESTAMP('{s_date}') and o.createtime < UNIX_TIMESTAMP('{e_date}')
+GROUP BY user_id,money,type
+) base
+GROUP BY isp,province,city,sex,y_m,monet_box,order_times
 """
 
 

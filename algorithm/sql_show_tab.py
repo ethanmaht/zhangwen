@@ -1,7 +1,7 @@
 
 sql_logon_admin_book_val = """
 SELECT logon_day 激活日期,order_day 充值日期,base.admin_id,admin.nickname 公众号,
-    admin.business_name 商务,base.book_id,book.name 书名,date_sub,
+    admin.business_name 商务,base.book_id,concat(book.name, ' ', book.id) 书名,date_sub,
     if(date_sub=0,'首日', 
         if(date_sub=1,'次日', 
             if(date_sub=2,'三日', 
