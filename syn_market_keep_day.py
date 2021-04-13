@@ -2,6 +2,8 @@ from algorithm import retained
 from algorithm import show_tabel
 import time
 from es_worker import ec_market
+from emtools import read_database as rd
+from emtools import data_job
 
 
 def syn_market_keep_day(s_date=None):
@@ -73,7 +75,7 @@ def syn_market_logon_compress_thirty_day(s_date=None):
     work.step_run_kwargs(
         func=retained.retained_logon_compress_thirty_day,
         follow_func=retained.retained_logon_compress_thirty_day_count,
-        date_sub=31,
+        date_sub=90,
         process_num=12
     )
 
@@ -86,6 +88,21 @@ def syn_market_book_admin_read_situation(s_date=None):
         work.s_date = s_date
     work.step_run_kwargs(
         func=retained.chart_book_admin_read_30,
+        follow_func=retained.chart_book_admin_read_count_30,
+        date_sub=90,
+        process_num=16
+    )
+
+
+def syn_new_user_market_book_admin_read_situation(s_date=None):
+    work = retained.RunCount(
+        write_db='market_read', write_tab='new_user_book_admin_read_situation_30',
+        date_col='start_date', extend='delete'
+    )
+    if s_date:
+        work.s_date = s_date
+    work.step_run_kwargs(
+        func=retained.chart_book_admin_read_new_user_30,
         follow_func=retained.chart_book_admin_read_count_30,
         date_sub=90,
         process_num=16
@@ -123,13 +140,16 @@ def syn_read_sign_order_count(s_date=None):
 
 if __name__ == '__main__':
     print('Start work:')
+    """ ******* ↓ 自动并部署 ↓ ******* """
     syn_admin_book_order()  # 书籍分销
     table_show_logon_admin_book_order('2020-06-01')  # 书籍分销 展示 -> .1h
-    syn_market_logon_compress_thirty_day()  # 注册后30日的订阅
+    syn_market_logon_compress_thirty_day(s_date='2021-01-01')  # 注册后30日的订阅
     syn_market_book_admin_read_situation()  # 跟读率 -> .3h
+    syn_new_user_market_book_admin_read_situation()  # 新用户-图书跟读率 -> .3h
     sound_market_book_count('2020-04-01')  # 有声book数据 -> .1h
     sound_market_chapter_count('2020-04-01')  # 有声chapter数据 -> .1h
     syn_market_keep_day_admin_new()  # 带渠道和书的留存数据 -> 3h
 
+    """ ******* ↓ discard ↓ ******* """
     # syn_market_keep_day_by_order_consume()  # 新留存 订阅和充值 -- 废弃 210412
     # syn_market_keep_day()  # 老留存 -- 废弃 210412

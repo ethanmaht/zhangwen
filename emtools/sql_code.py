@@ -476,11 +476,11 @@ GROUP BY book_id,channel_id,last_chapter_id,is_finish,start_date
 
 sql_book_admin_read_step_30 = """
 SELECT book_id,channel_id,last_chapter_id,is_finish,start_date,count(*) start_book,
-sum(over_free) over_free, sum(over_30) over_30,sum(over_60) over_60, sum(over_90) over_90,
-sum(over_120) over_120,sum(over_150) over_150,sum(over_180) over_180,sum(over_210) over_210,
-sum(over_240) over_240,sum(over_270) over_270,sum(over_300) over_300,sum(over_400) over_400,
-sum(over_500) over_500,sum(over_600) over_600,sum(over_700) over_700,sum(over_800) over_800,
-sum(over_1000) over_1000,sum(over_book) over_book
+    sum(over_free) over_free, sum(over_30) over_30,sum(over_60) over_60, sum(over_90) over_90,
+    sum(over_120) over_120,sum(over_150) over_150,sum(over_180) over_180,sum(over_210) over_210,
+    sum(over_240) over_240,sum(over_270) over_270,sum(over_300) over_300,sum(over_400) over_400,
+    sum(over_500) over_500,sum(over_600) over_600,sum(over_700) over_700,sum(over_800) over_800,
+    sum(over_1000) over_1000,sum(over_book) over_book
 from(
     SELECT book_id,channel_id,last_chapter_id,is_finish,logon_date,
         date(FROM_UNIXTIME(book_create)) book_create,date(FROM_UNIXTIME(createtime)) start_date,
@@ -490,7 +490,7 @@ from(
         if(chapter_id>=240,1,0) over_240,if(chapter_id>=270,1,0) over_270,if(chapter_id>=300,1,0) over_300,
         if(chapter_id>=400,1,0) over_400,if(chapter_id>=500,1,0) over_500,if(chapter_id>=600,1,0) over_600,
         if(chapter_id>=700,1,0) over_700,if(chapter_id>=800,1,0) over_800,if(chapter_id>=1000,1,0) over_1000,
-        if(chapter_id=last_chapter_id,1,0) over_book
+        if(chapter_id>=last_chapter_id,1,0) over_book
     from (
         SELECT a.book_id,a.channel_id,b.is_finish,a.createtime,a.updatetime,book_create,logon_date,
             CAST(if(a.channel_free_chapter_num<>0,a.channel_free_chapter_num,
@@ -499,6 +499,36 @@ from(
         from user_read.user_read_{num} a
         left join market_read.book_info b on b.id = a.book_id
         where a.createtime >= UNIX_TIMESTAMP('{date}')
+    ) base
+) box
+GROUP BY book_id,channel_id,last_chapter_id,is_finish,start_date
+"""
+
+sql_book_admin_read_step_new_user_30 = """
+SELECT book_id,channel_id,last_chapter_id,is_finish,start_date,count(*) start_book,
+    sum(over_free) over_free, sum(over_30) over_30,sum(over_60) over_60, sum(over_90) over_90,
+    sum(over_120) over_120,sum(over_150) over_150,sum(over_180) over_180,sum(over_210) over_210,
+    sum(over_240) over_240,sum(over_270) over_270,sum(over_300) over_300,sum(over_400) over_400,
+    sum(over_500) over_500,sum(over_600) over_600,sum(over_700) over_700,sum(over_800) over_800,
+    sum(over_1000) over_1000,sum(over_book) over_book
+from(
+    SELECT book_id,channel_id,last_chapter_id,is_finish,logon_date,
+        date(FROM_UNIXTIME(book_create)) book_create,date(FROM_UNIXTIME(createtime)) start_date,
+        if(chapter_id>=free_chapter,1,0) over_free,if(chapter_id>=30,1,0) over_30,
+        if(chapter_id>=60,1,0) over_60,if(chapter_id>=90,1,0) over_90,if(chapter_id>=120,1,0) over_120,
+        if(chapter_id>=150,1,0) over_150,if(chapter_id>=180,1,0) over_180,if(chapter_id>=210,1,0) over_210,
+        if(chapter_id>=240,1,0) over_240,if(chapter_id>=270,1,0) over_270,if(chapter_id>=300,1,0) over_300,
+        if(chapter_id>=400,1,0) over_400,if(chapter_id>=500,1,0) over_500,if(chapter_id>=600,1,0) over_600,
+        if(chapter_id>=700,1,0) over_700,if(chapter_id>=800,1,0) over_800,if(chapter_id>=1000,1,0) over_1000,
+        if(chapter_id>=last_chapter_id,1,0) over_book
+    from (
+        SELECT a.book_id,a.channel_id,b.is_finish,a.createtime,a.updatetime,book_create,logon_date,
+            CAST(if(a.channel_free_chapter_num<>0,a.channel_free_chapter_num,
+            if(a.free_chapter_num<>0,a.free_chapter_num,15)) AS SIGNED) free_chapter,
+            CAST(b.chapter_num AS SIGNED) last_chapter_id,CAST(chapter_id AS SIGNED) chapter_id
+        from user_read.user_read_{num} a
+        left join market_read.book_info b on b.id = a.book_id 
+        where a.logon_date >= '{date}' and a.book_id = a.referral_book
     ) base
 ) box
 GROUP BY book_id,channel_id,last_chapter_id,is_finish,start_date
@@ -675,7 +705,7 @@ sql_user_order_portrait = """
 SELECT isp,province,city,sex,y_m,monet_box,order_times,type,sum(money) order_money,
     sum(order_times) order_count,count(DISTINCT user_id) ordre_users
 from (
-SELECT o.money monet_box,DATE_FORMAT(FROM_UNIXTIME(u.createtime),'%Y-%m') y_m,user_id,
+SELECT o.money monet_box,DATE_FORMAT(FROM_UNIXTIME(u.createtime),'%Y-%m-01') y_m,user_id,
     count(*) order_times,sum(money) money,u.sex,u.province,u.city,u.isp,type
 from cps_user_{num}.orders o
 left join cps_user_{num}.`user` u on u.id = o.user_id

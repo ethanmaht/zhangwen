@@ -654,3 +654,18 @@ def chart_book_admin_read_count_30(host, write_db, write_tab, date_type_name, da
     rd.delete_last_date(conn, write_db, write_tab, date_type_name, date)
     rd.subsection_insert_to_data(read_date, conn, write_db, write_tab)
     conn.close()
+
+
+def chart_book_admin_read_new_user_30(read_config, db_name, tab_name, date_col, num, s_date=None):
+    if isinstance(s_date, list):
+        s_date = s_date[0]
+    print('======> is start to run {db}.{tab} - {num} - {date} ===> start time:'.format(
+        db=db_name, tab=tab_name, date=s_date, num=num), dt.datetime.now())
+    conn = rd.connect_database_host(read_config['host'], read_config['user'], read_config['pw'])
+    read_data = pd.read_sql(
+        sql_code.sql_book_admin_read_step_new_user_30.format(date=s_date, num=num), conn
+    )
+    read_data['tab_num'] = num
+    read_data = read_data.fillna(0)
+    rd.insert_to_data(read_data, conn, db_name, tab_name)
+    conn.close()
