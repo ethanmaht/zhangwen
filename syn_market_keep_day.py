@@ -138,6 +138,20 @@ def syn_read_sign_order_count(s_date=None):
         )
 
 
+def conversion_funnel_count(s_date=None):
+    work = retained.RunCount(
+        write_db='market_read', write_tab='conversion_funnel_count', date_col='logon_date', extend='delete'
+    )
+    if s_date:
+        work.s_date = s_date
+    work.step_run_kwargs(
+        func=retained.chart_book_admin_conversion_funnel,
+        follow_func=retained.conversion_funnel_count,
+        date_sub=90,
+        process_num=12
+    )
+
+
 if __name__ == '__main__':
     print('Start work:')
     """ ******* ↓ 自动并部署 ↓ ******* """
@@ -149,6 +163,8 @@ if __name__ == '__main__':
     sound_market_book_count('2020-04-01')  # 有声book数据 -> .1h
     sound_market_chapter_count('2020-04-01')  # 有声chapter数据 -> .1h
     syn_market_keep_day_admin_new()  # 带渠道和书的留存数据 -> 3h
+
+    conversion_funnel_count()
 
     """ ******* ↓ discard ↓ ******* """
     # syn_market_keep_day_by_order_consume()  # 新留存 订阅和充值 -- 废弃 210412

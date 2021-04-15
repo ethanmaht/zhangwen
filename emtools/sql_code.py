@@ -717,9 +717,57 @@ GROUP BY isp,province,city,sex,y_m,monet_box,order_times
 """
 
 
+""" ****** -*- conversion funnel -*- ******"""
+
+sql_first_order = """
+SELECT user_id,date(FROM_UNIXTIME(min(first_time))) first_time,1 first_order
+from orders_log.orders_log_{num}
+where state=1 and deduct=0 and referral_book = book_id and first_time = createtime 
+GROUP BY user_id
 """
-************** -*- give up sql -*- **************
+
+sql_first_recharge_order = """
+SELECT user_id,date(FROM_UNIXTIME(min(createtime))) recharge_time,1 recharge_order
+from orders_log.orders_log_{num}
+where state=1 and deduct=0 and referral_book = book_id and first_time != createtime 
+GROUP BY user_id
 """
+
+sql_logon_user = """
+SELECT user_id,date(FROM_UNIXTIME(createtime)) logon_date,admin_id,referral_book book_id,is_subscribe,1 logon_user
+from user_info.user_info_{num}
+where createtime >= UNIX_TIMESTAMP('{s_date}')
+"""
+
+sql_user_read = """
+SELECT user_id,book_id,
+    max(if(CONVERT(chapter_id,SIGNED)>=if(free_chapter_num=0,15,CONVERT(free_chapter_num,SIGNED)),1,0)) pass_free
+from user_read.user_read_{num}
+where logon_date >= '{s_date}' and referral_book = book_id
+group by user_id,book_id
+"""
+
+sql_consume = """
+SELECT user_id,1 consume
+from log_block.action_log{block}_{num}
+where type = 5 and book_id = referral_book and createtime >= UNIX_TIMESTAMP('{s_date}')
+GROUP BY user_id,book_id
+"""
+
+sql_conversion_funnel_count = """
+SELECT logon_date,book_id,admin_id channel_id,sum(logon_user) logon_user,sum(pass_free) pass_free,
+sum(if(first_sub>=0 and first_sub<3,first_order,0)) 'first_order_3day',
+sum(if(recharge_sub>=0 and recharge_sub<3,recharge_order,0)) 'recharge_order_3day',
+sum(if(recharge_sub>=0 and recharge_sub<7,recharge_order,0)) 'recharge_order_7day',
+sum(if(recharge_sub>=0 and recharge_sub<14,recharge_order,0)) 'recharge_order_14day',
+sum(if(recharge_sub>=0 and recharge_sub<30,recharge_order,0)) 'recharge_order_30day',
+sum(if(recharge_sub>=0 and recharge_sub<60,recharge_order,0)) 'recharge_order_60day',
+sum(if(recharge_sub>=0 and recharge_sub<90,recharge_order,0)) 'recharge_order_90day'
+from {db}.{tab}
+GROUP BY logon_date,book_id,admin_id
+"""
+
+""" ************** -*- give up sql -*- ************** """
 
 analysis_reason_for_save = """
 select count(*) nums,sum(bv) saves,sum(signv) reason_signs,sum(fdv) reason_fd,

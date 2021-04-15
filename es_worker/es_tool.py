@@ -29,8 +29,9 @@ def connect_es(sub_day, index, host='http://192.168.1.221', size=10000, s_num=0)
     }
     res = es.search(index=index, body=body)
     data = res['hits']['hits']
+    data_size = len(data)
     data = draw_date_from_es_to_df(data)
-    return data
+    return data, data_size
 
 
 def draw_date_from_es_to_df(one_day, ):
@@ -76,13 +77,11 @@ def draw_date_from_es_to_df(one_day, ):
 
 def run_read_ex_loop(sub_days, size, write_conn_fig, write_db, tab, index="logstash-qiyue-sound-access*"):
     start_page, all_data = 0, []
-    re_data = connect_es(sub_days, size=size, s_num=start_page, index=index)
-    _size = re_data.index.size
+    re_data, _size = connect_es(sub_days, size=size, s_num=start_page, index=index)
     all_data.append(re_data)
     while _size >= size:
         start_page += size
-        re_data = connect_es(sub_days, index=index, size=size, s_num=start_page)
-        _size = re_data.index.size
+        re_data, _size = connect_es(sub_days, index=index, size=size, s_num=start_page)
         all_data.append(re_data)
     all_data = pd.concat(all_data)
     write_conn = rd.connect_database_vpn(write_conn_fig)
