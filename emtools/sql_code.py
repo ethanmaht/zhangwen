@@ -703,17 +703,18 @@ left join sound.book b on b.id = base.book_id
 
 sql_user_order_portrait = """
 SELECT isp,province,city,sex,y_m,monet_box,order_times,type,sum(money) order_money,
-    sum(order_times) order_count,count(DISTINCT user_id) ordre_users
+    sum(order_times) order_count,count(DISTINCT user_id) ordre_users,o_y_m
 from (
 SELECT o.money monet_box,DATE_FORMAT(FROM_UNIXTIME(u.createtime),'%Y-%m-01') y_m,user_id,
-    count(*) order_times,sum(money) money,u.sex,u.province,u.city,u.isp,type
+    count(*) order_times,sum(money) money,u.sex,u.province,u.city,u.isp,type,
+    DATE_FORMAT(FROM_UNIXTIME(o.createtime),'%Y-%m-01') o_y_m
 from cps_user_{num}.orders o
 left join cps_user_{num}.`user` u on u.id = o.user_id
 where o.deduct = '0' and o.state = '1' 
     and o.createtime >= UNIX_TIMESTAMP('{s_date}') and o.createtime < UNIX_TIMESTAMP('{e_date}')
 GROUP BY user_id,money,type
 ) base
-GROUP BY isp,province,city,sex,y_m,monet_box,order_times
+GROUP BY isp,province,city,sex,y_m,monet_box,order_times,o_y_m
 """
 
 
@@ -755,14 +756,15 @@ GROUP BY user_id,book_id
 """
 
 sql_conversion_funnel_count = """
-SELECT logon_date,book_id,admin_id channel_id,sum(logon_user) logon_user,sum(pass_free) pass_free,
-sum(if(first_sub>=0 and first_sub<3,first_order,0)) 'first_order_3day',
-sum(if(recharge_sub>=0 and recharge_sub<3,recharge_order,0)) 'recharge_order_3day',
-sum(if(recharge_sub>=0 and recharge_sub<7,recharge_order,0)) 'recharge_order_7day',
-sum(if(recharge_sub>=0 and recharge_sub<14,recharge_order,0)) 'recharge_order_14day',
-sum(if(recharge_sub>=0 and recharge_sub<30,recharge_order,0)) 'recharge_order_30day',
-sum(if(recharge_sub>=0 and recharge_sub<60,recharge_order,0)) 'recharge_order_60day',
-sum(if(recharge_sub>=0 and recharge_sub<90,recharge_order,0)) 'recharge_order_90day'
+SELECT logon_date,book_id,admin_id channel_id,
+    sum(logon_user) logon_user,sum(pass_free) pass_free,sum(is_subscribe) is_subscribe,
+    sum(if(first_sub>=0 and first_sub<3,first_order,0)) 'first_order_3day',
+    sum(if(recharge_sub>=0 and recharge_sub<3,recharge_order,0)) 'recharge_order_3day',
+    sum(if(recharge_sub>=0 and recharge_sub<7,recharge_order,0)) 'recharge_order_7day',
+    sum(if(recharge_sub>=0 and recharge_sub<14,recharge_order,0)) 'recharge_order_14day',
+    sum(if(recharge_sub>=0 and recharge_sub<30,recharge_order,0)) 'recharge_order_30day',
+    sum(if(recharge_sub>=0 and recharge_sub<60,recharge_order,0)) 'recharge_order_60day',
+    sum(if(recharge_sub>=0 and recharge_sub<90,recharge_order,0)) 'recharge_order_90day'
 from {db}.{tab}
 GROUP BY logon_date,book_id,admin_id
 """

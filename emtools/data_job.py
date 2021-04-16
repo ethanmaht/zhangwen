@@ -425,6 +425,7 @@ def portrait_user_order_run(write_conn_fig, write_db, write_tab, num, date=None,
     if not end_date:
         end_date = emdate.datetime_format_code(dt.datetime.now())
     block_data = _read_one_portrait_user_order(read_conn, s_date=date, num=num, e_date=end_date)
+    block_data['tab_num'] = num
     rd.insert_to_data(block_data, write_conn, write_db, write_tab)
 
 

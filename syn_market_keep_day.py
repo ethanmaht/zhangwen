@@ -133,9 +133,9 @@ def sound_market_chapter_count(s_date):
 
 def syn_read_sign_order_count(s_date=None):
     rd.syn_date_block_run(
-            data_job.read_sign_order_read, s_date, process_num=12,
-            write_conn_fig='datamarket', write_db='market_read', write_tab='sign_order_count'
-        )
+        data_job.read_sign_order_read, s_date, process_num=12,
+        write_conn_fig='datamarket', write_db='market_read', write_tab='sign_order_count'
+    )
 
 
 def conversion_funnel_count(s_date=None):
@@ -155,6 +155,7 @@ def conversion_funnel_count(s_date=None):
 if __name__ == '__main__':
     print('Start work:')
     """ ******* ↓ 自动并部署 ↓ ******* """
+    syn_market_keep_day()  # 老留存 -- 不废弃
     syn_admin_book_order()  # 书籍分销
     table_show_logon_admin_book_order('2020-06-01')  # 书籍分销 展示 -> .1h
     syn_market_logon_compress_thirty_day(s_date='2021-01-01')  # 注册后30日的订阅
@@ -164,7 +165,7 @@ if __name__ == '__main__':
     sound_market_chapter_count('2020-04-01')  # 有声chapter数据 -> .1h
     syn_market_keep_day_admin_new()  # 带渠道和书的留存数据 -> 3h
 
-    conversion_funnel_count()
+    conversion_funnel_count()  # 转化漏斗 -> .2h
 
     """ ******* ↓ discard ↓ ******* """
     # syn_market_keep_day_by_order_consume()  # 新留存 订阅和充值 -- 废弃 210412

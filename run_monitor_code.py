@@ -52,10 +52,10 @@ def one_book_orders():
 
 def one_book_sql():
     work = syn_monitor_run.SynMonitor(
-        {'db': 'syn_monitor', 'tab': 'one_book_test_11', 'date_col': 'date_day'},
+        {'db': 'syn_monitor', 'tab': 'year_admin_order', 'date_col': 'date_day'},
         {'db': 'orders_log', 'tab': 'orders_log', 'date_col': 'createtime', 'date_type': 'stamp'}
     )
-    work.s_date = '2021-04-01'
+    # work.s_date = '2021-04-01'
     work.syn_step_run(monitor_works.comparison_by_one_sql, process_num=64)
 
 

@@ -94,13 +94,11 @@ def comparison_by_one_sql(market_host, read_host, write_tab, read_tab, date, num
         db=read_tab['db'], tab=read_tab['tab'], num=num), dt.datetime.now())
     conn = rd.connect_database_host(market_host['host'], market_host['user'], market_host['pw'])
     sql = """
-    SELECT a.user_id,a.book_id,a.channel_id,b.is_finish,a.createtime,a.updatetime,book_create,logon_date,
-            CAST(if(a.channel_free_chapter_num<>0,a.channel_free_chapter_num,
-            if(a.free_chapter_num<>0,a.free_chapter_num,15)) AS SIGNED) free_chapter,
-            CAST(b.chapter_num AS SIGNED) last_chapter_id,b.chapter_num,CAST(chapter_id AS SIGNED) chapter_id
-    from user_read.user_read_{num} a
-    left join market_read.book_info b on b.id = a.book_id
-    where a.createtime >= UNIX_TIMESTAMP('2021-04-01') and a.book_id = 10077522
+    SELECT DATE_FORMAT(FROM_UNIXTIME(createtime),'%Y') y,admin_id,count(DISTINCT user_id) order_users,
+    count(*) order_times,sum(money) order_money
+    from orders_log.orders_log_0
+    where state = 1 and deduct = 0
+    GROUP BY y,admin_id
     """
     # sql = """
     # SELECT user_id,referral_book,FROM_UNIXTIME(createtime) date_day
@@ -117,5 +115,3 @@ def comparison_by_one_sql(market_host, read_host, write_tab, read_tab, date, num
     )
     one_book_data = one_book_data.fillna(0)
     rd.insert_to_data(one_book_data, conn, write_tab['db'], write_tab['tab'])
-
-

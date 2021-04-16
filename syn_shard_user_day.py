@@ -51,7 +51,7 @@ def syn_portrait_user_order_run(s_date=None):
         write_conn_fig='datamarket', write_db='market_read', write_tab='portrait_user_order'
     )
     rd.syn_date_block_run(
-        data_job.portrait_user_order_run, s_date, process_num=12,
+        data_job.portrait_user_order_run, s_date, process_num=16,
         write_conn_fig='datamarket', write_db='market_read', write_tab='portrait_user_order'
     )
 
@@ -64,7 +64,7 @@ if __name__ == '__main__':
     syn_read_user_recently_read('2021-01-01')  # 跟读数据同步
     syn_happy_seven_sound_shard_work('2020-01-1')  # 有声的数据库同步
     es_tool.run_read_ex_loop(
-        sub_days=90, size=10000, write_conn_fig='datamarket', write_db='sound', tab='es_log'
+        sub_days=15, size=10000, write_conn_fig='datamarket', write_db='sound', tab='es_log'
     )  # 有声的es同步
     syn_portrait_user_order_run()  # 用户画像数据同步
 
