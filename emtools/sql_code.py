@@ -727,10 +727,24 @@ where state=1 and deduct=0 and referral_book = book_id and first_time = createti
 GROUP BY user_id
 """
 
+sql_first_order_not_same_book = """
+SELECT user_id,date(FROM_UNIXTIME(min(first_time))) first_time,1 first_order
+from orders_log.orders_log_{num}
+where state=1 and deduct=0 and first_time = createtime 
+GROUP BY user_id
+"""
+
 sql_first_recharge_order = """
 SELECT user_id,date(FROM_UNIXTIME(min(createtime))) recharge_time,1 recharge_order
 from orders_log.orders_log_{num}
 where state=1 and deduct=0 and referral_book = book_id and first_time != createtime 
+GROUP BY user_id
+"""
+
+sql_first_recharge_order_not_same_book = """
+SELECT user_id,date(FROM_UNIXTIME(min(createtime))) recharge_time,1 recharge_order
+from orders_log.orders_log_{num}
+where state=1 and deduct=0 and first_time != createtime 
 GROUP BY user_id
 """
 
@@ -748,6 +762,14 @@ where logon_date >= '{s_date}' and referral_book = book_id
 group by user_id,book_id
 """
 
+sql_user_read_not_same_book = """
+SELECT user_id,book_id,
+    max(if(CONVERT(chapter_id,SIGNED)>=if(free_chapter_num=0,15,CONVERT(free_chapter_num,SIGNED)),1,0)) pass_free
+from user_read.user_read_{num}
+where logon_date >= '{s_date}'
+group by user_id,book_id
+"""
+
 sql_consume = """
 SELECT user_id,1 consume
 from log_block.action_log{block}_{num}
@@ -755,10 +777,19 @@ where type = 5 and book_id = referral_book and createtime >= UNIX_TIMESTAMP('{s_
 GROUP BY user_id,book_id
 """
 
+sql_consume_not_same_book = """
+SELECT user_id,1 consume
+from log_block.action_log{block}_{num}
+where type = 5 and createtime >= UNIX_TIMESTAMP('{s_date}')
+GROUP BY user_id,book_id
+"""
+
 sql_conversion_funnel_count = """
 SELECT logon_date,book_id,admin_id channel_id,
     sum(logon_user) logon_user,sum(pass_free) pass_free,sum(is_subscribe) is_subscribe,
+    sum(if(first_sub>=0 and first_sub<1,first_order,0)) 'first_order_day',
     sum(if(first_sub>=0 and first_sub<3,first_order,0)) 'first_order_3day',
+    sum(if(recharge_sub>=0 and recharge_sub<1,recharge_order,0)) 'recharge_order_day',
     sum(if(recharge_sub>=0 and recharge_sub<3,recharge_order,0)) 'recharge_order_3day',
     sum(if(recharge_sub>=0 and recharge_sub<7,recharge_order,0)) 'recharge_order_7day',
     sum(if(recharge_sub>=0 and recharge_sub<14,recharge_order,0)) 'recharge_order_14day',

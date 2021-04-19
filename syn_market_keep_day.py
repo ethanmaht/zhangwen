@@ -32,7 +32,7 @@ def syn_market_keep_day_admin_new(s_date=None):
         retained.user_keep_admin_run,
         follow_func=retained.user_keep_admin_count,
         date_sub=31,
-        process_num=12
+        process_num=8
     )
 
 
@@ -76,7 +76,7 @@ def syn_market_logon_compress_thirty_day(s_date=None):
         func=retained.retained_logon_compress_thirty_day,
         follow_func=retained.retained_logon_compress_thirty_day_count,
         date_sub=90,
-        process_num=12
+        process_num=8
     )
 
 
@@ -90,7 +90,7 @@ def syn_market_book_admin_read_situation(s_date=None):
         func=retained.chart_book_admin_read_30,
         follow_func=retained.chart_book_admin_read_count_30,
         date_sub=90,
-        process_num=16
+        process_num=8
     )
 
 
@@ -105,7 +105,7 @@ def syn_new_user_market_book_admin_read_situation(s_date=None):
         func=retained.chart_book_admin_read_new_user_30,
         follow_func=retained.chart_book_admin_read_count_30,
         date_sub=90,
-        process_num=16
+        process_num=8
     )
 
 
@@ -152,6 +152,20 @@ def conversion_funnel_count(s_date=None):
     )
 
 
+def conversion_funnel_count_all_book(s_date=None):
+    work = retained.RunCount(
+        write_db='market_read', write_tab='conversion_funnel_count_all_book', date_col='logon_date', extend='delete'
+    )
+    if s_date:
+        work.s_date = s_date
+    work.step_run_kwargs(
+        func=retained.chart_book_admin_conversion_funnel_all_book,
+        follow_func=retained.conversion_funnel_count,
+        date_sub=90,
+        process_num=8
+    )
+
+
 if __name__ == '__main__':
     print('Start work:')
     """ ******* ↓ 自动并部署 ↓ ******* """
@@ -166,6 +180,7 @@ if __name__ == '__main__':
     syn_market_keep_day_admin_new()  # 带渠道和书的留存数据 -> 3h
 
     conversion_funnel_count()  # 转化漏斗 -> .2h
+    conversion_funnel_count_all_book('2021-01-01')  # 转化漏斗-所有书 -> .2h
 
     """ ******* ↓ discard ↓ ******* """
     # syn_market_keep_day_by_order_consume()  # 新留存 订阅和充值 -- 废弃 210412

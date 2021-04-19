@@ -747,3 +747,58 @@ def conversion_funnel_count(host, write_db, write_tab, date_type_name, date):
     rd.delete_last_date(conn, write_db, write_tab, date_type_name, date)
     rd.subsection_insert_to_data(read_date, conn, write_db, write_tab)
     conn.close()
+
+
+def chart_book_admin_conversion_funnel_all_book(read_config, db_name, tab_name, num, date_col, s_date=None):
+    if isinstance(s_date, list):
+        s_date = s_date[0]
+    print('======> is start to run {db}.{tab} - {num} - {date} ===> start time:'.format(
+        db=db_name, tab=tab_name, date=s_date, num=num), dt.datetime.now())
+    conn = rd.connect_database_host(read_config['host'], read_config['user'], read_config['pw'])
+
+    _consume = _read_conversion_funnel_by_block_not_same_book(conn=conn, date=s_date, num=num)
+    logon_user = pd.read_sql(
+        sql_code.sql_logon_user.format(s_date=s_date, num=num), conn
+    )
+    user_read = pd.read_sql(
+        sql_code.sql_user_read_not_same_book.format(s_date=s_date, num=num), conn
+    )
+    first_order = pd.read_sql(
+        sql_code.sql_first_order_not_same_book.format(s_date=s_date, num=num), conn
+    )
+    recharge_order = pd.read_sql(
+        sql_code.sql_first_recharge_order_not_same_book.format(s_date=s_date, num=num), conn
+    )
+
+    logon_user[['user_id', 'book_id', 'is_subscribe']] = logon_user[['user_id', 'book_id', 'is_subscribe']].astype(int)
+    user_read[['user_id', 'book_id']] = user_read[['user_id', 'book_id']].astype(int)
+    first_order['user_id'] = first_order['user_id'].astype(int)
+    recharge_order['user_id'] = recharge_order['user_id'].astype(int)
+    _consume['user_id'] = _consume['user_id'].astype(int)
+
+    read_data = pd.merge(logon_user, user_read, on=['user_id', 'book_id'], how='left')
+    read_data = pd.merge(read_data, first_order, on=['user_id'], how='left')
+    read_data = pd.merge(read_data, recharge_order, on=['user_id'], how='left')
+    read_data = pd.merge(read_data, _consume, on=['user_id'], how='left')
+
+    read_data['first_sub'] = read_data.apply(lambda x: emdate.sub_date(x['logon_date'], x['first_time']), axis=1)
+    read_data['recharge_sub'] = read_data.apply(lambda x: emdate.sub_date(x['logon_date'], x['recharge_time']), axis=1)
+
+    group_data = read_data.groupby(
+        by=['logon_date', 'book_id', 'admin_id', 'first_sub', 'recharge_sub'],
+    )[['is_subscribe', 'logon_user', 'pass_free', 'first_order', 'recharge_order']].sum()
+
+    group_data = group_data.reset_index()
+    group_data['tab_num'] = num
+    group_data = group_data.fillna(0)
+    rd.insert_to_data(group_data, conn, db_name, tab_name)
+    conn.close()
+
+
+def _read_conversion_funnel_by_block_not_same_book(conn, date, num):
+    date_list = emdate.block_date_list(date)
+    sql = sql_code.sql_consume_not_same_book
+    one_num_data = rd.read_date_block(conn, sql, date_list, num)
+    one_num_data = one_num_data.drop_duplicates(['user_id'])
+    one_num_data['consume'] = 1
+    return one_num_data
