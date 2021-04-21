@@ -702,19 +702,60 @@ left join sound.book b on b.id = base.book_id
 """
 
 sql_user_order_portrait = """
-SELECT isp,province,city,sex,y_m,monet_box,order_times,type,sum(money) order_money,
-    sum(order_times) order_count,count(DISTINCT user_id) ordre_users,o_y_m
+SELECT isp,province,city,sex,y_m,monet_box,user_times order_times,type,sum(money) order_money,
+    sum(order_times) order_count,count(DISTINCT user_id) ordre_users,o_y_m,first_sub
 from (
-SELECT o.money monet_box,DATE_FORMAT(FROM_UNIXTIME(u.createtime),'%Y-%m-01') y_m,user_id,
-    count(*) order_times,sum(money) money,u.sex,u.province,u.city,u.isp,type,
-    DATE_FORMAT(FROM_UNIXTIME(o.createtime),'%Y-%m-01') o_y_m
-from cps_user_{num}.orders o
-left join cps_user_{num}.`user` u on u.id = o.user_id
-where o.deduct = '0' and o.state = '1' 
-    and o.createtime >= UNIX_TIMESTAMP('{s_date}') and o.createtime < UNIX_TIMESTAMP('{e_date}')
-GROUP BY user_id,money,type
+    SELECT o.money monet_box,DATE_FORMAT(FROM_UNIXTIME(u.createtime),'%Y-%m-01') y_m,o.user_id,
+        TIMESTAMPDIFF(DAY,date(FROM_UNIXTIME(u.createtime)),first_date) first_sub,
+        count(*) order_times,user_times,sum(money) money,u.sex,u.province,u.city,u.isp,type,
+        DATE_FORMAT(FROM_UNIXTIME(o.createtime),'%Y-%m-01') o_y_m
+    from cps_user_{num}.orders o
+    left join cps_user_{num}.`user` u on u.id = o.user_id
+    left join (
+        SELECT user_id,count(*) user_times,min(date(FROM_UNIXTIME(o.createtime))) first_date
+        from cps_user_{num}.orders o
+        where deduct = '0' and state = '1'
+        GROUP BY user_id
+    ) f on f.user_id = o.user_id
+    where o.deduct = '0' and o.state = '1' 
+        and o.createtime >= UNIX_TIMESTAMP('{s_date}') and o.createtime < UNIX_TIMESTAMP('{e_date}')
+    GROUP BY o.user_id,money,type,o_y_m
 ) base
-GROUP BY isp,province,city,sex,y_m,monet_box,order_times,o_y_m
+GROUP BY isp,province,city,sex,y_m,monet_box,user_times,o_y_m,first_sub
+"""
+
+sql_user_order_portrait_admin_book = """
+SELECT isp,province,city,sex,y_m,monet_box,user_times order_times,type,sum(money) order_money,
+    sum(order_times) order_count,count(DISTINCT user_id) ordre_users,o_y_m,first_sub,admin_id,book_id
+from (
+    SELECT o.money monet_box,DATE_FORMAT(FROM_UNIXTIME(u.createtime),'%Y-%m-01') y_m,o.user_id,
+        TIMESTAMPDIFF(DAY,date(FROM_UNIXTIME(u.createtime)),first_date) first_sub,
+        count(*) order_times,user_times,sum(money) money,u.sex,u.province,u.city,u.isp,type,
+        DATE_FORMAT(FROM_UNIXTIME(o.createtime),'%Y-%m-01') o_y_m,admin_id,book_id
+    from cps_user_{num}.orders o
+    left join cps_user_{num}.`user` u on u.id = o.user_id
+    left join (
+        SELECT user_id,count(*) user_times,min(date(FROM_UNIXTIME(o.createtime))) first_date
+        from cps_user_{num}.orders o
+        where deduct = '0' and state = '1'
+        GROUP BY user_id
+    ) f on f.user_id = o.user_id
+    where o.deduct = '0' and o.state = '1' 
+        and o.createtime >= UNIX_TIMESTAMP('{s_date}') and o.createtime < UNIX_TIMESTAMP('{e_date}')
+    GROUP BY o.user_id,money,type,o_y_m,admin_id,book_id
+) base
+GROUP BY isp,province,city,sex,y_m,monet_box,user_times,o_y_m,first_sub
+"""
+
+sql_user_order_portrait_admin_book_count = """
+SELECT isp,province,city,p.sex,y_m,monet_box,order_times,o_y_m,admin_id,book_id,type,sum(order_money) order_money,
+    sum(order_count) order_count,sum(ordre_users) ordre_users,a.nickname,a.business_name,b.name book_name,first_sub
+from market_read.portrait_user_order_admin_book p
+left join market_read.book_info b on b.id = book_id
+left join market_read.admin_info a on a.id = admin_id
+where y_m >= '{s_date}'
+GROUP BY isp,province,city,p.sex,y_m,monet_box,order_times,
+    o_y_m,admin_id,book_id,type,a.nickname,a.business_name,b.name,first_sub
 """
 
 

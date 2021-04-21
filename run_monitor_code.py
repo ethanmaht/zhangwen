@@ -66,5 +66,5 @@ if __name__ == '__main__':
     comparison_admin_book_order()
 
     # one_book_orders()
-    # one_book_sql()
+    one_book_sql()
     # syn_table_day_nums_monitor()

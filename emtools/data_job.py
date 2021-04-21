@@ -435,3 +435,46 @@ def _read_one_portrait_user_order(read_conn, s_date, num, e_date):
     )
     re_date.fillna(0, inplace=True)
     return re_date
+
+
+def portrait_user_order_run_admin_book(write_conn_fig, write_db, write_tab, num, date=None, end_date=None):
+    print('======> is start to run {db}.{tab} - {num} ===> start time:'.format(
+        db=write_db, tab=write_tab, num=num), dt.datetime.now())
+    read_conn_fig = rd.read_db_host(
+        (os.path.split(os.path.realpath(__file__))[0] + '/config.yml')
+    )
+    read_host_conn_fig = cm.pick_conn_host_by_num(num, read_conn_fig['shart_host'])
+    read_conn = rd.connect_database_direct(read_host_conn_fig)
+    write_conn = rd.connect_database_vpn(write_conn_fig)
+    if not date:
+        date = '2019-01-01'
+    if not end_date:
+        end_date = emdate.datetime_format_code(dt.datetime.now())
+    block_data = _read_one_portrait_user_order_admin_book(read_conn, s_date=date, num=num, e_date=end_date)
+    block_data['tab_num'] = num
+    rd.insert_to_data(block_data, write_conn, write_db, write_tab)
+    write_conn.close()
+
+
+def _read_one_portrait_user_order_admin_book(read_conn, s_date, num, e_date):
+    re_date = pd.read_sql(
+        sql_code.sql_user_order_portrait_admin_book.format(s_date=s_date, num=num, e_date=e_date), read_conn
+    )
+    re_date.fillna(0, inplace=True)
+    return re_date
+
+
+def portrait_user_order_run_admin_book_count(write_conn_fig, write_db, write_tab, date=None):
+    print('======> is start to run {db}.{tab} - count ===> start time:'.format(
+        db=write_db, tab=write_tab), dt.datetime.now())
+    write_conn = rd.connect_database_vpn(write_conn_fig)
+    if not date:
+        date = '2019-01-01'
+    count_data = pd.read_sql(
+        sql_code.sql_user_order_portrait_admin_book_count.format(s_date=date), write_conn
+    )
+    count_data.fillna(0, inplace=True)
+    write_tab = write_tab + '_count'
+    rd.delete_table_data(write_conn, write_db, write_tab)
+    rd.subsection_insert_to_data(count_data, write_conn, write_db, write_tab)
+    write_conn.close()

@@ -94,11 +94,11 @@ def comparison_by_one_sql(market_host, read_host, write_tab, read_tab, date, num
         db=read_tab['db'], tab=read_tab['tab'], num=num), dt.datetime.now())
     conn = rd.connect_database_host(market_host['host'], market_host['user'], market_host['pw'])
     sql = """
-    SELECT DATE_FORMAT(FROM_UNIXTIME(createtime),'%Y') y,admin_id,count(DISTINCT user_id) order_users,
+    SELECT DATE_FORMAT(FROM_UNIXTIME(createtime),'%Y_%m') y,count(DISTINCT user_id) order_users,
     count(*) order_times,sum(money) order_money
-    from orders_log.orders_log_0
+    from orders_log.orders_log_{num}
     where state = 1 and deduct = 0
-    GROUP BY y,admin_id
+    GROUP BY y
     """
     # sql = """
     # SELECT user_id,referral_book,FROM_UNIXTIME(createtime) date_day

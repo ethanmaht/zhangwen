@@ -56,6 +56,19 @@ def syn_portrait_user_order_run(s_date=None):
     )
 
 
+def syn_portrait_user_order_admin_book_run(s_date=None):
+    data_job.delete_portrait_user_order(
+        write_conn_fig='datamarket', write_db='market_read', write_tab='portrait_user_order_admin_book'
+    )
+    rd.syn_date_block_run(
+        data_job.portrait_user_order_run_admin_book, s_date, process_num=12,
+        write_conn_fig='datamarket', write_db='market_read', write_tab='portrait_user_order_admin_book'
+    )
+    data_job.portrait_user_order_run_admin_book_count(
+        write_conn_fig='datamarket', write_db='market_read', write_tab='portrait_user_order_admin_book'
+    )
+
+
 if __name__ == '__main__':
     print('Start work:')
     """ ****** ↓ 自动并部署 ↓ ****** """
@@ -63,10 +76,11 @@ if __name__ == '__main__':
     syn_date_block()  # 动作日志分时间块记录
     syn_read_user_recently_read('2021-01-01')  # 跟读数据同步
     syn_happy_seven_sound_shard_work('2020-01-1')  # 有声的数据库同步
-    es_tool.run_read_ex_loop(
-        sub_days=15, size=10000, write_conn_fig='datamarket', write_db='sound', tab='es_log'
-    )  # 有声的es同步
     syn_portrait_user_order_run()  # 用户画像数据同步
+    syn_portrait_user_order_admin_book_run()  # 用户画像-渠道-书 数据同步
+    es_tool.run_read_ex_loop(
+        sub_days=5, size=10000, write_conn_fig='datamarket', write_db='sound', tab='es_log'
+    )  # 有声的es同步
 
     """ ****** ↓ 手动或者测试 ↓ ****** """
     # syn_read_sign_order_count()  # 连续签到奖励查询 - 手动: 李迪
