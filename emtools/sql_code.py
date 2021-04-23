@@ -753,7 +753,7 @@ SELECT isp,province,city,p.sex,y_m,monet_box,order_times,o_y_m,admin_id,book_id,
 from market_read.portrait_user_order_admin_book p
 left join market_read.book_info b on b.id = book_id
 left join market_read.admin_info a on a.id = admin_id
-where y_m >= '{s_date}'
+where y_m >= '{s_date}' and y_m < '{_date}'
 GROUP BY isp,province,city,p.sex,y_m,monet_box,order_times,
     o_y_m,admin_id,book_id,type,a.nickname,a.business_name,b.name,first_sub
 """
@@ -840,6 +840,58 @@ SELECT logon_date,book_id,admin_id channel_id,
 from {db}.{tab}
 GROUP BY logon_date,book_id,admin_id
 """
+
+""" interval """
+sql_user_date_interval = """
+SELECT user_id,date(FROM_UNIXTIME(createtime)) date_day
+from log_block.action_log{_block}_{num}
+GROUP BY user_id,date_day
+"""
+
+
+""" """
+
+sql_logon_users = """
+SELECT date(FROM_UNIXTIME(createtime)) date_day,count(*) logon_user
+from user_info.user_info_{num}
+where createtime >= UNIX_TIMESTAMP('{s_date}')
+GROUP BY date_day
+"""
+
+sql_order_users_money = """
+SELECT date(FROM_UNIXTIME(createtime)) date_day,
+    count(user_id) order_user,sum(money) money,
+    sum(if(first_time=createtime,money,0)) first_money,
+        count(DISTINCT if(first_time=createtime,user_id,Null)) first_user,
+    sum(if(first_time!=createtime,money,0)) re_money,
+        count(DISTINCT if(first_time!=createtime,user_id,Null)) re_user,
+    sum(if(type=2,money,0)) vip_money,count(DISTINCT if(type=2,user_id,Null)) vip_user
+from orders_log.orders_log_{num}
+where createtime >= UNIX_TIMESTAMP('{s_date}') and state = 1 and deduct = 0
+GROUP BY date_day
+"""
+
+sql_active = """
+SELECT date(date_day) date_day,count(DISTINCT user_id) active_user
+from user_interval.user_date_interval_{num}
+where date_day >= '{s_date}'
+GROUP BY date_day
+"""
+
+sql_back = """
+SELECT date(next_date) date_day,count(DISTINCT if(day_sub>6,user_id,Null)) back_user
+from user_interval.user_date_interval_{num}
+where next_date >= '{s_date}'
+GROUP BY next_date
+"""
+
+sql_user_date_consume = """
+SELECT date(FROM_UNIXTIME(createtime)) date_day,count(DISTINCT book_id,user_id) comsum_book,count(*) comsum
+from log_block.action_log{_block}_{num}
+where createtime >= UNIX_TIMESTAMP('{s_date}') and type = 5
+GROUP BY date_day
+"""
+
 
 """ ************** -*- give up sql -*- ************** """
 

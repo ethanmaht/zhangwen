@@ -802,3 +802,49 @@ def _read_conversion_funnel_by_block_not_same_book(conn, date, num):
     one_num_data = one_num_data.drop_duplicates(['user_id'])
     one_num_data['consume'] = 1
     return one_num_data
+
+
+def index_data(read_config, db_name, tab_name, num, date_col, s_date=None, end_date=None):
+    print('======> is start to run {db}.{tab} - {num} - {date} ===> start time:'.format(
+        db=db_name, tab=tab_name, date=s_date, num=num), dt.datetime.now())
+    write_conn = rd.connect_database_vpn('datamarket')
+    if not s_date:
+        s_date = '2019-01-01'
+    if not end_date:
+        end_date = emdate.datetime_format_code(dt.datetime.now())
+    logon_user = pd.read_sql(
+        sql_code.sql_logon_users.format(s_date=s_date, num=num), write_conn
+    )
+    order_user = pd.read_sql(
+        sql_code.sql_order_users_money.format(s_date=s_date, num=num), write_conn
+    )
+    active_user = pd.read_sql(
+        sql_code.sql_active.format(s_date=s_date, num=num), write_conn
+    )
+    back_user = pd.read_sql(
+        sql_code.sql_back.format(s_date=s_date, num=num), write_conn
+    )
+    date_list = emdate.block_date_list(s_date, end_date, num=num)
+    consume = read_one_num_data(write_conn, date_list, s_date, num)
+    _index_data = pd.merge(logon_user, order_user, on='date_day', how='outer')
+    _index_data = pd.merge(_index_data, active_user, on='date_day', how='outer')
+    _index_data = pd.merge(_index_data, back_user, on='date_day', how='outer')
+    _index_data = pd.merge(_index_data, consume, on='date_day', how='outer')
+    _index_data.fillna(0, inplace=True)
+    _index_data['tab_num'] = num
+    _index_data['id'] = _index_data.apply(lambda x: cm.user_date_id(x['date_day'], x['tab_num']), axis=1)
+    rd.insert_to_data(_index_data, write_conn, db_name, tab_name)
+    write_conn.close()
+
+
+def read_one_num_data(write_conn, date_list, s_date, num):
+    all_date_data = []
+    for _block in date_list:
+        date_name, _, e_date = _block['date_name'], _block['s_date'], _block['e_date']
+        block_data = pd.read_sql(
+            sql_code.sql_user_date_consume.format(_block=date_name, s_date=s_date, num=num), write_conn
+        )
+        all_date_data.append(block_data)
+    all_date_df = pd.concat(all_date_data)
+    all_date_df.fillna(0, inplace=True)
+    return all_date_df

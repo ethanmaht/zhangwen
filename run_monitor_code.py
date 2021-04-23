@@ -1,7 +1,9 @@
 from syn_monitor import syn_monitor_run
 from syn_monitor import monitor_works
+from logs import loger
 
 
+@loger.logging_read
 def order_info_monitor():
     work = syn_monitor_run.SynMonitor(
         {'db': 'syn_monitor', 'tab': 'monitor_orders_syn', 'date_col': 'date_day'},
@@ -11,6 +13,7 @@ def order_info_monitor():
     work.syn_step_run(monitor_works.monitor_order_table_date, process_num=32)
 
 
+@loger.logging_read
 def logon_info_monitor():
     work = syn_monitor_run.SynMonitor(
         {'db': 'syn_monitor', 'tab': 'monitor_user_syn', 'date_col': 'date_day'},
@@ -20,6 +23,7 @@ def logon_info_monitor():
     work.syn_step_run(monitor_works.monitor_user_table_date, process_num=32)
 
 
+@loger.logging_read
 def syn_table_day_nums_monitor():
     work = syn_monitor_run.SynMonitor(
         {'db': 'syn_monitor', 'tab': 'monitor_user_syn', 'date_col': 'date_day'},
@@ -33,6 +37,7 @@ def syn_table_day_nums_monitor():
     work.syn_step_run(monitor_works.monitor_syn_tables, process_num=32)
 
 
+@loger.logging_read
 def comparison_admin_book_order():
     work = syn_monitor_run.SynMonitor(
         {'db': 'syn_monitor', 'tab': 'monitor_admin_book_order', 'date_col': 'date_day'},
@@ -41,6 +46,7 @@ def comparison_admin_book_order():
     work.direct_run_comparison(monitor_works.comparison_tab_admin_book_val)
 
 
+@loger.logging_read
 def one_book_orders():
     work = syn_monitor_run.SynMonitor(
         {'db': 'syn_monitor', 'tab': 'one_book', 'date_col': 'date_day'},
@@ -50,13 +56,14 @@ def one_book_orders():
     work.syn_step_run(monitor_works.comparison_by_book_id, process_num=32)
 
 
+@loger.logging_read
 def one_book_sql():
     work = syn_monitor_run.SynMonitor(
-        {'db': 'syn_monitor', 'tab': 'year_admin_order', 'date_col': 'date_day'},
+        {'db': 'syn_monitor', 'tab': 'one_book_10077522', 'date_col': 'date_day'},
         {'db': 'orders_log', 'tab': 'orders_log', 'date_col': 'createtime', 'date_type': 'stamp'}
     )
     # work.s_date = '2021-04-01'
-    work.syn_step_run(monitor_works.comparison_by_one_sql, process_num=64)
+    work.syn_step_run(monitor_works.comparison_by_one_sql, process_num=16)
 
 
 if __name__ == '__main__':
@@ -66,5 +73,5 @@ if __name__ == '__main__':
     comparison_admin_book_order()
 
     # one_book_orders()
-    one_book_sql()
+    # one_book_sql()
     # syn_table_day_nums_monitor()

@@ -93,22 +93,31 @@ def comparison_by_one_sql(market_host, read_host, write_tab, read_tab, date, num
     print('======> is start to run {db}.{tab} - {num} ===> start time:'.format(
         db=read_tab['db'], tab=read_tab['tab'], num=num), dt.datetime.now())
     conn = rd.connect_database_host(market_host['host'], market_host['user'], market_host['pw'])
+    # sql = """
+    # SELECT DATE_FORMAT(FROM_UNIXTIME(createtime),'%Y_%m') y,count(DISTINCT user_id) order_users,
+    # count(*) order_times,sum(money) order_money
+    # from orders_log.orders_log_{num}
+    # where state = 1 and deduct = 0
+    # GROUP BY y
+    # """
     sql = """
-    SELECT DATE_FORMAT(FROM_UNIXTIME(createtime),'%Y_%m') y,count(DISTINCT user_id) order_users,
-    count(*) order_times,sum(money) order_money
-    from orders_log.orders_log_{num}
-    where state = 1 and deduct = 0
-    GROUP BY y
+    SELECT chapter_id,count(DISTINCT USER_id) u, {num} tab_num
+    from log_block.action_log_2021Q2_{num}
+    where book_id = 10077522 and type = 5
+    GROUP BY chapter_id
+    UNION
+    SELECT chapter_id,count(DISTINCT USER_id) u, {num} tab_num
+    from log_block.action_log_2021Q1_{num}
+    where book_id = 10077522 and type = 5
+    GROUP BY chapter_id
     """
     # sql = """
-    # SELECT user_id,referral_book,FROM_UNIXTIME(createtime) date_day
-    # from user_read.user_read_{num} where createtime >= UNIX_TIMESTAMP('{date}') and referral_book = 10077522
+    # SELECT user_id,createtime,chapter_id, {num} tab_num
+    # from log_block.action_log_2021Q2_{num}
+    # where book_id = 10077522 and type = 5
+    #     and createtime >= UNIX_TIMESTAMP('2021-04-15') and createtime < UNIX_TIMESTAMP('2021-04-22')
     # """
-    # sql = """
-    # SELECT *,date(FROM_UNIXTIME(createtime)) date_day,{num} tab_num
-    # from user_read.user_read_{num}
-    # where book_id = 10077522
-    # """
+
     e_date = emdate.datetime_format_code(dt.datetime.now())
     one_book_data = pd.read_sql(
         sql.format(date=date, e_date=e_date, num=num, bookid=10077894), conn

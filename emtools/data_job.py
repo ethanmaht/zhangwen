@@ -468,13 +468,72 @@ def portrait_user_order_run_admin_book_count(write_conn_fig, write_db, write_tab
     print('======> is start to run {db}.{tab} - count ===> start time:'.format(
         db=write_db, tab=write_tab), dt.datetime.now())
     write_conn = rd.connect_database_vpn(write_conn_fig)
-    if not date:
-        date = '2019-01-01'
-    count_data = pd.read_sql(
-        sql_code.sql_user_order_portrait_admin_book_count.format(s_date=date), write_conn
-    )
-    count_data.fillna(0, inplace=True)
+
     write_tab = write_tab + '_count'
     rd.delete_table_data(write_conn, write_db, write_tab)
-    rd.subsection_insert_to_data(count_data, write_conn, write_db, write_tab)
+
+    _ladder_by_day_count(write_conn, write_db, write_tab)
     write_conn.close()
+
+
+def _ladder_by_day_count(write_conn, write_db, write_tab, s_date=None, day_ladder=None):
+    if not s_date:
+        s_date = '2019-06-01'
+    if not day_ladder:
+        day_ladder = -15
+    end_day = emdate.datetime_format_code(dt.datetime.now())
+    while s_date <= end_day:
+        _date = emdate.date_sub_days(day_ladder, s_date)
+        print('======> is start to run {db}.{tab} - {_s} to {_e} ===> start time:'.format(
+            db=write_db, tab=write_tab, _s=s_date, _e=_date), dt.datetime.now())
+        count_data = pd.read_sql(
+            sql_code.sql_user_order_portrait_admin_book_count.format(s_date=s_date, _date=_date), write_conn
+        )
+        if count_data.index.size > 0:
+            count_data.fillna(0, inplace=True)
+            rd.subsection_insert_to_data(count_data, write_conn, write_db, write_tab)
+        s_date = emdate.date_sub_days(day_ladder, s_date)
+
+
+def user_date_interval(read_config, db_name, tab_name, num, date_col, s_date=None, end_date=None):
+    print('======> is start to run {db}.{tab} - {num} ===> start time:'.format(
+        db=db_name, tab=tab_name, num=num), dt.datetime.now())
+    write_conn = rd.connect_database_vpn('datamarket')
+    if not s_date:
+        s_date = '2019-01-01'
+    if not end_date:
+        end_date = emdate.datetime_format_code(dt.datetime.now())
+    date_list = emdate.block_date_list(s_date, end_date, num=num)
+    one_num_data = read_one_num_data(write_conn, date_list, num)
+    write_tab = tab_name + '_' + str(num)
+    rd.delete_last_date(write_conn, db_name, write_tab, date_col, s_date)
+    rd.insert_to_data(one_num_data, write_conn, db_name, write_tab)
+
+
+def read_one_num_data(write_conn, date_list, num):
+    all_date_data = []
+    for _block in date_list:
+        date_name, s_date, e_date = _block['date_name'], _block['s_date'], _block['e_date']
+        block_data = pd.read_sql(
+            sql_code.sql_user_date_interval.format(_block=date_name, num=num), write_conn
+        )
+        all_date_data.append(block_data)
+    all_date_df = pd.concat(all_date_data)
+    all_date_df.sort_values(by=['user_id', 'date_day'], inplace=True)
+    all_date_df.fillna(0, inplace=True)
+    all_date_df['user_id'] = all_date_df['user_id'].astype(int)
+    all_date_df['next_id'] = all_date_df['user_id'].shift(-1)
+    all_date_df['next_date'] = all_date_df['date_day'].shift(-1)
+    all_date_df['day_sub'] = all_date_df.apply(
+        lambda x: _date_cat(x['user_id'], x['next_id'], x['next_date'], x['date_day']), axis=1
+    )
+    all_date_df.fillna(0, inplace=True)
+    return all_date_df
+
+
+def _date_cat(user_id, next_id, date_day, next_date):
+    if user_id != next_id:
+        next_date = emdate.datetime_format_code(dt.datetime.now())
+    _sub = emdate.sub_date(next_date, date_day)
+    return _sub
+
