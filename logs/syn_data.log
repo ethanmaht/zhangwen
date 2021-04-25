@@ -1,0 +1,7 @@
+2021/04/25 14:03:26 - root - ERROR - 20 - loger - Error
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 11, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\zwwork\test.py", line 6, in test1
+    a = 1 / 0
+ZeroDivisionError: division by zero

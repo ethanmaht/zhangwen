@@ -1,0 +1,7 @@
+[MissionStart]:mission name 'aaa' ; time:2021-04-25 13:49:13.405201
+[MissionStart]:mission name 'aaa' ; time:2021-04-25 13:49:18.777552
+[MissionStart]:mission name '<module>'; time:2021-04-25 13:56:27.691196
+[MissionStart]:mission name '[FrameInfo(frame=<frame at 0x000001B47A363410, file 'D:\\datawork\\syn_market_keep_day.py', line 219, code test>, filename='D:\\datawork\\syn_market_keep_day.py', lineno=219, function='test', code_context=['    loger.logging_start_up(inspect.stack())\n'], index=0), FrameInfo(frame=<frame at 0x000001B469BD7640, file 'D:\\datawork\\syn_market_keep_day.py', line 240, code <module>>, filename='D:\\datawork\\syn_market_keep_day.py', lineno=240, function='<module>', code_context=['    test()\n'], index=0)]'; time:2021-04-25 13:57:52.011209
+[MissionStart]:mission name 'test1'; time:2021-04-25 14:03:26.954338
+[MissionStart]:mission name 'test2'; time:2021-04-25 14:03:26.955313
+[MissionStart]:mission name 'sound_market_chapter_count'; time:2021-04-25 17:21:24.234117

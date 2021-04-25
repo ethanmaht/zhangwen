@@ -5,6 +5,8 @@ from es_worker import ec_market
 from emtools import read_database as rd
 from emtools import data_job
 from logs import loger
+import sys
+import inspect
 
 
 @loger.logging_read
@@ -207,6 +209,32 @@ def syn_index_data_run(s_date=None):
     )
 
 
+def syn_index_data_month_run(s_date=None):
+    work = retained.RunCount(
+        write_db='market_read', write_tab='index_data_month', date_col='date_month',  # extend='delete'
+    )
+    if s_date:
+        work.s_date = s_date
+    work.step_run_kwargs(
+        func=retained.index_data_month,
+        date_sub=15,
+        process_num=12
+    )
+
+
+def syn_index_book_consume_run(s_date=None):
+    work = retained.RunCount(
+        write_db='market_read', write_tab='index_book_consume', date_col='date_day', extend='delete'
+    )
+    if s_date:
+        work.s_date = s_date
+    work.step_run_kwargs(
+        func=retained.index_data_book_consume,
+        date_sub=15,
+        process_num=12
+    )
+
+
 if __name__ == '__main__':
     print('Start work:')
     """ ****** ↓ 自动并部署 ↓ ****** """
@@ -225,6 +253,8 @@ if __name__ == '__main__':
     sound_market_chapter_count('2020-04-01')  # 有声chapter数据 -> .1h
 
     syn_index_data_run()
+    syn_index_data_month_run()
+    syn_index_book_consume_run()
 
     """ ****** ↓ discard ↓ ****** """
     # syn_market_keep_day_by_order_consume()  # 新留存 订阅和充值 -- 废弃 210412

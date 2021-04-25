@@ -46,7 +46,6 @@ def comparison_admin_book_order():
     work.direct_run_comparison(monitor_works.comparison_tab_admin_book_val)
 
 
-@loger.logging_read
 def one_book_orders():
     work = syn_monitor_run.SynMonitor(
         {'db': 'syn_monitor', 'tab': 'one_book', 'date_col': 'date_day'},
@@ -66,11 +65,33 @@ def one_book_sql():
     work.syn_step_run(monitor_works.comparison_by_one_sql, process_num=16)
 
 
+def table_last_date():
+    work = syn_monitor_run.SynMonitor(
+        {'db': 'syn_monitor', 'tab': 'syn_table_update', 'date_col': 'date_day'},
+        {'db': '', 'tab': '', 'date_col': '', 'date_type': ''}
+    )
+    work.s_date = '2019-01-01'
+    target_list = [
+        {'db_tab': 'sound.es_log', 'date_col': 'time'},
+        {'db_tab': 'sound.market_book_count', 'date_col': 'logon_day'},
+        {'db_tab': 'sound.market_chapter_count', 'date_col': 'date_day'},
+        {'db_tab': 'market_read.new_user_book_admin_read_situation_30', 'date_col': 'start_date'},
+        {'db_tab': 'market_read.book_admin_read_situation_30', 'date_col': 'start_date'},
+        {'db_tab': 'market_read.conversion_funnel_count_all_book_count', 'date_col': 'logon_date'},
+        {'db_tab': 'market_read.conversion_funnel_count_count', 'date_col': 'logon_date'},
+        {'db_tab': 'market_read.index_data', 'date_col': 'date_day'},
+        {'db_tab': 'market_read.market_keep_day_admin_test', 'date_col': 'date_day'},
+        # {'db_tab': '', 'date_col': ''},
+    ]
+    work.direct_run(monitor_works.syn_last_date, target_list=target_list)
+
+
 if __name__ == '__main__':
     print('start work:')
     order_info_monitor()
     logon_info_monitor()
     comparison_admin_book_order()
+    table_last_date()
 
     # one_book_orders()
     # one_book_sql()

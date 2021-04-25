@@ -56,3 +56,8 @@ SELECT *,date(FROM_UNIXTIME(createtime)) create_date
 from orders_log.orders_log_{num}
 where createtime >= UNIX_TIMESTAMP('{date}') and createtime < UNIX_TIMESTAMP('{e_date}') and book_id = {bookid}
 """
+
+
+sql_max_date = """
+SELECT '{db_tab}' table_name,max({date_col}) update_time from {db_tab}
+"""

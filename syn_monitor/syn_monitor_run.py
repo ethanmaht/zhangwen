@@ -53,12 +53,12 @@ class SynMonitor:
                 tars=tars, process_num=process_num, interval=interval, step=step
             )
 
-    def direct_run(self, func, *args):
+    def direct_run(self, func, **kwargs):
         if self.date_col:
             tar_date_list = self.read_last_date(is_list=0)[0]
         else:
             tar_date_list = self.s_date
-        func(self.market_host, self.write_db, self.write_tab, self.date_col, tar_date_list, *args)
+        func(self.market_host, self.write_db, self.write_tab, self.date_col, tar_date_list, **kwargs)
 
     def direct_run_comparison(self, func, days=30, *args):
         if self.s_date:

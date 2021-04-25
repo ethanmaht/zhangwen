@@ -5,7 +5,6 @@ from emtools import read_database as rd
 from emtools import emdate
 import datetime as dt
 import pandas as pd
-from logs import loger
 
 
 def monitor_order_table_date(write_host, read_host, write_tab, read_tab, date, num):
@@ -76,7 +75,6 @@ def comparison_tab_admin_book_val(market_host, write_dict, date, *args):
     conn.close()
 
 
-@loger.logging_read
 def comparison_by_book_id(market_host, read_host, write_tab, read_tab, date, num):
     print('======> is start to run {db}.{tab} - {num} ===> start time:'.format(
         db=read_tab['db'], tab=read_tab['tab'], num=num), dt.datetime.now())
@@ -124,3 +122,20 @@ def comparison_by_one_sql(market_host, read_host, write_tab, read_tab, date, num
     )
     one_book_data = one_book_data.fillna(0)
     rd.insert_to_data(one_book_data, conn, write_tab['db'], write_tab['tab'])
+
+
+def syn_last_date(market_host, write_db, write_tab, date_col, tar_date_list, target_list):
+    re_data = []
+    conn = rd.connect_database_host(market_host['host'], market_host['user'], market_host['pw'])
+    for _tab in target_list:
+        one_tab = pd.read_sql(
+            sql_monitor.sql_max_date.format(db_tab=_tab['db_tab'], date_col=_tab['date_col']), conn
+        )
+        re_data.append(one_tab)
+    re_df = pd.concat(re_data)
+    re_df['monitor_time'] = dt.datetime.now()
+    re_df.fillna(0, inplace=True)
+    rd.delete_table_data(conn, write_db, write_tab)
+    rd.insert_to_data(re_df, conn, write_db, write_tab)
+
+

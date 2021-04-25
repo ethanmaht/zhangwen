@@ -618,9 +618,11 @@ GROUP BY logon_date,date_day,book_id,channel_id
 """
 
 sound_user_log = """
-SELECT date(FROM_UNIXTIME(createtime)) logon_day,user_id,1 logon_user,is_subscribe,referral_id_permanent
-from sound.`user` 
-where createtime >= UNIX_TIMESTAMP('{s_date}')
+SELECT date(FROM_UNIXTIME(u.createtime)) logon_day,user_id,1 logon_user,is_subscribe,
+    referral_id_permanent,u.admin_id,a.business_name,a.nickname
+from sound.`user` u
+left join sound.admin a on a.id = u.admin_id
+where u.createtime >= UNIX_TIMESTAMP('{s_date}')
 """
 
 sount_order_log = """
@@ -631,9 +633,8 @@ GROUP BY user_id
 """
 
 sound_referral_info = """
-SELECT r.id referral_id_permanent,r.admin_id,a.business_name,a.nickname,b.`name` logon_book,c.channel_free_chapter_num
+SELECT r.id referral_id_permanent,b.`name` logon_book,c.channel_free_chapter_num
 from sound.referral r
-left join sound.admin a on a.id = r.admin_id
 left join sound.book b on b.id = r.book_id
 left join sound.channel_price c on c.admin_id = r.admin_id and c.book_id = r.book_id
 """
@@ -858,9 +859,16 @@ where createtime >= UNIX_TIMESTAMP('{s_date}')
 GROUP BY date_day
 """
 
+sql_logon_users_ym = """
+SELECT DATE_FORMAT(FROM_UNIXTIME(createtime),'%Y-%m-01') date_month,count(*) logon_user
+from user_info.user_info_{num}
+where createtime >= UNIX_TIMESTAMP('{s_date}')
+GROUP BY date_month
+"""
+
 sql_order_users_money = """
 SELECT date(FROM_UNIXTIME(createtime)) date_day,
-    count(user_id) order_user,sum(money) money,
+    count(DISTINCT user_id) order_user,sum(money) money,
     sum(if(first_time=createtime,money,0)) first_money,
         count(DISTINCT if(first_time=createtime,user_id,Null)) first_user,
     sum(if(first_time!=createtime,money,0)) re_money,
@@ -871,11 +879,31 @@ where createtime >= UNIX_TIMESTAMP('{s_date}') and state = 1 and deduct = 0
 GROUP BY date_day
 """
 
+sql_order_users_money_ym = """
+SELECT DATE_FORMAT(FROM_UNIXTIME(createtime),'%Y-%m-01') date_month,
+    count(DISTINCT user_id) order_user,sum(money) money,
+    sum(if(first_time=createtime,money,0)) first_money,
+        count(DISTINCT if(first_time=createtime,user_id,Null)) first_user,
+    sum(if(first_time!=createtime,money,0)) re_money,
+        count(DISTINCT if(first_time!=createtime,user_id,Null)) re_user,
+    sum(if(type=2,money,0)) vip_money,count(DISTINCT if(type=2,user_id,Null)) vip_user
+from orders_log.orders_log_{num}
+where createtime >= UNIX_TIMESTAMP('{s_date}') and state = 1 and deduct = 0
+GROUP BY date_month
+"""
+
 sql_active = """
 SELECT date(date_day) date_day,count(DISTINCT user_id) active_user
 from user_interval.user_date_interval_{num}
 where date_day >= '{s_date}'
 GROUP BY date_day
+"""
+
+sql_active_ym = """
+SELECT DATE_FORMAT(date_day,'%Y-%m-01') date_month,count(DISTINCT user_id) active_user
+from user_interval.user_date_interval_{num}
+where date_day >= '{s_date}'
+GROUP BY date_month
 """
 
 sql_back = """
@@ -885,11 +913,35 @@ where next_date >= '{s_date}'
 GROUP BY next_date
 """
 
+sql_back_ym = """
+SELECT DATE_FORMAT(next_date,'%Y-%m-01') date_month,count(DISTINCT if(day_sub>6,user_id,Null)) back_user
+from user_interval.user_date_interval_{num}
+where next_date >= '{s_date}'
+GROUP BY date_month
+"""
+
 sql_user_date_consume = """
-SELECT date(FROM_UNIXTIME(createtime)) date_day,count(DISTINCT book_id,user_id) comsum_book,count(*) comsum
+SELECT date(FROM_UNIXTIME(createtime)) date_day,count(DISTINCT book_id,user_id) comsum_book,
+    count(*) comsum,count(DISTINCT user_id) comsum_user
 from log_block.action_log{_block}_{num}
 where createtime >= UNIX_TIMESTAMP('{s_date}') and type = 5
 GROUP BY date_day
+"""
+
+sql_user_date_consume_ym = """
+SELECT DATE_FORMAT(FROM_UNIXTIME(createtime),'%Y-%m-01') date_month,count(DISTINCT book_id,user_id) comsum_book,
+    count(*) comsum,count(DISTINCT user_id) comsum_user
+from log_block.action_log{_block}_{num}
+where createtime >= UNIX_TIMESTAMP('{s_date}') and type = 5
+GROUP BY date_month
+"""
+
+sql_book_date_consume = """
+SELECT date(FROM_UNIXTIME(createtime)) date_day,book_id,
+    count(*) comsume,count(DISTINCT user_id) comsume_user
+from log_block.action_log{_block}_{num}
+where createtime >= UNIX_TIMESTAMP('{s_date}') and type = 5
+GROUP BY date_day,book_id
 """
 
 
