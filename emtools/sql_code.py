@@ -219,6 +219,19 @@ FROM cps.referral
 where updatetime >= '{date}';
 """
 
+
+sql_dict_update_custom = """
+SELECT id custom_id,admin_id,sendtime,user_json,createtime,updatetime,statue,send_num,message_type
+FROM cps.custom
+where updatetime >= '{date}';
+"""
+
+sql_dict_update_custom_url = """
+SELECT id,title,custom_id,book_id,book_name
+FROM cps.custom_url
+where updatetime >= '{date}';
+"""
+
 sql_dict_update_referral_sound = """
 SELECT id,book_id,chapter_id,admin_id,chapter_name,cost,type,uv,follow,unfollow_num,net_follow_num,
     guide_chapter_idx,incr_num,money,orders_num,createtime,updatetime,state 
@@ -558,6 +571,19 @@ SELECT book_id,channel_id,last_chapter_id,is_finish,start_date,sum(start_book) s
     sum(over_500) over_500, sum(over_600) over_600, sum(over_700) over_700, 
     sum(over_800) over_800,sum(over_1000) over_1000,sum(over_book) over_book
 from {db}.{tab}
+GROUP BY book_id,channel_id,last_chapter_id,is_finish,start_date
+"""
+
+sql_book_admin_read_count_30_day_ladder = """
+SELECT book_id,channel_id,last_chapter_id,is_finish,start_date,sum(start_book) start_book,
+    sum(over_free) over_free,sum(over_30) over_30,sum(over_60) over_60, 
+    sum(over_90) over_90, sum(over_120) over_120, sum(over_150) over_150, 
+    sum(over_180) over_180, sum(over_210) over_210, sum(over_240) over_240, 
+    sum(over_270) over_270, sum(over_300) over_300, sum(over_400) over_400, 
+    sum(over_500) over_500, sum(over_600) over_600, sum(over_700) over_700, 
+    sum(over_800) over_800,sum(over_1000) over_1000,sum(over_book) over_book
+from {db}.{tab}
+where start_date >= '{s_date}' and start_date < '{e_date}' 
 GROUP BY book_id,channel_id,last_chapter_id,is_finish,start_date
 """
 
@@ -942,6 +968,60 @@ SELECT date(FROM_UNIXTIME(createtime)) date_day,book_id,
 from log_block.action_log{_block}_{num}
 where createtime >= UNIX_TIMESTAMP('{s_date}') and type = 5
 GROUP BY date_day,book_id
+"""
+
+
+""" ************** -*- analysis -*- ************** """
+
+sql_order_save = """
+SELECT 
+    date_day,
+    first_day,
+    first_sub,
+    user_id,
+    user_sub,
+    if(is_first=1,'首充',if(first_sub=0,'当日',if(first_sub=1,'次日',
+    if(first_sub=2,'3日',if(first_sub=3,'4日',if(first_sub>3 and first_sub<7,'4-7日',
+    if(first_sub>=7 and first_sub<14,'7-14日',if(first_sub>=14 and first_sub<30,'14-30日',
+    if(first_sub>=30 and first_sub<90,'30-90日','90日以上'))))))))) first_box,
+    if(user_sub=0,'当日',if(user_sub=1,'次日',if(user_sub=2,'3日',
+    if(user_sub=3,'4日',if(user_sub>3 and user_sub<7,'4-7日',
+    if(user_sub>=7 and user_sub<14,'7-14日',if(user_sub>=14 and user_sub<30,'14-30日',
+    if(user_sub>=30 and user_sub<90,'30-90日','90日以上')))))))) logon_box,
+    book_id,referral_book,admin_id channel_id,type
+from (
+    SELECT 
+        date(FROM_UNIXTIME(createtime)) date_day,
+        date(FROM_UNIXTIME(first_time)) first_day,
+        TIMESTAMPDIFF(DAY,date(FROM_UNIXTIME(first_time)),date(FROM_UNIXTIME(createtime))) first_sub,
+        TIMESTAMPDIFF(DAY,date(FROM_UNIXTIME(user_createtime)),date(FROM_UNIXTIME(createtime))) user_sub,
+        book_id,referral_book,admin_id,type,if(createtime=first_time,1,0) is_first,user_id
+    from orders_log.orders_log_{num}
+    where deduct = 0 and state = 1 and createtime >= UNIX_TIMESTAMP('{s_date}')
+) a
+"""
+
+
+""" ************** -*- one_book_locus -*- ************** """
+
+sql_one_book_logon = """
+SELECT user_id,admin_id,'logon' type,FROM_UNIXTIME(createtime) create_date,date(FROM_UNIXTIME(createtime)) date_day
+from user_info.user_info_{num}
+where referral_book = {book_id}
+"""
+
+sql_one_book_read = """
+SELECT user_id,channel_id admin_id,'read' type,
+    FROM_UNIXTIME(createtime) create_date,date(FROM_UNIXTIME(createtime)) date_day
+from user_read.user_read_{num}
+where book_id = {book_id}
+"""
+
+sql_one_book_order = """
+SELECT user_id,admin_id,'order' type,
+    FROM_UNIXTIME(createtime) create_date,date(FROM_UNIXTIME(createtime)) date_day,money,type order_type
+from orders_log.orders_log_{num}
+where book_id = {book_id} and state = 1 and deduct= 0
 """
 
 

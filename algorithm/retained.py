@@ -256,6 +256,20 @@ class RunCount:
         conn.close()
 
 
+def ladder_by_day_count(func, write_conn, write_db, write_tab, s_date=None, day_ladder=None, **kwargs):
+    if not s_date:
+        s_date = '2019-07-01'
+    if not day_ladder:
+        day_ladder = -30
+    end_day = emdate.datetime_format_code(dt.datetime.now())
+    while s_date <= end_day:
+        _date = emdate.date_sub_days(day_ladder, s_date)
+        print('======> is start to run {db}.{tab} - {_s} to {_e} ===> start time:'.format(
+            db=write_db, tab=write_tab, _s=s_date, _e=_date), dt.datetime.now())
+        func(write_conn, write_db, write_tab, s_date, _date, **kwargs)
+        s_date = _date
+
+
 def count_order_logon_conversion(host, write_db, write_tab, date, num):
     print('======> is start to run {db}.{tab} - {num} ===> start time:'.format(
         db=write_db, tab=write_tab, num=num), dt.datetime.now())
@@ -631,8 +645,38 @@ def chart_book_admin_read_count_30(host, write_db, write_tab, date_type_name, da
     print('======> is start to run {db}.{tab} - count - {date} ===> start time:'.format(
         db=write_db, tab=write_tab, date=date), dt.datetime.now())
     conn = rd.connect_database_host(host['host'], host['user'], host['pw'])
+    ladder_by_day_count(
+        chart_book_admin_read_count_30_day_ladder, conn, write_db, write_tab, date_type_name=date_type_name
+    )
+    conn.close()
+    # read_date = pd.read_sql(
+    #     sql_code.sql_book_admin_read_count_30.format(db=write_db, tab=write_tab, date=date), conn
+    # )
+    # book_info = pd.read_sql(
+    #     sql_code.sql_retained_three_index_by_user_count_book_info, conn
+    # )
+    # admin_info = pd.read_sql(
+    #     sql_code.sql_retained_admin_info, conn
+    # )
+    # read_date['book_id'] = read_date['book_id'].astype(int)
+    # book_info['book_id'] = book_info['book_id'].astype(int)
+    # read_date['channel_id'] = read_date['channel_id'].astype(int)
+    # admin_info['channel_id'] = admin_info['channel_id'].astype(int)
+    # read_date = pd.merge(read_date, book_info, on='book_id', how='left')
+    # read_date = pd.merge(read_date, admin_info, on='channel_id', how='left')
+    # read_date = read_date.fillna(0)
+    # rd.delete_last_date(conn, write_db, write_tab, date_type_name, date)
+    # rd.subsection_insert_to_data(read_date, conn, write_db, write_tab)
+    # conn.close()
+
+
+def chart_book_admin_read_count_30_day_ladder(conn, write_db, write_tab, s_date, _date, date_type_name):
+    print('======> is start to run {db}.{tab} - count - {s_date} to {_date} ===> start time:'.format(
+        db=write_db, tab=write_tab, s_date=s_date, _date=_date), dt.datetime.now())
     read_date = pd.read_sql(
-        sql_code.sql_book_admin_read_count_30.format(db=write_db, tab=write_tab, date=date), conn
+        sql_code.sql_book_admin_read_count_30_day_ladder.format(
+            db=write_db, tab=write_tab, s_date=s_date, e_date=_date
+        ), conn
     )
     book_info = pd.read_sql(
         sql_code.sql_retained_three_index_by_user_count_book_info, conn
@@ -647,9 +691,9 @@ def chart_book_admin_read_count_30(host, write_db, write_tab, date_type_name, da
     read_date = pd.merge(read_date, book_info, on='book_id', how='left')
     read_date = pd.merge(read_date, admin_info, on='channel_id', how='left')
     read_date = read_date.fillna(0)
-    rd.delete_last_date(conn, write_db, write_tab, date_type_name, date)
+    write_tab = write_tab + '_count'
+    rd.delete_last_date(conn, write_db, write_tab, date_type_name, s_date)
     rd.subsection_insert_to_data(read_date, conn, write_db, write_tab)
-    conn.close()
 
 
 def chart_book_admin_read_new_user_30(read_config, db_name, tab_name, date_col, num, s_date=None):
@@ -926,3 +970,30 @@ def read_one_num_data_book_consume(write_conn, date_list, s_date, num):
     all_date_df = pd.concat(all_date_data)
     all_date_df.fillna(0, inplace=True)
     return all_date_df
+
+
+def order_book_date_sub(read_config, db_name, tab_name, date_col, num, s_date=None):
+    if isinstance(s_date, list):
+        s_date = s_date[0]
+    print('======> is start to run {db}.{tab} - {num} - {date} ===> start time:'.format(
+        db=db_name, tab=tab_name, date=s_date, num=num), dt.datetime.now())
+    conn = rd.connect_database_host(read_config['host'], read_config['user'], read_config['pw'])
+    order_data = pd.read_sql(
+        sql_code.sql_order_save.format(num=num, s_date=s_date), conn
+    )
+    book_info = pd.read_sql(
+        sql_code.sql_retained_three_index_by_user_count_book_info, conn
+    )
+    admin_info = pd.read_sql(
+        sql_code.sql_retained_admin_info, conn
+    )
+    order_data['book_id'] = order_data['book_id'].astype(int)
+    book_info['book_id'] = book_info['book_id'].astype(int)
+    order_data['channel_id'] = order_data['channel_id'].astype(int)
+    admin_info['channel_id'] = admin_info['channel_id'].astype(int)
+    read_date = pd.merge(order_data, book_info, on='book_id', how='left')
+    read_date = pd.merge(read_date, admin_info, on='channel_id', how='left')
+    read_date = read_date.fillna(0)
+
+    rd.insert_to_data(read_date, conn, db_name, tab_name)
+    conn.close()

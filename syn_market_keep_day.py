@@ -93,7 +93,7 @@ def syn_market_logon_compress_thirty_day(s_date=None):
 @loger.logging_read
 def syn_market_book_admin_read_situation(s_date=None):
     work = retained.RunCount(
-        write_db='market_read', write_tab='book_admin_read_situation_30', date_col='start_date', extend='delete'
+        write_db='market_read', write_tab='book_admin_read_situation_30', date_col='start_date',  extend='delete'
     )
     if s_date:
         work.s_date = s_date
@@ -105,11 +105,11 @@ def syn_market_book_admin_read_situation(s_date=None):
     )
 
 
-@loger.logging_read
+# @loger.logging_read
 def syn_new_user_market_book_admin_read_situation(s_date=None):
     work = retained.RunCount(
         write_db='market_read', write_tab='new_user_book_admin_read_situation_30',
-        date_col='start_date', extend='delete'
+        date_col='start_date',  extend='delete'
     )
     if s_date:
         work.s_date = s_date
@@ -204,7 +204,7 @@ def syn_index_data_run(s_date=None):
         work.s_date = s_date
     work.step_run_kwargs(
         func=retained.index_data,
-        date_sub=15,
+        date_sub=3,
         process_num=12
     )
 
@@ -217,7 +217,7 @@ def syn_index_data_month_run(s_date=None):
         work.s_date = s_date
     work.step_run_kwargs(
         func=retained.index_data_month,
-        date_sub=15,
+        date_sub=35,
         process_num=12
     )
 
@@ -230,7 +230,20 @@ def syn_index_book_consume_run(s_date=None):
         work.s_date = s_date
     work.step_run_kwargs(
         func=retained.index_data_book_consume,
-        date_sub=15,
+        date_sub=2,
+        process_num=12
+    )
+
+
+def order_book_date_sub_run(s_date=None):
+    work = retained.RunCount(
+        write_db='market_read', write_tab='order_book_date_sub', date_col='date_day', extend='delete'
+    )
+    if s_date:
+        work.s_date = s_date
+    work.step_run_kwargs(
+        func=retained.order_book_date_sub,
+        date_sub=2,
         process_num=12
     )
 
@@ -242,9 +255,6 @@ if __name__ == '__main__':
     syn_admin_book_order()  # 书籍分销
     table_show_logon_admin_book_order('2020-06-01')  # 书籍分销 展示 -> .1h
     syn_market_logon_compress_thirty_day()  # 注册后30日的订阅
-    syn_market_book_admin_read_situation()  # 跟读率 -> .3h
-    syn_new_user_market_book_admin_read_situation()  # 新用户-图书跟读率 -> .3h
-    syn_market_keep_day_admin_new()  # 带渠道和书的留存数据 -> 3h
 
     conversion_funnel_count()  # 转化漏斗 -> .2h
     conversion_funnel_count_all_book()  # 转化漏斗-所有书 -> .8h
@@ -256,6 +266,12 @@ if __name__ == '__main__':
     syn_index_data_month_run()
     syn_index_book_consume_run()
 
+    syn_market_book_admin_read_situation()  # 跟读率 -> .3h
+    syn_new_user_market_book_admin_read_situation()  # 新用户-图书跟读率 -> .3h
+
+    syn_market_keep_day_admin_new()  # 带渠道和书的留存数据 -> 3h
+
     """ ****** ↓ discard ↓ ****** """
+    # order_book_date_sub_run('2019-01-01')
     # syn_market_keep_day_by_order_consume()  # 新留存 订阅和充值 -- 废弃 210412
     # syn_market_keep_day()  # 老留存 -- 废弃 210412

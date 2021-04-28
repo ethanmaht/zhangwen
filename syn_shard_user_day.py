@@ -5,7 +5,7 @@ from logs import loger
 from algorithm import retained
 
 
-@loger.logging_read
+# @loger.logging_read
 def syn_shard_user_day_work(s_date=None):
     shard_user_day_work = rd.DataBaseWork()
     if s_date:

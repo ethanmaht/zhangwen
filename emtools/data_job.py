@@ -6,6 +6,7 @@ from emtools import emdate
 import datetime as dt
 from logs import loger
 import os
+import json
 import time
 
 
@@ -122,7 +123,6 @@ def user_and_order(read_conn_fig, write_conn_fig, date, referral_data, date_sub,
 
 
 # 同步维度表： 渠道，书，推广
-@loger.logging_read
 def read_dict_table(read_conn_fig, write_conn_fig, date):
     print('======> is work to read -*- read_dict_table -*- ===> start:', dt.datetime.now())
     write_db_name = 'market_read'
@@ -132,6 +132,7 @@ def read_dict_table(read_conn_fig, write_conn_fig, date):
     read_dict_all(read_conn, write_conn, sql_code.sql_dict_total_book, write_db_name, 'book_info')
     read_dict_all(read_conn, write_conn, sql_code.sql_book_channel_price, write_db_name, 'book_channel_price')
     read_dict_update(read_conn, write_conn, sql_code.sql_dict_update_referral, write_db_name, 'referral_info', date)
+    read_custom_update(read_conn, write_conn, sql_code.sql_dict_update_custom, write_db_name, 'custom', date)
     read_conn.close()
     write_conn.close()
 
@@ -156,7 +157,21 @@ def read_dict_update(read_conn, write_conn, read_sql, write_db_name, write_tab_n
     rd.insert_to_data(data_info, write_conn, write_db_name, write_tab_name)
 
 
-@loger.logging_read
+def read_custom_update(read_conn, write_conn, read_sql, write_db_name, write_tab_name, date, fill_na=0):
+    print('****** is time to write table: ', write_tab_name)
+    if not date:
+        date = rd.read_last_date(write_conn, write_db_name, write_tab_name, 'updatetime')
+    custom_url = pd.read_sql(
+        sql_code.sql_dict_update_custom_url.format(date=date), read_conn
+    )
+    custom = pd.read_sql(
+        read_sql.format(date=date), read_conn
+    )
+    data_info = pd.merge(custom_url, custom, on='custom_id', how='left')
+    data_info.fillna(fill_na, inplace=True)
+    rd.subsection_insert_to_data(data_info, write_conn, write_db_name, write_tab_name)
+
+
 def read_kd_log(write_conn_fig, write_db, write_tab, num, date=None, end_date=None):
     print('======> is start to run {db}.{tab} - {num} ===> start time:'.format(
         db=write_db, tab=write_tab, num=num), dt.datetime.now())
@@ -206,7 +221,6 @@ def _kd_log_read_data(read_conn, write_conn, s_date, e_date, num):
     return _log_info
 
 
-# @loger.logging_read
 def read_user_recently_read(write_conn_fig, write_db, write_tab, num, date=None, end_date=None):
     print('======> is start to run {db}.{tab} - {num} ===> start time:'.format(
         db=write_db, tab=write_tab, num=num), dt.datetime.now())
