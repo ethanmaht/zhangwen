@@ -1005,25 +1005,32 @@ from (
 """ ************** -*- one_book_locus -*- ************** """
 
 sql_one_book_logon = """
-SELECT user_id,admin_id,'logon' type,FROM_UNIXTIME(createtime) create_date,date(FROM_UNIXTIME(createtime)) date_day
+SELECT user_id,'logon' type,FROM_UNIXTIME(createtime) create_date,date(FROM_UNIXTIME(createtime)) date_day
 from user_info.user_info_{num}
 where referral_book = {book_id}
 """
 
 sql_one_book_read = """
-SELECT user_id,channel_id admin_id,'read' type,
+SELECT user_id,'read' type,
     FROM_UNIXTIME(createtime) create_date,date(FROM_UNIXTIME(createtime)) date_day
 from user_read.user_read_{num}
 where book_id = {book_id}
 """
 
 sql_one_book_order = """
-SELECT user_id,admin_id,'order' type,
+SELECT user_id,'order' type,
     FROM_UNIXTIME(createtime) create_date,date(FROM_UNIXTIME(createtime)) date_day,money,type order_type
 from orders_log.orders_log_{num}
 where book_id = {book_id} and state = 1 and deduct= 0
 """
 
+sql_one_book_consume = """
+SELECT user_id,'consume' type,FROM_UNIXTIME(createtime) create_date,date(FROM_UNIXTIME(createtime)) date_day
+from cps_shard_{num}.consume
+where book_id = {book_id}
+"""
+
+sql_one_book_user_info = sql_user_info_kd_log
 
 """ ************** -*- give up sql -*- ************** """
 

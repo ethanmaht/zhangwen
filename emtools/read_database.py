@@ -11,7 +11,7 @@ from emtools import currency_means as cm
 import time
 
 
-def read_db_host(file_path):
+def read_db_host(file_path=None):
     if not file_path:
         file_path = os.path.split(os.path.realpath(__file__))[0] + '/config.yml'
     _file = open(file_path, 'r', encoding='utf-8')
@@ -273,3 +273,25 @@ def read_date_block(conn, sql, date_list, num):
         _re_data.append(one_num_data_block)
     re_data = pd.concat(_re_data)
     return re_data
+
+
+def data_sub(all_date_df, id_col, date_col):
+    all_date_df.sort_values(by=[id_col, date_col], inplace=True)
+    all_date_df.fillna(0, inplace=True)
+    all_date_df[id_col] = all_date_df[id_col].astype(int)
+    all_date_df['next_id'] = all_date_df[id_col].shift(1)
+    all_date_df['next_date'] = all_date_df[date_col].shift(1)
+    all_date_df['day_sub'] = all_date_df.apply(
+        lambda x: _date_cat(x[id_col], x['next_id'], x[date_col], x['next_date']), axis=1
+    )
+    _all_date_df = all_date_df.loc[:, [id_col, date_col, 'day_sub']]
+    _all_date_df.fillna(-1, inplace=True)
+    return _all_date_df
+
+
+def _date_cat(user_id, next_id, date_day, next_date):
+    if not next_date:
+        return -1
+    if user_id != next_id:
+        return -1
+    return emdate.sub_date(next_date, date_day)
