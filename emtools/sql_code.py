@@ -1032,6 +1032,100 @@ where book_id = {book_id}
 
 sql_one_book_user_info = sql_user_info_kd_log
 
+sql_order_today_user_before = """
+SELECT book_id,admin_id channel_id,count(*) before_times,count(DISTINCT user_id) before_user,sum(money) before_money
+from orders_log.orders_log_{num} 
+where user_id in (
+    SELECT user_id 
+    from orders_log.orders_log_{num} 
+    where createtime >= UNIX_TIMESTAMP('{s_date}')
+    and createtime < UNIX_TIMESTAMP('{e_date}')
+    and book_id = {book}
+)
+and createtime < UNIX_TIMESTAMP('{s_date}')
+GROUP BY book_id,admin_id
+"""
+
+sql_book_before_users = """
+SELECT book_id,channel_id,count(DISTINCT user_id) book_user
+from user_read.user_read_{num}
+where createtime < UNIX_TIMESTAMP('{s_date}')
+and book_id = {book}
+GROUP BY book_id,channel_id
+"""
+
+sql_channel_before_users = """
+SELECT admin_id channel_id,count(*) admin_user
+from user_info.user_info_{num}
+where createtime < UNIX_TIMESTAMP('{s_date}')
+GROUP BY admin_id
+"""
+
+sql_active_sub = """
+SELECT channel_id,type,day_sub,count(DISTINCT user_id) active_users
+from one_book.book_{book}_{num}
+where date_day = '{s_date}'
+GROUP BY channel_id,type,day_sub
+"""
+
+sql_logon_sub = """
+SELECT channel_id,logon_sub,count(DISTINCT user_id) active_users
+from one_book.book_{book}_{num}
+where date_day = '{s_date}'
+and type = 'order'
+GROUP BY channel_id,logon_sub
+"""
+
+sql_result_order = """
+SELECT channel_id,count(DISTINCT user_id) order_users,count(*) order_times
+from one_book.book_{book}_{num}
+where date_day = '{s_date}' and type = 'order'
+GROUP BY channel_id
+"""
+
+sql_mid_active_sub = """
+SELECT channel_id,type,day_sub,sum(active_users) active_users
+from model.mid_active_sub
+GROUP BY channel_id,type,day_sub
+"""
+
+sql_mid_book_before_users = """
+SELECT channel_id,sum(book_user) book_user
+from model.mid_book_before_users
+GROUP BY channel_id
+"""
+
+sql_mid_channel_before_users = """
+SELECT channel_id,sum(admin_user) admin_user
+from model.mid_channel_before_users
+GROUP BY channel_id
+"""
+
+sql_mid_logon_sub = """
+SELECT channel_id,logon_sub,sum(active_users) active_users
+from model.mid_logon_sub
+GROUP BY channel_id,logon_sub
+"""
+
+sql_mid_result_order = """
+SELECT channel_id,sum(order_users) order_users,sum(order_times) order_times
+from model.mid_result_order
+GROUP BY channel_id
+"""
+
+sql_mid_before_order_book = """
+SELECT channel_id,book_id,sum(before_times) before_times,sum(before_user) before_user,sum(before_money) before_money
+from model.mid_before_order
+GROUP BY channel_id,book_id
+"""
+
+sql_mid_before_order_money = """
+SELECT channel_id,before_money money_box,sum(before_times) money_times
+from model.mid_before_order
+GROUP BY channel_id,before_money
+"""
+
+
 """ ************** -*- give up sql -*- ************** """
 
 analysis_reason_for_save = """

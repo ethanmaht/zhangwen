@@ -35,3 +35,4 @@
 [MissionStart]:mission name 'syn_market_book_admin_read_situation'; time:2021-04-28 19:23:28.804061
 [MissionStart]:mission name 'syn_market_book_admin_read_situation'; time:2021-04-28 19:23:59.189610
 [MissionStart]:mission name 'syn_market_book_admin_read_situation'; time:2021-04-28 19:25:38.073003
+[MissionStart]:mission name 'sound_market_chapter_count'; time:2021-05-06 09:43:29.238569

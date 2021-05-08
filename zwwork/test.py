@@ -1,11 +1,41 @@
-import re
+from pandas import DataFrame as df
+import numpy as np
+import pymysql
+import pandas as pd
+from emtools import read_database as rd
 import json
+import pyecharts
 
 
-a = '[{"url": "https://wx6dd439ffc27afa14.zhangwenwenhua.com/index/book/chapter?book_id=10042564", "cost": "", "push": "1", "type": "0", "title": "📚《你是澎湃的海》--她瞧不起他，诋毁他，讨厌他。可有一天，谁都没料到，这人竟然一跃成为她的丈夫。", "book_id": "10042564", "wx_type": "1", "book_name": "你是澎湃的海", "title_type": "0", "channel_name": "0427客服", "guide_chapter_idx": "8"}]'
+def df_columns_index_reset(_df):
+    index_name, index_values = _df.index.name, _df.index.values
+    re_df = df(_df.values)
+    col_name, _one_col = [], None
+    for _cols in _df.columns:
+        for _ in _cols:
+            if _one_col:
+                _one_col = _one_col + '_' + _
+            else:
+                _one_col = _
+        col_name.append(_one_col)
+        _one_col = None
+    re_df.columns = col_name
+    re_df[index_name] = index_values
+    return re_df
 
 
-b = json.loads(a)
+conn = rd.connect_database_vpn('datamarket')
 
-print(b[0])
+sql = """
+SELECT * from model.mid
+"""
+
+_d = pd.read_sql(sql, conn)
+
+test = _d.to_dict(orient='records')
+for _ in test:
+    print(_)
+    json1 = eval(_['active_sub'])
+    print(json1)
+
 

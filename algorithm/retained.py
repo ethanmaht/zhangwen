@@ -166,7 +166,8 @@ class RunCount:
 
     def step_run_kwargs(
             self, func,
-            date_sub=None, process_num=16, run_num=512, interval=0.03, step=1, follow_func=None,
+            date_sub=None, process_num=16, run_num=512, interval=0.03, step=1,
+            front_func=None, follow_func=None, end_func=None,
             **kwargs
     ):
         tar_date_list = self.get_date(date_sub=date_sub)
@@ -176,17 +177,32 @@ class RunCount:
                 tars = [_ for _ in range(run_num)]
             else:
                 tars = run_num
+            if front_func:
+                front_func(
+                    host=self.host, write_db=self.write_db, write_tab=self.write_tab,
+                    date_type_name=self.date_col, date=_day,
+                    **kwargs
+                )
             cm.thread_work_kwargs(
                 func=func, run_list=tars, read_config=self.host, db_name=self.write_db, tab_name=self.write_tab,
                 s_date=_day, date_col=self.date_col, process_num=process_num, interval=interval, step=step,
                 **kwargs
             )
             if follow_func:
-                follow_func(
-                    host=self.host, write_db=self.write_db, write_tab=self.write_tab,
-                    date_type_name=self.date_col, date=_day,
-                    **kwargs
-                )
+                try:
+                    follow_func(
+                        host=self.host, write_db=self.write_db, write_tab=self.write_tab,
+                        date_type_name=self.date_col, date=_day,
+                        **kwargs
+                    )
+                except:
+                    pass
+        if end_func:
+            end_func(
+                host=self.host, write_db=self.write_db, write_tab=self.write_tab,
+                date_type_name=self.date_col,
+                **kwargs
+            )
 
     def direct_run(self, func, *args):
         if self.date_col:

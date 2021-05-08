@@ -253,3 +253,13 @@ def fill_na_by_col(fill_col, none_col):
     if isinstance(none_col, float):
         return fill_col
     return none_col
+
+
+def val_to_df_one_lat(_df, id_type, val_name):
+    re_list = []
+    id_list = set(_df[id_type].to_list())
+    records_list = _df.to_dict(orient='records')
+    for _id in id_list:
+        _lat = [_ for _ in records_list if _[id_type] == _id]
+        re_list.append({id_type: _id, val_name: str(_lat)})
+    return df(re_list)
