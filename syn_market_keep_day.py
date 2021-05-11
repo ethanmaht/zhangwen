@@ -29,7 +29,7 @@ def syn_market_keep_day_admin(s_date=None):
     )
 
 
-@loger.logging_read
+# @loger.logging_read
 def syn_market_keep_day_admin_new(s_date=None):
     work = retained.RunCount('market_read', 'market_keep_day_admin_test', 'date_day', extend='delete')
     if s_date:
@@ -90,7 +90,7 @@ def syn_market_logon_compress_thirty_day(s_date=None):
     )
 
 
-@loger.logging_read
+# @loger.logging_read
 def syn_market_book_admin_read_situation(s_date=None):
     work = retained.RunCount(
         write_db='market_read', write_tab='book_admin_read_situation_30', date_col='start_date',  extend='delete'
@@ -183,6 +183,14 @@ def conversion_funnel_count_all_book(s_date=None):
     )
 
 
+def conversion_message_push_run():
+    retained.conversion_message_push(
+        read_config='market_read',
+        db_name='market_read',
+        tab_name='conversion_custom_message_push'
+    )
+
+
 def syn_user_date_interval_run(s_date=None):
     work = retained.RunCount(
         write_db='user_interval', write_tab='user_date_interval', date_col='date_day', extend='delete'
@@ -258,6 +266,7 @@ if __name__ == '__main__':
 
     conversion_funnel_count()  # 转化漏斗 -> .2h
     conversion_funnel_count_all_book()  # 转化漏斗-所有书 -> .8h
+    conversion_message_push_run()  # 转化漏斗 消息发送 -> .h
 
     sound_market_book_count('2020-04-01')  # 有声book数据 -> .1h
     sound_market_chapter_count('2020-04-01')  # 有声chapter数据 -> .1h

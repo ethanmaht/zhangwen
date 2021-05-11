@@ -232,6 +232,10 @@ FROM cps.custom_url
 where updatetime >= '{date}';
 """
 
+sql_dict_update_custom_url_collect = """
+SELECT * from cps.custom_url_collect
+"""
+
 sql_dict_update_referral_sound = """
 SELECT id,book_id,chapter_id,admin_id,chapter_name,cost,type,uv,follow,unfollow_num,net_follow_num,
     guide_chapter_idx,incr_num,money,orders_num,createtime,updatetime,state 

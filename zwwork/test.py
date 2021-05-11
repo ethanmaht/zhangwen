@@ -39,3 +39,6 @@ for _ in test:
     print(json1)
 
 
+def open_df_one_lat(_df):
+    print()
+

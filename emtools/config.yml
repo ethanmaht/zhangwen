@@ -105,3 +105,47 @@ cps_host_sound:
     mahongtao
   pw:
     Qiyue@321
+
+
+kuaiyong_user:
+  host:
+    rm-bp1x902rfj802ztsj.mysql.rds.aliyuncs.com
+  user:
+    dianzhong
+  pw:
+    Heiyan@123
+
+
+kuaiyong_read:
+  host:
+    rm-bp15o3b7f09t16m0m.mysql.rds.aliyuncs.com
+  user:
+    dianzhong
+  pw:
+    Heiyan@123
+
+
+kuaiyong_cps:
+  host:
+    rm-bp1475767c9103x8k.mysql.rds.aliyuncs.com
+  user:
+    dianzhong
+  pw:
+    Heiyan@123
+
+
+kuaiyong_consume:
+  region:
+    - 64
+    - 128
+    - 192
+    - 256
+  host:
+    - rm-bp1df809a4d8nkb9x.mysql.rds.aliyuncs.com
+    - rm-bp1ash32rt0ry51a6.mysql.rds.aliyuncs.com
+    - rm-bp1169xrmdiu7u6w9.mysql.rds.aliyuncs.com
+    - rm-bp1wr2f23t57pxclv.mysql.rds.aliyuncs.com
+  user:
+    dianzhong
+  pw:
+    Heiyan@123

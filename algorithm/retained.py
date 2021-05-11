@@ -241,7 +241,6 @@ class RunCount:
         if self.s_date:
             _date = self.s_date
         else:
-            print(self.host)
             conn = rd.connect_database_host(self.host['host'], self.host['user'], self.host['pw'])
             _date = rd.read_last_date(conn, self.write_db, self.write_tab, date_type_name=self.date_col)
             conn.close()
@@ -1013,3 +1012,11 @@ def order_book_date_sub(read_config, db_name, tab_name, date_col, num, s_date=No
 
     rd.insert_to_data(read_date, conn, db_name, tab_name)
     conn.close()
+
+
+def conversion_message_push(read_config, db_name, tab_name):
+    conn = rd.connect_database_host(read_config['host'], read_config['user'], read_config['pw'])
+    custom = pd.read_sql('', conn)
+    url_collect = pd.read_sql('', conn)
+    custom = pd.merge(custom, url_collect, on='', how='left')
+    rd.insert_to_data(custom, conn, db_name, tab_name)

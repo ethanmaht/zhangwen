@@ -39,4 +39,4 @@ def syn_book_mid_data_run(s_date=None):
 
 if __name__ == '__main__':
     # syn_index_book_consume_run(s_date='2019-01-01')
-    syn_book_mid_data_run(s_date='2020-01-20')
+    syn_book_mid_data_run(s_date='2020-02-01')
