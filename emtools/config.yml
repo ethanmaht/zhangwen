@@ -43,6 +43,12 @@ datamarket:
   pw: Qiyue@123
   db_name: happy_seven
 
+datamarket_out:
+  host: 8.140.112.119
+  user: root
+  pw: Qiyue@123
+  db_name: happy_seven
+
 shard_1:
   host: rr-2zeosaq969q3d1lw2.mysql.rds.aliyuncs.com
   user: cps_select
@@ -110,6 +116,7 @@ cps_host_sound:
 kuaiyong_user:
   host:
     rm-bp1x902rfj802ztsj.mysql.rds.aliyuncs.com
+    # rm-bp1x902rfj802ztsjbo.mysql.rds.aliyuncs.com
   user:
     dianzhong
   pw:
@@ -119,6 +126,7 @@ kuaiyong_user:
 kuaiyong_read:
   host:
     rm-bp15o3b7f09t16m0m.mysql.rds.aliyuncs.com
+    # rm-bp15o3b7f09t16m0m3o.mysql.rds.aliyuncs.com
   user:
     dianzhong
   pw:
@@ -149,3 +157,21 @@ kuaiyong_consume:
     dianzhong
   pw:
     Heiyan@123
+
+
+kuaiyong_order:
+  host:
+    pc-bp1t4p4awz411rxe0.rwlb.rds.aliyuncs.com
+  user:
+    dianzhong
+  pw:
+    Heiyan@123
+
+
+kuaiyong_market:
+  host:
+    121.40.53.178
+  user:
+    kuaiyong
+  pw:
+    1a2s3d4f

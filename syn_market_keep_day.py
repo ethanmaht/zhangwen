@@ -262,16 +262,16 @@ if __name__ == '__main__':
     syn_market_keep_day()  # 老留存 -- 不废弃
     syn_admin_book_order()  # 书籍分销
     table_show_logon_admin_book_order('2020-06-01')  # 书籍分销 展示 -> .1h
-    syn_market_logon_compress_thirty_day()  # 注册后30日的订阅
+    syn_market_logon_compress_thirty_day()  # 注册后30日的订阅 -> .3h
 
     conversion_funnel_count()  # 转化漏斗 -> .2h
     conversion_funnel_count_all_book()  # 转化漏斗-所有书 -> .8h
-    conversion_message_push_run()  # 转化漏斗 消息发送 -> .h
+    # conversion_message_push_run()  # 转化漏斗 消息发送 -> .h
 
     sound_market_book_count('2020-04-01')  # 有声book数据 -> .1h
     sound_market_chapter_count('2020-04-01')  # 有声chapter数据 -> .1h
 
-    syn_index_data_run()
+    syn_index_data_run()  # 大盘数据 -> .3h
     syn_index_data_month_run()
     syn_index_book_consume_run()
 

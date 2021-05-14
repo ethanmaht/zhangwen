@@ -158,7 +158,7 @@ group by user_id
 
 sql_order_info = """
 select id,user_id,createtime,updatetime,state,type,book_id,chapter_id,admin_id,referral_id_permanent,
-    money,money_benefit,benefit,kandian,free_kandian,user_createtime,deduct
+    money,money_benefit,benefit,kandian,free_kandian,user_createtime,deduct,activity_id
 FROM cps_user_{_num}.orders
 where createtime >= '{date}'
 """
@@ -234,6 +234,10 @@ where updatetime >= '{date}';
 
 sql_dict_update_custom_url_collect = """
 SELECT * from cps.custom_url_collect
+"""
+
+sql_dict_update_custom_url_activity = """
+SELECT * from cps.activity
 """
 
 sql_dict_update_referral_sound = """
@@ -1208,4 +1212,11 @@ from (SELECT distinct a.user_id, bv,signv,fdv,kdv,orderv FROM happy_seven.user_d
     where date_day = '{e_day}' and order_success > 0) orders 
         on a.user_id = orders.user_id
 where date_day = '{s_day}' and logon > 0) base
+"""
+
+sql_order_users_money_test = """
+SELECT date(FROM_UNIXTIME(createtime)) date_day,user_id,type
+from cps_user_{num}.orders
+where createtime >= UNIX_TIMESTAMP('{s_date}') and state = '1' and deduct = '0'
+# group by date_day
 """

@@ -128,14 +128,17 @@ def read_dict_table(read_conn_fig, write_conn_fig, date):
     write_db_name = 'market_read'
     read_conn = rd.connect_database_host(read_conn_fig)
     write_conn = rd.connect_database_vpn(write_conn_fig)
-    read_dict_all(read_conn, write_conn, sql_code.sql_dict_total_admin, write_db_name, 'admin_info')
-    read_dict_all(read_conn, write_conn, sql_code.sql_dict_total_book, write_db_name, 'book_info')
-    read_dict_all(read_conn, write_conn, sql_code.sql_book_channel_price, write_db_name, 'book_channel_price')
-    read_dict_update(read_conn, write_conn, sql_code.sql_dict_update_referral, write_db_name, 'referral_info', date)
-    read_custom_update(read_conn, write_conn, sql_code.sql_dict_update_custom, write_db_name, 'custom', date)
-    read_custom_url_collect(
-        read_conn, write_conn, sql_code.sql_dict_update_custom_url_collect, write_db_name, 'custom_url_collect', date
-    )
+    # read_dict_all(read_conn, write_conn, sql_code.sql_dict_total_admin, write_db_name, 'admin_info')
+    # read_dict_all(read_conn, write_conn, sql_code.sql_dict_total_book, write_db_name, 'book_info')
+    # read_dict_all(read_conn, write_conn, sql_code.sql_book_channel_price, write_db_name, 'book_channel_price')
+    # read_dict_update(read_conn, write_conn, sql_code.sql_dict_update_referral, write_db_name, 'referral_info', date)
+    # read_custom_update(read_conn, write_conn, sql_code.sql_dict_update_custom, write_db_name, 'custom', date)
+    # read_custom_url_collect(
+    #     read_conn, write_conn, sql_code.sql_dict_update_custom_url_collect, write_db_name, 'custom_url_collect', date
+    # )
+    # read_custom_url_collect(
+    #     read_conn, write_conn, sql_code.sql_dict_update_custom_url_activity, write_db_name, 'activity', date
+    # )
     read_conn.close()
     write_conn.close()
 

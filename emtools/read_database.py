@@ -68,7 +68,7 @@ class DataBaseWork:
         self.host = ''
         self.date = None
         self.process_num = 8
-        self.date_sub = 0
+        self.date_sub = 3
 
     def loop_all_database(self):
         for _db in self.data_list:
