@@ -32,13 +32,19 @@ left join kyycps.admin vip on r.vip_id = vip.id
 left join kyycps.referral re on r.referral_id = re.id
 """
 
+sql_book_info = """
+SELECT book_id,name book_name,status,price,total_chapter_num,total_word_size,market_status,is_sync
+from glory.b_book
+"""
+
 sql_user_info = """
-SELECT user_id,ctime,date(ctime) create_date,channel_code,extend
+SELECT user_id,ctime,utime,date(ctime) create_date,channel_code,extend
 from glory_sharding_{num}.u_user_info
+where utime >= '{s_date}'
 """
 
 sql_user_order = """
-SELECT user_id,ctime,status_notify,extend
+SELECT id,user_id,ctime,status_notify,extend,type,price,discount,award,quantity
 from glory_userdata.b_order
 where ctime >= '{s_date}'
 """
@@ -60,5 +66,66 @@ GROUP by book_id
 sql_consume_log = """
 SELECT user_id,type,src_id book_id,chapter_id,channel_code,amount,award,ctime
 from glory_sharding_{num}.b_owch_consume_h
-where ctime >= '{num}'
+where ctime >= '{s_date}'
+"""
+
+sql_recently_read_info = """
+SELECT uid user_id,bookid book_id,chapterid,utime,ctime read_time,date(ctime) read_date,date(utime) u_date,
+    chapterid % 10000 chapter_num
+from glory_sharding_{num}.b_recently_read
+where utime >= '{s_date}'
+"""
+
+
+""" kuaiyong data market sql """
+
+sql_user = """
+SELECT user_id,create_date,channel_code,book_id,1 logon_user,isAddDesktop AddDesktop
+from kuaiyong.user_info
+"""
+
+sql_read = """
+SELECT user_id,book_id,chapter_num
+from kuaiyong.recently_read
+where chapter_num != 0
+"""
+
+sql_read_num_sum = """
+SELECT read_date,user_id,book_id book,1 nums
+from kuaiyong.recently_read
+where chapter_num >= {num}
+"""
+
+sql_free_num = """
+SELECT book_id,free_num
+from kuaiyong.free_chapter
+"""
+
+sql_first_order = """
+SELECT user_id,book_id,1 first_order
+from kuaiyong.order_log
+where first_time = ctime and status_notify = 1 
+"""
+
+sql_re_order = """
+SELECT user_id,book_id,1 re_order
+from kuaiyong.order_log
+where first_time != ctime and status_notify = 1
+GROUP BY user_id,book_id
+"""
+
+sql_all_order = """
+SELECT user_id,book_id,1 all_order
+from kuaiyong.order_log
+GROUP BY user_id,book_id
+"""
+
+sql_admin = """
+SELECT channel_code,optimizer,vip,package_code,business
+from kuaiyong.admin_info
+"""
+
+sql_book = """
+SELECT book_id,book_name
+from kuaiyong.book_info
 """

@@ -240,6 +240,14 @@ sql_dict_update_custom_url_activity = """
 SELECT * from cps.activity
 """
 
+sql_dict_update_templatemessage = """
+SELECT * from cps.templatemessage
+"""
+
+sql_dict_update_mp_send = """
+SELECT * from cps.mp_send
+"""
+
 sql_dict_update_referral_sound = """
 SELECT id,book_id,chapter_id,admin_id,chapter_name,cost,type,uv,follow,unfollow_num,net_follow_num,
     guide_chapter_idx,incr_num,money,orders_num,createtime,updatetime,state 
@@ -1131,6 +1139,32 @@ sql_mid_before_order_money = """
 SELECT channel_id,before_money money_box,sum(before_times) money_times
 from model.mid_before_order
 GROUP BY channel_id,before_money
+"""
+
+
+""" ************** -*- custom sql -*- ************** """
+
+sql_custom = """
+SELECT custom_id,date(FROM_UNIXTIME(sendtime)) send_date,title,book_id,'custom' tab,
+    admin_id channel_id,user_json,send_num,statue,message_type types
+from market_read.custom
+"""
+
+sql_mp_send = """
+SELECT date(FROM_UNIXTIME(sendtime)) send_date,title,admin_id channel_id,'mp_send' tab,
+    user_json,send_num,statue,message_type types,success_num
+from market_read.mp_send
+"""
+
+sql_templatemessage = """
+SELECT date(FROM_UNIXTIME(sendtime)) send_date,title,admin_id channel_id,
+    user_json,send_num,statue,success_num,'template' tab
+from market_read.templatemessage
+"""
+
+sql_custom_url = """
+SELECT custom_id,uv,pv,recharge_orders,recharge_money
+from market_read.custom_url_collect
 """
 
 

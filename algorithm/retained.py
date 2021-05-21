@@ -1015,8 +1015,23 @@ def order_book_date_sub(read_config, db_name, tab_name, date_col, num, s_date=No
 
 
 def conversion_message_push(read_config, db_name, tab_name):
-    conn = rd.connect_database_host(read_config['host'], read_config['user'], read_config['pw'])
-    custom = pd.read_sql('', conn)
-    url_collect = pd.read_sql('', conn)
-    custom = pd.merge(custom, url_collect, on='', how='left')
-    rd.insert_to_data(custom, conn, db_name, tab_name)
+    conn = rd.connect_database_vpn(read_config)
+    custom = pd.read_sql(sql_code.sql_custom, conn)
+    url_collect = pd.read_sql(sql_code.sql_custom_url, conn)
+    custom = pd.merge(custom, url_collect, on='custom_id', how='left')
+    mp_send = pd.read_sql(sql_code.sql_mp_send, conn)
+    template = pd.read_sql(sql_code.sql_templatemessage, conn)
+    all_message = pd.concat([custom, mp_send, template])
+    book = pd.read_sql(sql_code.sql_retained_three_index_by_user_count_book_info, conn)
+    admin = pd.read_sql(sql_code.sql_retained_admin_info, conn)
+
+    all_message['book_id'] = all_message['book_id'].astype(str)
+    book['book_id'] = book['book_id'].astype(str)
+
+    all_message['channel_id'] = all_message['channel_id'].astype(str)
+    admin['channel_id'] = admin['channel_id'].astype(str)
+
+    all_message = pd.merge(all_message, book, on='book_id', how='left')
+    all_message = pd.merge(all_message, admin, on='channel_id', how='left')
+    all_message.fillna(0, inplace=True)
+    rd.insert_to_data(all_message, conn, db_name, tab_name)

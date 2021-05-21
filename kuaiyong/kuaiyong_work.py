@@ -95,8 +95,93 @@ def _order_book(_str):
         return 0
 
 
+def conversion_logon_book(config, db_name, tab_name):
+    conn = rd.connect_database_vpn(config)
+
+    user = pd.read_sql(sql_kuaiyong.sql_user, conn)
+    read = pd.read_sql(sql_kuaiyong.sql_read, conn)
+    free_num = pd.read_sql(sql_kuaiyong.sql_free_num, conn)
+    first_order = pd.read_sql(sql_kuaiyong.sql_first_order, conn)
+    re_order = pd.read_sql(sql_kuaiyong.sql_re_order, conn)
+    all_order = pd.read_sql(sql_kuaiyong.sql_all_order, conn)
+    admin = pd.read_sql(sql_kuaiyong.sql_admin, conn)
+    book = pd.read_sql(sql_kuaiyong.sql_book, conn)
+
+    user['user_id'] = user['user_id'].astype(str)
+    user['book_id'] = user['book_id'].astype(str)
+
+    read['user_id'] = read['user_id'].astype(str)
+    read['book_id'] = read['book_id'].astype(str)
+
+    free_num['book_id'] = free_num['book_id'].astype(str)
+
+    first_order['user_id'] = first_order['user_id'].astype(str)
+    first_order['book_id'] = first_order['book_id'].astype(str)
+
+    re_order['user_id'] = re_order['user_id'].astype(str)
+    re_order['book_id'] = re_order['book_id'].astype(str)
+
+    all_order['user_id'] = all_order['user_id'].astype(str)
+    all_order['book_id'] = all_order['book_id'].astype(str)
+
+    book['book_id'] = book['book_id'].astype(str)
+
+    data = pd.merge(user, free_num, on='book_id', how='left')
+    data = pd.merge(data, book, on='book_id', how='left')
+    data = pd.merge(data, read, on=['book_id', 'user_id'], how='left')
+    data = pd.merge(data, first_order, on=['book_id', 'user_id'], how='left')
+    data = pd.merge(data, re_order, on=['book_id', 'user_id'], how='left')
+    data = pd.merge(data, all_order, on=['book_id', 'user_id'], how='left')
+    data = pd.merge(data, admin, on='channel_code', how='left')
+    data.fillna(0, inplace=True)
+    rd.insert_to_data(data, conn, db_name, tab_name)
+
+
+def book_recently_read(config, db_name, tab_name, days):
+    conn = rd.connect_database_vpn(config)
+    free_num = pd.read_sql(sql_kuaiyong.sql_free_num, conn)
+    user = pd.read_sql(sql_kuaiyong.sql_user, conn)
+    admin = pd.read_sql(sql_kuaiyong.sql_admin, conn)
+    book = pd.read_sql(sql_kuaiyong.sql_book, conn)
+    all_read = pd.read_sql(sql_kuaiyong.sql_read_num_sum.format(num=0), conn)
+    all_read = pd.merge(all_read, user, on='user_id', how='left')
+    all_read = all_read[['read_date', 'book', 'channel_code', 'nums']]. \
+        groupby(by=['read_date', 'book', 'channel_code']).sum().reset_index()
+    all_read.rename(columns={'book': 'book_id', 'nums': 'all_read'}, inplace=True)
+    user['user_id'] = user['user_id'].astype(str)
+    book['book_id'] = book['book_id'].astype(str)
+    free_num['book_id'] = free_num['book_id'].astype(str)
+    _data_list = []
+
+    for _ in range(1, days + 1):
+        print(_)
+        read = pd.read_sql(sql_kuaiyong.sql_read_num_sum.format(num=_), conn)
+        read['user_id'] = read['user_id'].astype(str)
+        data = pd.merge(read, user, on='user_id', how='left')
+        data = data[['read_date', 'book', 'channel_code', 'nums']].\
+            groupby(by=['read_date', 'book', 'channel_code']).sum().reset_index()
+        data['chapter_num'] = _
+        print(data.index.size)
+        _data_list.append(data)
+    all_data = pd.concat(_data_list)
+    all_data.rename(columns={'book': 'book_id'}, inplace=True)
+    all_data['book_id'] = all_data['book_id'].astype(str)
+
+    all_data = pd.merge(all_read, all_data, on=['read_date', 'book_id', 'channel_code'], how='left')
+    all_data = pd.merge(all_data, free_num, on='book_id', how='left')
+    all_data = pd.merge(all_data, book, on='book_id', how='left')
+    all_data = pd.merge(all_data, admin, on='channel_code', how='left')
+
+    all_data.fillna(0, inplace=True)
+    rd.delete_table_data(conn, db_name, tab_name)
+    rd.insert_to_data(all_data, conn, db_name, tab_name)
+
+
 if __name__ == "__main__":
     print('start run')
-    orders = read_user_channel_order()
-    syn_user_date_interval_run('1', orders_df=orders)
+    # orders = read_user_channel_order()
+    # syn_user_date_interval_run('1', orders_df=orders)
     # write_data_to_db('D:\kuaiyong', 'market_read', 'kuaiyong_test')
+
+    conversion_logon_book(config='datamarket_out', db_name='kuaiyong', tab_name='conversion_logon_book')
+    book_recently_read(config='datamarket_out', db_name='kuaiyong', tab_name='chapter_recently_read', days=30)

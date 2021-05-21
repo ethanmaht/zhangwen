@@ -7,6 +7,7 @@ from multiprocessing import Process
 from pandas import DataFrame as df
 import os
 import copy
+import json
 
 
 def df_merge(df_list, on, how='left', fill_na=None):
@@ -263,3 +264,11 @@ def val_to_df_one_lat(_df, id_type, val_name):
         _lat = [_ for _ in records_list if _[id_type] == _id]
         re_list.append({id_type: _id, val_name: str(_lat)})
     return df(re_list)
+
+
+def get_data_by_json_col(col_name, tar_name):
+    try:
+        _json = json.loads(col_name)
+        return _json[tar_name]
+    except:
+        return 0

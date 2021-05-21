@@ -185,7 +185,7 @@ def conversion_funnel_count_all_book(s_date=None):
 
 def conversion_message_push_run():
     retained.conversion_message_push(
-        read_config='market_read',
+        read_config='datamarket',
         db_name='market_read',
         tab_name='conversion_custom_message_push'
     )
@@ -266,7 +266,6 @@ if __name__ == '__main__':
 
     conversion_funnel_count()  # 转化漏斗 -> .2h
     conversion_funnel_count_all_book()  # 转化漏斗-所有书 -> .8h
-    # conversion_message_push_run()  # 转化漏斗 消息发送 -> .h
 
     sound_market_book_count('2020-04-01')  # 有声book数据 -> .1h
     sound_market_chapter_count('2020-04-01')  # 有声chapter数据 -> .1h
@@ -279,6 +278,8 @@ if __name__ == '__main__':
     syn_new_user_market_book_admin_read_situation()  # 新用户-图书跟读率 -> .3h
 
     syn_market_keep_day_admin_new()  # 带渠道和书的留存数据 -> 3h
+
+    conversion_message_push_run()  # 转化漏斗 消息发送 -> .1h
 
     """ ****** ↓ discard ↓ ****** """
     # order_book_date_sub_run('2019-01-01')
