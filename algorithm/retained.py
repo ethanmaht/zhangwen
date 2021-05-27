@@ -273,7 +273,7 @@ class RunCount:
 
 def ladder_by_day_count(func, write_conn, write_db, write_tab, s_date=None, day_ladder=None, **kwargs):
     if not s_date:
-        s_date = '2019-07-01'
+        s_date = '2020-07-01'
     if not day_ladder:
         day_ladder = -30
     end_day = emdate.datetime_format_code(dt.datetime.now())
@@ -661,7 +661,7 @@ def chart_book_admin_read_count_30(host, write_db, write_tab, date_type_name, da
         db=write_db, tab=write_tab, date=date), dt.datetime.now())
     conn = rd.connect_database_host(host['host'], host['user'], host['pw'])
     ladder_by_day_count(
-        chart_book_admin_read_count_30_day_ladder, conn, write_db, write_tab, date_type_name=date_type_name
+        chart_book_admin_read_count_30_day_ladder, conn, write_db, write_tab, date_type_name=date_type_name, s_date=date
     )
     conn.close()
     # read_date = pd.read_sql(

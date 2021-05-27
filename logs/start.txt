@@ -9,3 +9,10 @@
 [MissionStart]:mission name 'read_data_user_day'; time:2021-05-14 13:29:33.345984
 [MissionStart]:mission name 'read_data_user_day'; time:2021-05-14 14:15:09.563199
 [MissionStart]:mission name 'read_data_user_day'; time:2021-05-14 15:00:37.635661
+[MissionStart]:mission name 'syn_read_user_recently_read'; time:2021-05-24 11:39:03.729520
+[MissionStart]:mission name 'syn_happy_seven_sound_shard_work'; time:2021-05-24 12:36:48.520086
+[MissionStart]:mission name 'syn_portrait_user_order_run'; time:2021-05-24 12:40:36.371962
+[MissionStart]:mission name 'syn_portrait_user_order_admin_book_run'; time:2021-05-24 12:50:14.704905
+[MissionStart]:mission name 'order_info_monitor'; time:2021-05-24 17:25:36.337642
+[MissionStart]:mission name 'logon_info_monitor'; time:2021-05-24 17:26:16.605073
+[MissionStart]:mission name 'comparison_admin_book_order'; time:2021-05-24 17:26:35.702555

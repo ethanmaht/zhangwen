@@ -484,7 +484,7 @@ def portrait_user_order_run_admin_book(write_conn_fig, write_db, write_tab, num,
     read_conn = rd.connect_database_direct(read_host_conn_fig)
     write_conn = rd.connect_database_vpn(write_conn_fig)
     if not date:
-        date = '2019-01-01'
+        date = '2019-07-01'
     if not end_date:
         end_date = emdate.datetime_format_code(dt.datetime.now())
     block_data = _read_one_portrait_user_order_admin_book(read_conn, s_date=date, num=num, e_date=end_date)

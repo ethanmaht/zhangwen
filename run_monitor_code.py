@@ -83,6 +83,8 @@ def table_last_date():
         {'db_tab': 'market_read.index_book_consume', 'date_col': 'date_day'},
         {'db_tab': 'market_read.index_data_month', 'date_col': 'date_month'},
         {'db_tab': 'market_read.market_keep_day_admin_test', 'date_col': 'date_day'},
+        {'db_tab': 'kuaiyong.chapter_recently_read', 'date_col': 'read_date'},
+        {'db_tab': 'kuaiyong.conversion_logon_book', 'date_col': 'create_date'},
         # {'db_tab': '', 'date_col': ''},
     ]
     work.direct_run(monitor_works.syn_last_date, target_list=target_list)

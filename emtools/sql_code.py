@@ -1145,20 +1145,20 @@ GROUP BY channel_id,before_money
 """ ************** -*- custom sql -*- ************** """
 
 sql_custom = """
-SELECT custom_id,date(FROM_UNIXTIME(sendtime)) send_date,title,book_id,'custom' tab,
-    admin_id channel_id,user_json,send_num,statue,message_type types
+SELECT custom_id,date(FROM_UNIXTIME(sendtime)) send_date,title,book_id,'客服消息' tab,
+    admin_id channel_id,user_json,send_num,statue,if(message_type=1,'文字信息','图文信息') types
 from market_read.custom
 """
 
 sql_mp_send = """
-SELECT date(FROM_UNIXTIME(sendtime)) send_date,title,admin_id channel_id,'mp_send' tab,
+SELECT date(FROM_UNIXTIME(sendtime)) send_date,title,admin_id channel_id,'高级群发' tab,
     user_json,send_num,statue,message_type types,success_num
 from market_read.mp_send
 """
 
 sql_templatemessage = """
 SELECT date(FROM_UNIXTIME(sendtime)) send_date,title,admin_id channel_id,
-    user_json,send_num,statue,success_num,'template' tab
+    user_json,send_num,statue,success_num,'模板消息' tab
 from market_read.templatemessage
 """
 

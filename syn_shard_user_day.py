@@ -97,10 +97,12 @@ if __name__ == '__main__':
     syn_shard_user_day_work()  # 基础数据同步 -> .5h
     syn_date_block()  # 动作日志分时间块记录 -> 1.5h
     syn_read_user_recently_read('2021-01-01')  # 跟读数据同步
+
     syn_happy_seven_sound_shard_work('2020-01-01')  # 有声的数据库同步 -> .1h
     es_tool.run_read_ex_loop(
         sub_days=5, size=10000, write_conn_fig='datamarket', write_db='sound', tab='es_log'
     )  # 有声的es同步 -> .1h
+
     syn_portrait_user_order_run()  # 用户画像数据同步 -> .3h
     syn_portrait_user_order_admin_book_run()  # 用户画像-渠道-书 数据同步 -> .7h
 
