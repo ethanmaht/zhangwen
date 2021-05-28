@@ -37,7 +37,7 @@ def syn_market_keep_day_admin_new(s_date=None):
     work.step_run_kwargs(
         retained.user_keep_admin_run,
         follow_func=retained.user_keep_admin_count,
-        date_sub=31,
+        date_sub=37,
         process_num=8
     )
 
@@ -277,9 +277,9 @@ if __name__ == '__main__':
     syn_market_book_admin_read_situation()  # 跟读率 -> .3h
     syn_new_user_market_book_admin_read_situation()  # 新用户-图书跟读率 -> .3h
 
-    syn_market_keep_day_admin_new()  # 带渠道和书的留存数据 -> 3h
-
     conversion_message_push_run()  # 转化漏斗 消息发送 -> .1h
+
+    syn_market_keep_day_admin_new()  # 带渠道和书的留存数据 -> 3h
 
     """ ****** ↓ discard ↓ ****** """
     # order_book_date_sub_run('2019-01-01')

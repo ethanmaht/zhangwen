@@ -91,6 +91,13 @@ def syn_user_date_interval_run(s_date=None):
     )
 
 
+def syn_one_book_read_run(book_id, s_date=None):
+    rd.syn_date_block_run(
+        data_job.one_book_read, s_date, process_num=12, book_id=book_id,
+        write_conn_fig='datamarket', write_db='one_book_read', write_tab='one_book_consume'
+    )
+
+
 if __name__ == '__main__':
     print('Start work:')
     """ ****** ↓ 自动并部署 ↓ ****** """
@@ -109,6 +116,7 @@ if __name__ == '__main__':
     syn_user_date_interval_run()  # 活跃间隔同步 -> .5h
 
     """ ****** ↓ 手动或者测试 ↓ ****** """
+    # syn_one_book_read_run(book_id=10078300)
     # syn_read_sign_order_count()  # 连续签到奖励查询 - 手动: 李迪
     # es_tool.run_read_ex_loop(
     #     sub_days=1, size=10000, write_conn_fig='datamarket', write_db='sound', tab='es_log',

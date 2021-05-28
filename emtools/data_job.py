@@ -547,6 +547,41 @@ def user_date_interval(read_config, db_name, tab_name, num, date_col, s_date=Non
     rd.insert_to_data(one_num_data, write_conn, db_name, write_tab)
 
 
+def one_book_read(write_conn_fig, write_db, write_tab, num, book_id, date=None, end_date=None):
+    print('======> is start to run {db}.{tab} - {num} ===> start time:'.format(
+        db=write_db, tab=write_tab, num=num), dt.datetime.now())
+    read_conn_fig = rd.read_db_host(
+        (os.path.split(os.path.realpath(__file__))[0] + '/config.yml')
+    )
+    read_host_conn_fig = cm.pick_conn_host_by_num(num, read_conn_fig['shart_host'])
+    read_conn = rd.connect_database_direct(read_host_conn_fig)
+    write_conn = rd.connect_database_vpn(write_conn_fig)
+    if not date:
+        date = '2019-07-01'
+    block_data = _read_one_book_read(read_conn, s_date=date, num=num, book_id=book_id)
+    block_data['tab_num'] = num
+    rd.insert_to_data(block_data, write_conn, write_db, write_tab)
+
+    read_write_tab = 'one_book_read'
+    read_data = pd.read_sql(
+        sql_code.sql_one_book_read_read.format(book_id=book_id, num=num, s_date=date),
+        read_conn
+    )
+    read_data['tab_num'] = num
+    rd.insert_to_data(read_data, write_conn, write_db, read_write_tab)
+
+    write_conn.close()
+
+
+def _read_one_book_read(read_conn, s_date, num, book_id):
+    block_data = pd.read_sql(
+        sql_code.sql_one_book_read_consume.format(book_id=book_id, num=num, s_date=s_date),
+        read_conn
+    )
+    return block_data
+
+
+
 def read_one_num_data(write_conn, date_list, num):
     all_date_data = []
     for _block in date_list:

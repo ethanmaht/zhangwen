@@ -1168,6 +1168,20 @@ from market_read.custom_url_collect
 """
 
 
+sql_one_book_read_consume = """
+SELECT user_id,book_id,book_name,chapter_id,chapter_name,kandian,
+    free_kandian,createtime,date(FROM_UNIXTIME(createtime)) date_day
+from cps_shard_{num}.consume
+where book_id = {book_id} and createtime >= UNIX_TIMESTAMP('{s_date}')
+"""
+
+sql_one_book_read_read = """
+SELECT book_id,user_id,chapter_id,chapter_name,updatetime,createtime,user_type,date(FROM_UNIXTIME(updatetime)) date_day
+from cps_shard_{num}.user_recently_read
+where book_id = {book_id} and updatetime >= UNIX_TIMESTAMP('{s_date}')
+"""
+
+
 """ ************** -*- give up sql -*- ************** """
 
 analysis_reason_for_save = """
