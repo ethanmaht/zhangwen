@@ -1035,3 +1035,16 @@ def conversion_message_push(read_config, db_name, tab_name):
     all_message = pd.merge(all_message, admin, on='channel_id', how='left')
     all_message.fillna(0, inplace=True)
     rd.insert_to_data(all_message, conn, db_name, tab_name)
+
+
+def model_keep_data(read_config, db_name, tab_name, date_col, num, s_date=None):
+    if isinstance(s_date, list):
+        s_date = s_date[0]
+    print('======> is start to run {db}.{tab} - {num} - {date} ===> start time:'.format(
+        db=db_name, tab=tab_name, date=s_date, num=num), dt.datetime.now())
+    conn = rd.connect_database_host(read_config['host'], read_config['user'], read_config['pw'])
+    read_conn_fig = rd.read_db_host()
+    read_conn = rd.connect_database_direct(cm.pick_conn_host_by_num(num, read_conn_fig['shart_host']))
+
+    # rd.insert_to_data(read_date, conn, db_name, tab_name)
+    # conn.close()

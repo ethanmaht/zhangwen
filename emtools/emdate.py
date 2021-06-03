@@ -152,7 +152,7 @@ def sub_date(s_date, e_date, types='day') -> int:
     try:
         sub = e_date - s_date
         return sub.days
-    except:
+    except TypeError or Exception as b:
         return -1
 
 

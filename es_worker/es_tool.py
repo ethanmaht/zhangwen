@@ -88,3 +88,66 @@ def run_read_ex_loop(sub_days, size, write_conn_fig, write_db, tab, index="logst
     _sub_date = emdate.date_sub_days(sub_days)
     rd.delete_last_date(write_conn, write_db, tab, date_type_name='time', date=_sub_date)
     rd.insert_to_data(all_data, write_conn, write_db, tab)
+
+
+def es_data_read(
+        index,
+        ranges_must=None, ranges_must_not=None, ranges_should=None,
+        host='http://192.168.1.221', size=10000, s_num=0
+):
+    if not ranges_must:
+        ranges_must = []
+    if not ranges_must_not:
+        ranges_must_not = []
+    if not ranges_should:
+        ranges_should = []
+    es = Elasticsearch(hosts=host, port=9200, timeout=15000)
+    body = {
+        "query":
+            {
+                "bool":
+                    {
+                        "must": ranges_must,
+                        "must_not": ranges_must_not,
+                        "should": ranges_should
+                    }
+            },
+        "from": s_num, "size": size, "sort": [], "aggs": {}
+    }
+    res = es.search(index=index, body=body)
+    data = res['hits']['hits']
+    return draw_date_from_es_to_df(data), len(data)
+
+
+def run_read_one_book_loop(sub_days, size, write_conn_fig, write_db, tab, index="logstash-qiyue-access*"):
+    start_page, all_data = 0, []
+    ranges_must = [
+        {"match": {"page": "/index/book/chapter"}},
+        {"match": {"map.book_id": "77522"}},
+        {'range': {'@timestamp': {'gte': u'now-{days}d'.format(days=sub_days), 'lte': 'now'}}}
+    ]
+    ranges_should = [
+        # {"match": {"map.book_id": "10078300"}},
+        # {"match": {"map.book_id": "78300"}},
+    ]
+    re_data, _size = es_data_read(
+        index=index, size=size, s_num=start_page, ranges_must=ranges_must, ranges_should=ranges_should
+    )
+    all_data.append(re_data)
+    while _size >= size:
+        start_page += size
+        print(start_page)
+        re_data, _size = es_data_read(
+            index=index, size=size, s_num=start_page, ranges_must=ranges_must, ranges_should=ranges_should
+        )
+        all_data.append(re_data)
+    all_data = pd.concat(all_data)
+    write_conn = rd.connect_database_vpn(write_conn_fig)
+    _sub_date = emdate.date_sub_days(sub_days)
+    rd.delete_last_date(write_conn, write_db, tab, date_type_name='time', date=_sub_date)
+    rd.insert_to_data(all_data, write_conn, write_db, tab)
+
+
+# run_read_one_book_loop(
+#     sub_days=300, size=10000, write_conn_fig='datamarket', write_db='one_book_read', tab='read_log_77522'
+# )

@@ -256,6 +256,19 @@ def order_book_date_sub_run(s_date=None):
     )
 
 
+def models_keep_data_run(s_date=None):
+    work = retained.RunCount(
+        write_db='market_read', write_tab='order_book_date_sub', date_col='model_keep', extend='model_keep'
+    )
+    if s_date:
+        work.s_date = s_date
+    work.step_run_kwargs(
+        func=retained.model_keep_data,
+        date_sub=2,
+        process_num=12
+    )
+
+
 if __name__ == '__main__':
     print('Start work:')
     """ ****** ↓ 自动并部署 ↓ ****** """
