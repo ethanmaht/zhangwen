@@ -1182,6 +1182,32 @@ where book_id = {book_id} and updatetime >= UNIX_TIMESTAMP('{s_date}')
 """
 
 
+sql_keep_consume = """
+SELECT user_id,date(FROM_UNIXTIME(createtime)) date_day,book_id,1 consume_user
+from cps_shard_{num}.consume
+where createtime >= UNIX_TIMESTAMP('{s_date}')
+GROUP BY user_id,date_day,book_id
+"""
+
+sql_keep_order = """
+SELECT user_id,book_id,date(FROM_UNIXTIME(createtime)) date_day,1 order_users,count(*) order_times,sum(money) moneys
+from cps_user_{num}.orders
+where state = '1' and deduct = '0' and createtime >= UNIX_TIMESTAMP('{s_date}')
+GROUP BY user_id,date_day,book_id
+"""
+
+sql_keep_user_info = """
+SELECT user_id,referral_book,admin_id,date(FROM_UNIXTIME(createtime)) logon_date
+from user_info.user_info_{num}
+"""
+
+sql_keep_logon = """
+SELECT referral_book book_id,admin_id,date(FROM_UNIXTIME(createtime)) logon_date,count(*) logon_users
+from user_info.user_info_{num}
+GROUP BY referral_book,admin_id,logon_date
+"""
+
+
 """ ************** -*- give up sql -*- ************** """
 
 analysis_reason_for_save = """

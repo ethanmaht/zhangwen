@@ -1046,5 +1046,44 @@ def model_keep_data(read_config, db_name, tab_name, date_col, num, s_date=None):
     read_conn_fig = rd.read_db_host()
     read_conn = rd.connect_database_direct(cm.pick_conn_host_by_num(num, read_conn_fig['shart_host']))
 
-    # rd.insert_to_data(read_date, conn, db_name, tab_name)
-    # conn.close()
+    consume = pd.read_sql(sql_code.sql_keep_consume.format(num=num, s_date=s_date), read_conn)
+    orders = pd.read_sql(sql_code.sql_keep_order.format(num=num, s_date=s_date), read_conn)
+
+    users = pd.read_sql(sql_code.sql_keep_user_info.format(num=num), conn)
+    logon = pd.read_sql(sql_code.sql_keep_logon.format(num=num), conn)
+
+    consume['user_id'] = consume['user_id'].astype(str)
+    orders['user_id'] = orders['user_id'].astype(str)
+    users['user_id'] = users['user_id'].astype(str)
+
+    all_keep = pd.merge(consume, orders, on=['user_id', 'book_id', 'date_day'], how='outer')
+    all_keep = pd.merge(all_keep, users, on='user_id', how='left')
+
+    all_keep['date_sub'] = all_keep[['logon_date', 'date_day']].apply(
+        lambda x: emdate.sub_date(x['logon_date'], x['date_day']), axis=1
+    )
+    keep_all_book = all_keep.groupby(['book_id', 'admin_id', 'logon_date', 'date_day', 'date_sub']).sum().reset_index()
+
+    all_keep_one_book = all_keep[all_keep['referral_book'] == all_keep['book_id']]
+    all_keep_one_book.rename(columns={
+        'consume_user': 'consume_user_same_book',
+        'order_times': 'order_times_same_book',
+        'moneys': 'moneys_same_book',
+        'order_users': 'order_users_same_book'
+    }, inplace=True)
+    keep_one_book = all_keep_one_book.groupby(
+        ['book_id', 'admin_id', 'logon_date', 'date_day', 'date_sub']
+    ).sum().reset_index()
+    keep_data = pd.merge(
+        keep_all_book, keep_one_book, on=['book_id', 'admin_id', 'logon_date', 'date_day', 'date_sub'], how='left'
+    )
+
+    keep_data[['book_id', 'admin_id', 'logon_date']] = keep_data[['book_id', 'admin_id', 'logon_date']].astype(str)
+    logon[['book_id', 'admin_id', 'logon_date']] = logon[['book_id', 'admin_id', 'logon_date']].astype(str)
+    keep_data = pd.merge(keep_data, logon, on=['book_id', 'admin_id', 'logon_date'], how='left')
+    tab_name = tab_name + '_' + str(num)
+
+    rd.delete_last_date(conn, db_name, tab_name, date_col, s_date)
+    rd.insert_to_data(keep_data, conn, db_name, tab_name)
+    conn.close()
+    read_conn.close()

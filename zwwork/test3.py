@@ -4,24 +4,24 @@ import numpy as np
 from scipy.optimize import curve_fit
 # import matplotlib.pyplot as plt
 from pandas import DataFrame as df
+from emtools import emdate
 import pylab as pl
 import math
 
-
-sql1 = """
-SELECT admin_id AS '渠道id',sum( money ) as '累计充值金额',sum( money ) / count( DISTINCT ( user_id ) ) AS '人均充值金额'
-FROM {new_file_name} 
-where state=1 and deduct=0 and admin_id in {channel_name} and createtime>=1619798400 GROUP BY admin_id
-"""
-
-print(sql1.format(new_file_name=1, channel_name=2), '\n')
-
-new_file_name = 11
-channel_name = 21
-sql2 = f"""
-SELECT admin_id AS '渠道id',sum( money ) as '累计充值金额',sum( money ) / count( DISTINCT ( user_id ) ) AS '人均充值金额'
-FROM {new_file_name} 
-where state=1 and deduct=0 and admin_id in {channel_name} and createtime>=1619798400 GROUP BY admin_id
-"""
-
-print(sql2)
+d = {
+    'k': [0, 0, 1, 1],
+    'k2': [3, 3, 5, 6],
+    'v1': [5, 6, 7, 8],
+    'v2': [6, 7, 8, 9],
+    'd1': ['2021-05-01', '2021-05-01', '2021-05-01', '2021-05-02'],
+    'd2': ['2021-05-03', '2021-05-05', '2021-05-06', '2021-06-02']
+}
+a = df(d)
+a[['k2', 'v1']] = a[['k2', 'v1']].astype(str)
+print(a.dtypes)
+# a['s'] = a[['d2', 'd1']].apply(lambda x: emdate.sub_date(x['d1'], x['d2']), axis=1)
+# print(a)
+#
+#
+# a = a.groupby(by=['k', 'k2']).sum().reset_index()
+# print(a)
