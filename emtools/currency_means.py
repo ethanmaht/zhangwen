@@ -8,6 +8,7 @@ from pandas import DataFrame as df
 import os
 import copy
 import json
+import re
 
 
 def df_merge(df_list, on, how='left', fill_na=None):

@@ -258,14 +258,14 @@ def order_book_date_sub_run(s_date=None):
 
 def models_keep_data_run(s_date=None):
     work = retained.RunCount(
-        write_db='market_read', write_tab='order_book_date_sub', date_col='model_keep', extend='model_keep'
+        write_db='model_keep', write_tab='model_keep', date_col='date_day', extend='delete'
     )
     if s_date:
         work.s_date = s_date
     work.step_run_kwargs(
         func=retained.model_keep_data,
-        date_sub=2,
-        process_num=12
+        date_sub=50,
+        process_num=8
     )
 
 
@@ -280,8 +280,8 @@ if __name__ == '__main__':
     conversion_funnel_count()  # 转化漏斗 -> .2h
     conversion_funnel_count_all_book()  # 转化漏斗-所有书 -> .8h
 
-    sound_market_book_count('2020-04-01')  # 有声book数据 -> .1h
-    sound_market_chapter_count('2020-04-01')  # 有声chapter数据 -> .1h
+    sound_market_book_count('2020-05-01')  # 有声book数据 -> .1h
+    sound_market_chapter_count('2020-05-01')  # 有声chapter数据 -> .1h
 
     syn_index_data_run()  # 大盘数据 -> .3h
     syn_index_data_month_run()
@@ -293,6 +293,8 @@ if __name__ == '__main__':
     conversion_message_push_run()  # 转化漏斗 消息发送 -> .1h
 
     syn_market_keep_day_admin_new()  # 带渠道和书的留存数据 -> 3h
+
+    models_keep_data_run()  # 留存 按天 -> 3h
 
     """ ****** ↓ discard ↓ ****** """
     # order_book_date_sub_run('2019-01-01')

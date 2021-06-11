@@ -1038,6 +1038,7 @@ def conversion_message_push(read_config, db_name, tab_name):
 
 
 def model_keep_data(read_config, db_name, tab_name, date_col, num, s_date=None):
+    pd.set_option('mode.chained_assignment', None)
     if isinstance(s_date, list):
         s_date = s_date[0]
     print('======> is start to run {db}.{tab} - {num} - {date} ===> start time:'.format(
@@ -1052,38 +1053,66 @@ def model_keep_data(read_config, db_name, tab_name, date_col, num, s_date=None):
     users = pd.read_sql(sql_code.sql_keep_user_info.format(num=num), conn)
     logon = pd.read_sql(sql_code.sql_keep_logon.format(num=num), conn)
 
-    consume['user_id'] = consume['user_id'].astype(str)
-    orders['user_id'] = orders['user_id'].astype(str)
-    users['user_id'] = users['user_id'].astype(str)
+    consume['user_id'] = consume['user_id'].astype(int)
+    orders['user_id'] = orders['user_id'].astype(int)
+    users['user_id'] = users['user_id'].astype(int)
 
     all_keep = pd.merge(consume, orders, on=['user_id', 'book_id', 'date_day'], how='outer')
     all_keep = pd.merge(all_keep, users, on='user_id', how='left')
+
+    all_keep['book_id'].fillna(0, inplace=True)
+    all_keep['book_id'] = all_keep['book_id'].astype(int)
+    all_keep['referral_book'].fillna(0, inplace=True)
+    all_keep['referral_book'] = all_keep['referral_book'].astype(int)
 
     all_keep['date_sub'] = all_keep[['logon_date', 'date_day']].apply(
         lambda x: emdate.sub_date(x['logon_date'], x['date_day']), axis=1
     )
     keep_all_book = all_keep.groupby(['book_id', 'admin_id', 'logon_date', 'date_day', 'date_sub']).sum().reset_index()
 
-    all_keep_one_book = all_keep[all_keep['referral_book'] == all_keep['book_id']]
-    all_keep_one_book.rename(columns={
+    all_keep_one_book = all_keep.loc[all_keep['referral_book'] == all_keep['book_id'], :]
+    all_keep_one_book.rename({
         'consume_user': 'consume_user_same_book',
         'order_times': 'order_times_same_book',
         'moneys': 'moneys_same_book',
         'order_users': 'order_users_same_book'
-    }, inplace=True)
+    }, axis='columns', inplace=True)
     keep_one_book = all_keep_one_book.groupby(
         ['book_id', 'admin_id', 'logon_date', 'date_day', 'date_sub']
     ).sum().reset_index()
+    keep_one_book.drop(columns=['user_id', 'referral_book'], inplace=True)
     keep_data = pd.merge(
         keep_all_book, keep_one_book, on=['book_id', 'admin_id', 'logon_date', 'date_day', 'date_sub'], how='left'
     )
 
-    keep_data[['book_id', 'admin_id', 'logon_date']] = keep_data[['book_id', 'admin_id', 'logon_date']].astype(str)
-    logon[['book_id', 'admin_id', 'logon_date']] = logon[['book_id', 'admin_id', 'logon_date']].astype(str)
+    keep_data[['book_id', 'admin_id']] = keep_data[['book_id', 'admin_id']].astype(int)
+    keep_data['logon_date'] = keep_data['logon_date'].astype(str)
+    logon[['book_id', 'admin_id']] = logon[['book_id', 'admin_id']].astype(int)
+    logon['logon_date'] = logon['logon_date'].astype(str)
     keep_data = pd.merge(keep_data, logon, on=['book_id', 'admin_id', 'logon_date'], how='left')
     tab_name = tab_name + '_' + str(num)
-
+    keep_data.drop(columns=['user_id', 'referral_book'], inplace=True)
+    keep_data.fillna(0, inplace=True)
     rd.delete_last_date(conn, db_name, tab_name, date_col, s_date)
     rd.insert_to_data(keep_data, conn, db_name, tab_name)
     conn.close()
     read_conn.close()
+
+
+def model_keep_data_count_by_day(host, write_db, write_tab, date_type_name, date=None):
+    if isinstance(date, list):
+        date = date[0]
+    conn = rd.connect_database_host(host['host'], host['user'], host['pw'])
+    date_list = emdate.date_list(date, e_date=dt.datetime.now())
+    for _day in date_list:
+        one_day_data = []
+        for num in range(512):
+            one_day_data.append(pd.read_sql(sql_code.sql_keep_one_day.format(num=num, s_date=_day), conn))
+        keep_data = pd.concat(one_day_data)
+
+        keep_data = keep_data.groupby(
+            ['book_id', 'admin_id', 'logon_date', 'date_day', 'date_sub']
+        ).sum().reset_index()
+        keep_data.drop(columns=['user_id', 'referral_book', 'id'], inplace=True)
+        rd.delete_last_date(conn, write_db, write_tab, date_type_name, _day)
+        rd.insert_to_data(keep_data, conn, write_db, write_tab)

@@ -581,7 +581,6 @@ def _read_one_book_read(read_conn, s_date, num, book_id):
     return block_data
 
 
-
 def read_one_num_data(write_conn, date_list, num):
     all_date_data = []
     for _block in date_list:

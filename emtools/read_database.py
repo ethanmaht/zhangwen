@@ -9,6 +9,7 @@ import datetime as dt
 import os
 from emtools import currency_means as cm
 import time
+import re
 
 
 def read_db_host(file_path=None):
@@ -295,3 +296,9 @@ def _date_cat(user_id, next_id, date_day, next_date):
     if user_id != next_id:
         return -1
     return emdate.sub_date(next_date, date_day)
+
+
+def read_click_sql(sql, client):
+    data, columns = client.execute(sql, columnar=True, with_column_types=True)
+    df = pd.DataFrame({re.sub(r'\W', '_', col[0]): d for d, col in zip(data, columns)})
+    return df

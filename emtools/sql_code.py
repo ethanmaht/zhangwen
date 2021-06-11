@@ -1207,86 +1207,35 @@ from user_info.user_info_{num}
 GROUP BY referral_book,admin_id,logon_date
 """
 
+sql_keep_one_day = """
+SELECT *
+from model_keep.model_keep_{num}
+where date_day = '{s_date}'
+"""
+
+
+""" ************** -*- clickhouse -*- ************** """
+
+click_sql_create_table = """
+CREATE TABLE heiyan.read_log(
+    ip String,
+    time DateTime,
+    user_id String,
+    method String,
+    url String,
+    status String,
+    size Int8,
+    site String,
+    day String
+) ENGINE = MergeTree() 
+PRIMARY KEY time 
+PARTITION BY toYYYYMMDD(time) 
+ORDER BY time; 
+"""
+
 
 """ ************** -*- give up sql -*- ************** """
 
-analysis_reason_for_save = """
-select count(*) nums,sum(bv) saves,sum(signv) reason_signs,sum(fdv) reason_fd,
-    sum(kdv) reason_dk,sum(orderv) reason_order, 'all' types
-from (
-    SELECT distinct a.user_id, bv,signv,fdv,kdv,orderv FROM happy_seven.user_day_{tab_num} a
-    left join (select distinct user_id,1 bv 
-    from happy_seven.user_day_{tab_num} 
-    where date_day = '{e_day}') b 
-        on a.user_id = b.user_id
-    left join (select distinct user_id,1 signv 
-    from happy_seven.user_day_{tab_num}
-    where date_day = '{e_day}' and signs > 0) sign 
-        on a.user_id = sign.user_id
-    left join (select distinct user_id,1 fdv 
-    from happy_seven.user_day_{tab_num}
-    where date_day = '{e_day}' and fd > 0) fd 
-        on a.user_id = fd.user_id
-    left join (select distinct user_id,1 kdv 
-    from happy_seven.user_day_{tab_num}
-    where date_day = '{e_day}' and kd > 0) kd 
-        on a.user_id = kd.user_id
-    left join (select distinct user_id,1 orderv 
-    from happy_seven.user_day_{tab_num}
-    where date_day = '{e_day}' and order_success > 0) orders 
-        on a.user_id = orders.user_id
-where date_day = '{s_day}') base
-union all
-select count(*) nums,sum(bv) saves,sum(signv) reason_signs,sum(fdv) reason_fd,
-    sum(kdv) reason_dk,sum(orderv) reason_order, 'order' types
-from (SELECT distinct a.user_id, bv,signv,fdv,kdv,orderv FROM happy_seven.user_day_{tab_num} a
-    left join (select distinct user_id,1 bv 
-    from happy_seven.user_day_{tab_num} 
-    where date_day = '{e_day}') b 
-        on a.user_id = b.user_id
-    left join (select distinct user_id,1 signv 
-    from happy_seven.user_day_{tab_num}
-    where date_day = '{e_day}' and signs > 0) sign 
-        on a.user_id = sign.user_id
-    left join (select distinct user_id,1 fdv 
-    from happy_seven.user_day_{tab_num}
-    where date_day = '{e_day}' and fd > 0) fd 
-        on a.user_id = fd.user_id
-    left join (select distinct user_id,1 kdv 
-    from happy_seven.user_day_{tab_num}
-    where date_day = '{e_day}' and kd > 0) kd 
-        on a.user_id = kd.user_id
-    left join (select distinct user_id,1 orderv 
-    from happy_seven.user_day_{tab_num}
-    where date_day = '{e_day}' and order_success > 0) orders 
-        on a.user_id = orders.user_id
-where date_day = '{s_day}' and order_success > 0) base
-union all
-select count(*) nums,sum(bv) saves,sum(signv) reason_signs,sum(fdv) reason_fd,
-    sum(kdv) reason_dk,sum(orderv) reason_order, 'logon' types
-from (SELECT distinct a.user_id, bv,signv,fdv,kdv,orderv FROM happy_seven.user_day_{tab_num} a
-    left join (select distinct user_id,1 bv 
-    from happy_seven.user_day_{tab_num} 
-    where date_day = '{e_day}') b 
-        on a.user_id = b.user_id
-    left join (select distinct user_id,1 signv 
-    from happy_seven.user_day_{tab_num}
-    where date_day = '{e_day}' and signs > 0) sign 
-        on a.user_id = sign.user_id
-    left join (select distinct user_id,1 fdv 
-    from happy_seven.user_day_{tab_num}
-    where date_day = '{e_day}' and fd > 0) fd 
-        on a.user_id = fd.user_id
-    left join (select distinct user_id,1 kdv 
-    from happy_seven.user_day_{tab_num}
-    where date_day = '{e_day}' and kd > 0) kd 
-        on a.user_id = kd.user_id
-    left join (select distinct user_id,1 orderv 
-    from happy_seven.user_day_{tab_num}
-    where date_day = '{e_day}' and order_success > 0) orders 
-        on a.user_id = orders.user_id
-where date_day = '{s_day}' and logon > 0) base
-"""
 
 sql_order_users_money_test = """
 SELECT date(FROM_UNIXTIME(createtime)) date_day,user_id,type
