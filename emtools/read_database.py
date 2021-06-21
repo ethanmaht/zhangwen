@@ -122,6 +122,15 @@ def make_inert_sql(db_name, table, _data):
     return f"replace INTO {db_name}.`{table}` {_col} VALUES {_char}", _val
 
 
+def make_click_inert_sql(db_name, table, _data):
+    _col = _data['columns']
+    _len = len(_col)
+    _col = tuple(_col)
+    _col = str(_col).replace("'", "`")
+    _val = str([tuple(_) for _ in _data['data']])[1:-1]
+    return f"INSERT INTO {db_name}.`{table}` {_col} VALUES {_val}"
+
+
 def insert_to_data(write_data, conn, db_name, table, key_name='id'):
     create_table(conn, db_name, table, key_name)
     _data = write_data.to_dict(orient='split')
@@ -302,3 +311,43 @@ def read_click_sql(sql, client):
     data, columns = client.execute(sql, columnar=True, with_column_types=True)
     df = pd.DataFrame({re.sub(r'\W', '_', col[0]): d for d, col in zip(data, columns)})
     return df
+
+
+def execute_click_sql(sql, client):
+    client.execute(sql, columnar=True, with_column_types=True)
+    print(f'Execute click sql <{sql}> success:')
+
+
+def write_click_date(write_data, client, db_name, table, step=0):
+    _data = write_data.to_dict(orient='split')
+    if step:
+        _step_write_click_date(_data, client, db_name, table, step)
+    else:
+        _sql = make_click_inert_sql(db_name, table, _data)
+        client.execute(_sql)
+        print(f'Write date to click success: {len(_data)} row')
+
+
+def _step_write_click_date(write_data, client, db_name, table, step=0):
+    _data, _col = write_data['data'], write_data['columns']
+    _s, _e, _top = 0, step, len(_data)
+    while _e < _top:
+        val_sub = _data[_s: _e]
+        _sql = make_click_inert_step_sql(db_name, table, val_sub, _col)
+        client.execute(_sql)
+        print('is insert data to db now:', _e, 'for ', _top)
+        _s += step
+        _e += step
+    val_sub = _data[_s: _top]
+    _sql = make_click_inert_step_sql(db_name, table, val_sub, _col)
+    client.execute(_sql)
+    print('is insert data to db now:', _e, 'for ', _top)
+
+
+def make_click_inert_step_sql(db_name, table, _data, col):
+    _col = col
+    _len = len(_col)
+    _col = tuple(_col)
+    _col = str(_col).replace("'", "`")
+    _val = str([tuple(_) for _ in _data])[1:-1]
+    return f"INSERT INTO {db_name}.`{table}` {_col} VALUES {_val}"

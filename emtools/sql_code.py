@@ -223,13 +223,13 @@ where updatetime >= '{date}';
 sql_dict_update_custom = """
 SELECT id custom_id,admin_id,sendtime,user_json,createtime,updatetime,statue,send_num,message_type
 FROM cps.custom
-where updatetime >= '{date}';
+where sendtime >= '{date}';
 """
 
 sql_dict_update_custom_url = """
 SELECT id,title,custom_id,book_id,book_name
 FROM cps.custom_url
-where updatetime >= '{date}';
+where sendtime >= '{date}';
 """
 
 sql_dict_update_custom_url_collect = """
@@ -1233,9 +1233,74 @@ PARTITION BY toYYYYMMDD(time)
 ORDER BY time; 
 """
 
+click_sql_delete_table_data = """
+alter table {db}.{tab} delete where {col} {cd} '{val}'
+"""
+
+
+sql_hy_pv_uv = """
+select day,if(book_id='',refer_book,book_id) book_id,count(*) pv,count(distinct user_id) uv
+from heiyan.read_log
+group by day,book_id
+"""
+
+sql_hy_orders = """
+select day,book_id,sum(orders) orders,sum(success) success,sum(real_money) real_money,
+    count(DISTINCT user_id) order_users,count(DISTINCT success_user) success_user
+from (
+    select day,book_id,status,real_money,1 orders,if(status=2,1,0) success,user_id,
+        if(status=2,user_id,NULL) success_user
+    from heiyan.order_log ol
+    left join heiyan.order_book ok on ol.id = ok.topup_id
+) orders
+where day >= '2021-06-01'
+group by day,book_id
+"""
+
+sql_hy_first_orders = """
+select day,book_id,sum(f_r.first) first_user,count(DISTINCT if(f_r.first=0,f_r.user_id,NULL)) reorder_user
+from (
+    SELECT ol.id,fo.first as `first`,ol.day day,ol.user_id user_id,ok.book_id book_id
+    from heiyan.order_log ol
+    left join heiyan.order_book ok on ol.id = ok.topup_id
+    left join (
+        select min(id) id,1 first
+        from heiyan.order_log
+        where status = 2
+        group by user_id
+    ) fo on ol.id = fo.id
+    where ol.status = 2
+) f_r
+group by day,book_id
+"""
+
+sql_hy_book_info = """
+select id book_id,i_name,date(create_time) book_create,words
+from heiyan.book_info bi  
+"""
+
+sql_hy_user_join_book = """
+select user_id,if(book_id='0',refer_book,book_id) book_id,min(day) join_day
+from heiyan.read_log rl 
+where user_id != '0'
+group by user_id,book_id
+"""
+
+sql_hy_user_read_log = """
+select if(book_id='0',refer_book,book_id) book_id,
+    if(chapter_id='0',refer_chapter,chapter_id) chapter_id,type,user_id,plat,day
+from heiyan.read_log
+where day = '2021_06_01'
+"""
+
+sql_hy_chapter_info = """
+select id chapter_id,sequence,book_id chapter_book,free
+from heiyan.chapter_info 
+where update_time > '2021-01-01'
+"""
+
 
 """ ************** -*- give up sql -*- ************** """
-
 
 sql_order_users_money_test = """
 SELECT date(FROM_UNIXTIME(createtime)) date_day,user_id,type

@@ -175,3 +175,14 @@ kuaiyong_market:
     kuaiyong
   pw:
     1a2s3d4f
+
+
+click_min:
+  host:
+    121.40.53.178
+  user:
+    testuser
+  pw:
+    1a2s3d4f
+  db:
+    heiyan

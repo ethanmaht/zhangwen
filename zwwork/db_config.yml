@@ -1,0 +1,36 @@
+#  配置文件,用于填写数据库链接配置；
+#  方法会通过配置文件自动建立数据库链接；
+#  config_name：配置的链接名称，方法在实例化时会通过此处读取配置，必须准确；
+#    type：数据库类型 选填，不填默认为mysql 支持模糊填写
+#    host：数据库地址 必填
+#    user：用户名
+#    pw：密码
+#    db_name：操作的库名 根据链接类型选填或必填
+#    port：端口 选填
+
+datamarket:
+  type: mysql
+  host: 172.16.0.248
+  user: root
+  pw: Qiyue@123
+  db_name: happy_seven
+  port: 3306
+
+datamarket_out:
+  type: clickhouse
+  host: 8.140.112.119
+  user: root
+  pw: Qiyue@123
+  db_name: happy_seven
+
+click_min:
+  type:
+    clickhouse
+  host:
+    121.40.53.178
+  user:
+    testuser
+  pw:
+    1a2s3d4f
+  db:
+    heiyan

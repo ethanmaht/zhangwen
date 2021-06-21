@@ -104,7 +104,7 @@ def _create_table_mysql(conn, db_name, table_name, key_name):
     conn.commit()
 
 
-def _write_sql_data(write_data, conn, db_name, table, key_name='id'):
+def _write_sql_data(write_data, conn, db_name, table):
     _data = write_data.to_dict(orient='split')
     _col = _data['columns']
     _sql, _val = make_inert_sql(db_name, table, _data)
