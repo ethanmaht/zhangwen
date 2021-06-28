@@ -1018,6 +1018,31 @@ from (
 """
 
 
+sql_user_referral = """
+SELECT user_id,referral_id,date(FROM_UNIXTIME(createtime)) logon_day
+from user_info.user_info_0
+where createtime >= UNIX_TIMESTAMP({s_date})
+"""
+
+sql_order_day_logon = """
+SELECT user_id,TIMESTAMPDIFF(day, FROM_UNIXTIME(user_createtime), FROM_UNIXTIME(createtime)) day_sub,money
+from orders_log.orders_log_{num}
+where state = 1 and deduct = 0
+"""
+
+sql_referral_info = """
+SELECT id referral_id,book_id,admin_id,cost,date(FROM_UNIXTIME(createtime)) referral_day
+from market_read.referral_info
+"""
+
+sql_referral_logon_user = """
+SELECT referral_id,date(FROM_UNIXTIME(createtime)) logon_day,count(*) logon_users
+from user_info.user_info_{num}
+where referral_id > 0 and createtime >= UNIX_TIMESTAMP({s_date})
+GROUP BY referral_id,logon_day
+"""
+
+
 """ ************** -*- one_book_locus -*- ************** """
 
 sql_one_book_logon = """
@@ -1297,6 +1322,42 @@ sql_hy_chapter_info = """
 select id chapter_id,sequence,book_id chapter_book,free
 from heiyan.chapter_info 
 where update_time > '2021-01-01'
+"""
+
+sql_uc_user_id = """
+select uc,max(user_id) uid
+from (
+    select uc,user_id
+    from heiyan.read_log 
+    where user_id > 0 and uc > ''
+    group by uc,user_id
+) a
+group by uc
+"""
+
+sql_chapter_sequence = """
+select id chapter_id,`sequence` ,`free` 
+from heiyan.chapter_info ci 
+"""
+
+sql_restructure_read_log = """
+select if(user_id>0,user_id,u.uid) user_id,uc,type,site,day,plat,book_id,chapter_id
+from (
+    select user_id,uc,site,day,plat,type,
+    if(book_id='0',refer_book,book_id) book_id,
+    if(chapter_id='0',refer_chapter,chapter_id) chapter_id 
+    from heiyan.read_log
+) rl 
+left join (
+    select uc,max(user_id) uid
+    from (
+        select uc,user_id
+        from heiyan.read_log 
+        where user_id > 0 and uc > ''
+        group by uc,user_id
+    ) a
+    group by uc
+) u on u.uc = rl.uc
 """
 
 

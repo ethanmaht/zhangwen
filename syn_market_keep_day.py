@@ -269,6 +269,21 @@ def models_keep_data_run(s_date=None):
     )
 
 
+def referral_roi_run(s_date=None):
+    work = retained.RunCount(
+        write_db='market_read', write_tab='referral_roi', date_col='logon_day', extend='delete'
+    )
+    if s_date:
+        work.s_date = s_date
+    referral_info = retained.read_referral_info()
+    work.step_run_kwargs(
+        func=retained.referral_roi,
+        date_sub=2,
+        process_num=8,
+        referral_info=referral_info
+    )
+
+
 if __name__ == '__main__':
     print('Start work:')
     """ ****** ↓ 自动并部署 ↓ ****** """
@@ -297,6 +312,7 @@ if __name__ == '__main__':
     models_keep_data_run()  # 留存 按天 -> 3h
 
     """ ****** ↓ discard ↓ ****** """
+    # referral_roi_run()
     # order_book_date_sub_run('2019-01-01')
     # syn_market_keep_day_by_order_consume()  # 新留存 订阅和充值 -- 废弃 210412
     # syn_market_keep_day()  # 老留存 -- 废弃 210412

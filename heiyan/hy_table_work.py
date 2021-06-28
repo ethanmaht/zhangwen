@@ -78,6 +78,19 @@ def hy_show_tab_keep(conn, db_name, tab_name):
     rd.write_click_date(all_data, conn, db_name, tab_name, step=10000)
 
 
+def hy_show_follow_tab(conn, db_name, tab_name):
+    rea_log = rd.read_click_sql(sql_code.sql_restructure_read_log, conn)
+    chapter = rd.read_click_sql(sql_code.sql_chapter_sequence, conn)
+    book_info = rd.read_click_sql(sql_code.sql_hy_book_info, conn)
+
+    rea_log[['chapter_id', 'book_id']] = rea_log[['chapter_id', 'book_id']].astype(str)
+    chapter['chapter_id'] = chapter['chapter_id'].astype(str)
+    book_info['book_id'] = book_info['book_id'].astype(str)
+
+    all_data = pd.merge(rea_log, chapter, on=['chapter_id'], how='left')
+    all_data = pd.merge(all_data, book_info, on=['book_id'], how='left')
+
+
 if __name__ == '__main__':
     client = Client(host='127.0.0.1', user='testuser', password='1a2s3d4f', database='heiyan')
 

@@ -186,3 +186,10 @@ click_min:
     1a2s3d4f
   db:
     heiyan
+
+
+bigdata_hive:
+  host: 8.140.178.215
+  port: 10000
+  user: mht
+  pw: mht

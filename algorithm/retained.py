@@ -1116,3 +1116,56 @@ def model_keep_data_count_by_day(host, write_db, write_tab, date_type_name, date
         keep_data.drop(columns=['user_id', 'referral_book', 'id'], inplace=True)
         rd.delete_last_date(conn, write_db, write_tab, date_type_name, _day)
         rd.insert_to_data(keep_data, conn, write_db, write_tab)
+
+
+def referral_roi(read_config, db_name, tab_name, date_col, num, referral_info, s_date=None):
+    if isinstance(s_date, list):
+        s_date = s_date[0]
+    print('======> is start to run {db}.{tab} - {num} - {date} ===> start time:'.format(
+        db=db_name, tab=tab_name, date=s_date, num=num), dt.datetime.now())
+    conn = rd.connect_database_host(read_config['host'], read_config['user'], read_config['pw'])
+
+    user_referral = pd.read_sql(
+        sql_code.sql_user_referral.format(num=num, s_date=s_date), conn
+    )
+    order_day_logon = pd.read_sql(
+        sql_code.sql_order_day_logon.format(num=num, s_date=s_date), conn
+    )
+
+    user_referral[['user_id', 'referral_id']] = user_referral[['user_id', 'referral_id']].astype(str)
+    order_day_logon['user_id'] = order_day_logon['user_id'].astype(str)
+
+    read_date = pd.merge(order_day_logon, user_referral, on='user_id', how='left')
+
+    read_date.fillna(0, inplace=True)
+    read_date[['referral_id', 'logon_day']] = read_date[['referral_id', 'logon_day']].astype(str)
+
+    read_date['money'] = read_date['money'].astype(float)
+
+    read_date = read_date.groupby(by=['logon_day', 'referral_id', 'day_sub'])['money'].sum().reset_index()
+
+    referral_users = pd.read_sql(sql_code.sql_referral_logon_user.format(num=num, s_date=s_date), conn)
+
+    referral_info[['referral_id', 'book_id', 'admin_id']] = \
+        referral_info[['referral_id', 'book_id', 'admin_id']].astype(str)
+
+    referral_users[['referral_id', 'logon_day']] = referral_users[['referral_id', 'logon_day']].astype(str)
+
+    read_date = pd.merge(read_date, referral_info, on='referral_id', how='left')
+    read_date = pd.merge(read_date, referral_users, on=['referral_id', 'logon_day'], how='left')
+
+    read_date.fillna(0, inplace=True)
+
+    rd.insert_to_data(read_date, conn, db_name, tab_name)
+    conn.close()
+
+
+def read_referral_info():
+    read_config = rd.read_db_config('datamarket')
+    conn = rd.connect_database_host(read_config['host'], read_config['user'], read_config['pw'])
+    referral_info = pd.read_sql(sql_code.sql_referral_info, conn)
+    return referral_info
+
+
+def referral_roi_show():
+    return 0
