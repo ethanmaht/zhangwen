@@ -14,7 +14,9 @@ import os
 class SynMonitor:
 
     def __init__(self, write_db, read_tab, extend='continue'):
-        self.market_host = {'host': '172.16.0.248', 'user': 'root', 'pw': 'Qiyue@123'}
+        self.market_host = rd.read_db_host(
+            (os.path.split(os.path.realpath(__file__))[0] + '/config.yml').replace('syn_monitor', 'emtools')
+        )['datamarket']
         self.syn_host = rd.read_db_host(
             (os.path.split(os.path.realpath(__file__))[0] + '/config.yml').replace('syn_monitor', 'emtools'))
         self.s_date = None

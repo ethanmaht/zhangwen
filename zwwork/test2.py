@@ -1,21 +1,23 @@
 import requests
-import lxml
+import json
+from pandas import DataFrame as df
+import os
+from emtools import read_database as rd
+
+a = ['宜春市宜春大道698号绿野天城1栋二单元201号', '宜春市袁州区西村镇老水泥厂', '宜丰县青草坑', '樟树市人民医院。', '个体街袁山西路299号', '明月北路', '宜春市宜阳小区18栋1单元902', '万载县株潭镇亭下村', '丰城市第二中学。', '丰城市解放北路公安局110指挥中心']
+b = ['袁州区', '樟树市', '丰城市', '靖安县', '奉新县', '高安市', '上高县', '宜丰县', '铜鼓县', '万载县']
+d = {}
+
+for _a in a:
+    x = True
+    for _b in b:
+        if _b in _a:
+            # c.append(_b)
+            d.update({_a: _b})
+            x = False
+            break
+    if x:
+        d.update({_a: ''})
 
 
-jd = """
-https://search.jd.com/Search?keyword=%E9%A5%AE%E6%96%99&qrst=1
-&wq=%E9%A5%AE%E6%96%99&stock=1&pvid=317be2ae751e428db0aeff239a7bd6af&page=3&s=56&click=0
-"""
-
-tt = """
-https://zhuanlan.zhihu.com/p/29436838
-"""
-headers = {
-    'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.116 Safari/537.36',
-    'Connection': 'keep-alive',
-    'Referer': 'http://www.baidu.com/'
-}
-
-a = requests.get(tt, headers)
-# b = lxml.etree.HTML(a.text)
-print(a.text)
+print(d)

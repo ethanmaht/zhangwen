@@ -134,18 +134,52 @@ def insert_to_data(write_data, conn, db_name, table, key_name='id'):
     conn.commit()
 
 
+def insert_data(write_data, conn, db_name, table, is_subsection=0, is_replace=False):
+    cursor = conn.cursor()
+    _data = write_data.to_dict(orient='split')
+    val = _data['data']
+    _col = _data['columns']
+    if is_subsection:
+        _s, _e, _top = 0, is_subsection, len(val)
+        while _e < _top:
+            val_sub = val[_s: _e]
+            print('is insert data to db now:', _e, 'for ', _top)
+            _sql = make_sub_mysql_inert_sql(db_name, table, _col, val_sub, _s, _e, is_replace=False)
+            # print(_sql)
+            _s += is_subsection
+            _e += is_subsection
+            cursor.execute(_sql)
+            conn.commit()
+        val_sub = val[_s: _e]
+        print('is insert data to db now:', _e, 'for ', _top)
+        _sql = make_sub_mysql_inert_sql(db_name, table, _col, val_sub, _s, _e, is_replace=False)
+        cursor.execute(_sql)
+        conn.commit()
+    else:
+        _sql = make_mysql_inert_sql(db_name, table, _data, is_replace)
+        print('make_mysql_inert_sql:!!!')
+        cursor.execute(_sql)
+        conn.commit()
+
+
 def subsection_insert_to_data(write_data, conn, db_name, table, key_name='id'):
+    print('subsection_insert_to_data:', 1)
     create_table(conn, db_name, table, key_name)
+    print('subsection_insert_to_data:', 2)
     _data = write_data.to_dict(orient='split')
     _col = _data['columns']
+    print('subsection_insert_to_data:', 3)
     chick_col(conn, db_name, table, _col)
+    print('subsection_insert_to_data:', 4)
     _sql, _val = make_inert_sql(db_name, table, _data)
     _subsection_insert(conn, _sql, _val)
 
 
 def _subsection_insert(conn, _sql, val, sub=10000):
     _s, _e, _top = 0, sub, len(val)
+    print('_subsection_insert', _e, len(val))
     while _e < _top:
+        print('_subsection_insert', _e, len(val))
         val_sub = val[_s: _e]
         _data_executemany(conn, _sql, val_sub)
         print('is insert data to db now:', _e, 'for ', _top)
@@ -503,14 +537,24 @@ def read_click_sql(sql, client):
 
 def make_mysql_inert_sql(db_name, table, _data, is_replace=False):
     _col = _data['columns']
+    data_val = _data['data']
     _len = len(_col)
     _col = tuple(_col)
     _col = str(_col).replace("'", "`")
     _char = '({len})'.format(len='%s,' * _len)[:-2] + ')'
-    _val = [tuple(_) for _ in _data['data']]
+    _val = str([tuple(_) for _ in data_val])[1:-1]
     if is_replace:
         return f"replace INTO {db_name}.`{table}` {_col} VALUES {_char}", _val
-    return f"insert INTO {db_name}.`{table}` {_col} VALUES {_char}", _val
+    return f"INSERT INTO {db_name}.`{table}` {_col} VALUES {_val}"
+
+
+def make_sub_mysql_inert_sql(db_name, table, _col, _data, _s, _e, is_replace=False):
+    _col = tuple(_col)
+    _col = str(_col).replace("'", "`")
+    _val = str([tuple(_) for _ in _data])[1:-1]
+    if is_replace:
+        return f"replace INTO {db_name}.`{table}` {_col} VALUES {_val}"
+    return f"INSERT INTO {db_name}.`{table}` {_col} VALUES {_val}"
 
 
 def str_correcting(_str, standard_list: list):

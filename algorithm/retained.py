@@ -40,7 +40,7 @@ def retain_date_day(conn, db_name, table, date):
 
 class KeepTableDay:
     def __init__(self, list_day):
-        self.host = '172.16.0.248'
+        self.host = rd.read_db_config('datamarket')['host']
         self.table_ = 'user_day'
         self.s_date = None
         self.list_day = list_day
@@ -706,9 +706,11 @@ def chart_book_admin_read_count_30_day_ladder(conn, write_db, write_tab, s_date,
     read_date = pd.merge(read_date, book_info, on='book_id', how='left')
     read_date = pd.merge(read_date, admin_info, on='channel_id', how='left')
     read_date = read_date.fillna(0)
+    read_date['start_date'] = read_date['start_date'].astype(str)
     write_tab = write_tab + '_count'
     rd.delete_last_date(conn, write_db, write_tab, date_type_name, s_date)
-    rd.subsection_insert_to_data(read_date, conn, write_db, write_tab)
+    rd.insert_data(read_date, conn, write_db, write_tab, is_subsection=10000)
+    # rd.subsection_insert_to_data(read_date, conn, write_db, write_tab)
 
 
 def chart_book_admin_read_new_user_30(read_config, db_name, tab_name, date_col, num, s_date=None):
@@ -800,11 +802,15 @@ def conversion_funnel_count(host, write_db, write_tab, date_type_name, date):
     admin_info['channel_id'] = admin_info['channel_id'].astype(int)
     read_date = pd.merge(read_date, book_info, on='book_id', how='left')
     read_date = pd.merge(read_date, admin_info, on='channel_id', how='left')
+
+    read_date['logon_date'] = read_date['logon_date'].astype(str)
     read_date = read_date.fillna(0)
 
     write_tab = write_tab + '_count'
     rd.delete_last_date(conn, write_db, write_tab, date_type_name, date)
-    rd.subsection_insert_to_data(read_date, conn, write_db, write_tab)
+    rd.insert_data(read_date, conn, write_db, write_tab, is_subsection=10000)
+    # rd.subsection_insert_to_data(read_date, conn, write_db, write_tab)
+    print('insert_to_data: ok !!!')
     conn.close()
 
 

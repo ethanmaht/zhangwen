@@ -515,7 +515,7 @@ def portrait_user_order_run_admin_book_count(write_conn_fig, write_db, write_tab
 
 def _ladder_by_day_count(write_conn, write_db, write_tab, s_date=None, day_ladder=None):
     if not s_date:
-        s_date = '2019-06-01'
+        s_date = '2021-01-01'
     if not day_ladder:
         day_ladder = -15
     end_day = emdate.datetime_format_code(dt.datetime.now())

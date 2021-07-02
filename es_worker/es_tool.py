@@ -5,9 +5,9 @@ from elasticsearch import Elasticsearch
 from emtools import read_database as rd
 
 
-def connect_es(sub_day, index, host='http://192.168.1.221', size=10000, s_num=0):
+def connect_es(sub_day, index, host='http://es-cn-7mz280y590006czc7.elasticsearch.aliyuncs.com', size=10000, s_num=0):
     es_host = host
-    es = Elasticsearch(hosts=es_host, port=9200, timeout=15000)
+    es = Elasticsearch(hosts=es_host, port=9200, timeout=15000, http_auth="elastic:dDE4pwJdqnNHg0fH")
     body = {
         "query":
             {
@@ -77,9 +77,11 @@ def draw_date_from_es_to_df(one_day, ):
 
 def run_read_ex_loop(sub_days, size, write_conn_fig, write_db, tab, index="logstash-qiyue-sound-access*"):
     start_page, all_data = 0, []
+    print('es: 0')
     re_data, _size = connect_es(sub_days, size=size, s_num=start_page, index=index)
     all_data.append(re_data)
     while _size >= size:
+        print(start_page)
         start_page += size
         re_data, _size = connect_es(sub_days, index=index, size=size, s_num=start_page)
         all_data.append(re_data)
@@ -93,7 +95,7 @@ def run_read_ex_loop(sub_days, size, write_conn_fig, write_db, tab, index="logst
 def es_data_read(
         index,
         ranges_must=None, ranges_must_not=None, ranges_should=None,
-        host='http://192.168.1.221', size=10000, s_num=0
+        host='http://es-cn-7mz280y590006czc7.elasticsearch.aliyuncs.com', size=10000, s_num=0
 ):
     if not ranges_must:
         ranges_must = []
@@ -101,7 +103,7 @@ def es_data_read(
         ranges_must_not = []
     if not ranges_should:
         ranges_should = []
-    es = Elasticsearch(hosts=host, port=9200, timeout=15000)
+    es = Elasticsearch(hosts=host, port=9200, timeout=15000, user='elastic', password='dDE4pwJdqnNHg0fH')
     body = {
         "query":
             {

@@ -38,13 +38,13 @@ database_host:
 
 
 datamarket:
-  host: 172.16.0.248
+  host: 192.168.10.33
   user: root
   pw: Qiyue@123
   db_name: happy_seven
 
 datamarket_out:
-  host: 8.140.112.119
+  host: 59.110.236.113
   user: root
   pw: Qiyue@123
   db_name: happy_seven
@@ -94,10 +94,10 @@ shard_host_sound:
     - 384
     - 512
   host:
-    - rm-2ze4zx9c2rqq4w57835910.mysql.rds.aliyuncs.com
-    - rm-2zet7n7n10ltd4z2335910.mysql.rds.aliyuncs.com
-    - rm-2ze316i87m9n6g8i735910.mysql.rds.aliyuncs.com
-    - rm-2ze83554plz232cju35910.mysql.rds.aliyuncs.com
+    - rm-bp1nu77u5w5hg537i.mysql.rds.aliyuncs.com
+    - rm-bp19vq422k49j76w2.mysql.rds.aliyuncs.com
+    - rm-bp1803h67547w051i.mysql.rds.aliyuncs.com
+    - rm-bp16536qh2ox8bcsi.mysql.rds.aliyuncs.com
   user:
     mahongtao
   pw:
@@ -106,7 +106,7 @@ shard_host_sound:
 
 cps_host_sound:
   host:
-    rm-2ze987sywd87ish4b35910.mysql.rds.aliyuncs.com
+    rm-bp17156ip9r549952.mysql.rds.aliyuncs.com
   user:
     mahongtao
   pw:

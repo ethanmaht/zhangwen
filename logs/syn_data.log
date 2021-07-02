@@ -1,0 +1,202 @@
+2021/06/28 17:55:46 - root - ERROR - 20 - loger - Error
+Traceback (most recent call last):
+  File "D:\python3\Lib\site-packages\pymysql\connections.py", line 613, in connect
+    sock = socket.create_connection(
+  File "D:\python3\lib\socket.py", line 843, in create_connection
+    raise err
+  File "D:\python3\lib\socket.py", line 831, in create_connection
+    sock.connect(sa)
+socket.timeout: timed out
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\datawork\logs\loger.py", line 11, in wrapper
+    return func(*args, **kwargs)
+  File "D:\datawork\syn_shard_user_day.py", line 53, in syn_happy_seven_sound_shard_work
+    data_job.syn_happy_seven_sound_cps('datamarket', 'sound')
+  File "D:\datawork\emtools\data_job.py", line 353, in syn_happy_seven_sound_cps
+    write_conn = rd.connect_database_vpn(write_conn_fig)
+  File "D:\datawork\emtools\read_database.py", line 42, in connect_database_vpn
+    conn = pymysql.connect(
+  File "D:\python3\Lib\site-packages\pymysql\connections.py", line 353, in __init__
+    self.connect()
+  File "D:\python3\Lib\site-packages\pymysql\connections.py", line 664, in connect
+    raise exc
+pymysql.err.OperationalError: (2003, "Can't connect to MySQL server on '172.16.0.248' (timed out)")
+2021/06/28 17:55:46 - urllib3.connectionpool - DEBUG - 227 - connectionpool - Starting new HTTP connection (1): 192.168.1.221:9200
+2021/06/28 17:56:07 - elasticsearch - WARNING - 285 - base - POST http://192.168.1.221:9200/logstash-qiyue-sound-access*/_search [status:N/A request:21.038s]
+Traceback (most recent call last):
+  File "D:\python3\Lib\site-packages\urllib3\connection.py", line 169, in _new_conn
+    conn = connection.create_connection(
+  File "D:\python3\Lib\site-packages\urllib3\util\connection.py", line 96, in create_connection
+    raise err
+  File "D:\python3\Lib\site-packages\urllib3\util\connection.py", line 86, in create_connection
+    sock.connect(sa)
+TimeoutError: [WinError 10060] 由于连接方在一段时间后没有正确答复或连接的主机没有反应，连接尝试失败。
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\python3\Lib\site-packages\elasticsearch\connection\http_urllib3.py", line 251, in perform_request
+    response = self.pool.urlopen(
+  File "D:\python3\Lib\site-packages\urllib3\connectionpool.py", line 755, in urlopen
+    retries = retries.increment(
+  File "D:\python3\Lib\site-packages\urllib3\util\retry.py", line 507, in increment
+    raise six.reraise(type(error), error, _stacktrace)
+  File "D:\python3\Lib\site-packages\urllib3\packages\six.py", line 735, in reraise
+    raise value
+  File "D:\python3\Lib\site-packages\urllib3\connectionpool.py", line 699, in urlopen
+    httplib_response = self._make_request(
+  File "D:\python3\Lib\site-packages\urllib3\connectionpool.py", line 394, in _make_request
+    conn.request(method, url, **httplib_request_kw)
+  File "D:\python3\Lib\site-packages\urllib3\connection.py", line 234, in request
+    super(HTTPConnection, self).request(method, url, body=body, headers=headers)
+  File "D:\python3\lib\http\client.py", line 1255, in request
+    self._send_request(method, url, body, headers, encode_chunked)
+  File "D:\python3\lib\http\client.py", line 1301, in _send_request
+    self.endheaders(body, encode_chunked=encode_chunked)
+  File "D:\python3\lib\http\client.py", line 1250, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "D:\python3\lib\http\client.py", line 1010, in _send_output
+    self.send(msg)
+  File "D:\python3\lib\http\client.py", line 950, in send
+    self.connect()
+  File "D:\python3\Lib\site-packages\urllib3\connection.py", line 200, in connect
+    conn = self._new_conn()
+  File "D:\python3\Lib\site-packages\urllib3\connection.py", line 181, in _new_conn
+    raise NewConnectionError(
+urllib3.exceptions.NewConnectionError: <urllib3.connection.HTTPConnection object at 0x0000023C93C952E0>: Failed to establish a new connection: [WinError 10060] 由于连接方在一段时间后没有正确答复或连接的主机没有反应，连接尝试失败。
+2021/06/28 17:56:07 - elasticsearch - DEBUG - 302 - base - > {"query":{"bool":{"must":[{"range":{"@timestamp":{"gte":"now-5d","lte":"now"}}}],"must_not":[],"should":[]}},"from":0,"size":10000,"sort":[],"aggs":{}}
+2021/06/28 17:56:07 - urllib3.connectionpool - DEBUG - 227 - connectionpool - Starting new HTTP connection (2): 192.168.1.221:9200
+2021/06/28 17:56:28 - elasticsearch - WARNING - 285 - base - POST http://192.168.1.221:9200/logstash-qiyue-sound-access*/_search [status:N/A request:21.052s]
+Traceback (most recent call last):
+  File "D:\python3\Lib\site-packages\urllib3\connection.py", line 169, in _new_conn
+    conn = connection.create_connection(
+  File "D:\python3\Lib\site-packages\urllib3\util\connection.py", line 96, in create_connection
+    raise err
+  File "D:\python3\Lib\site-packages\urllib3\util\connection.py", line 86, in create_connection
+    sock.connect(sa)
+TimeoutError: [WinError 10060] 由于连接方在一段时间后没有正确答复或连接的主机没有反应，连接尝试失败。
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\python3\Lib\site-packages\elasticsearch\connection\http_urllib3.py", line 251, in perform_request
+    response = self.pool.urlopen(
+  File "D:\python3\Lib\site-packages\urllib3\connectionpool.py", line 755, in urlopen
+    retries = retries.increment(
+  File "D:\python3\Lib\site-packages\urllib3\util\retry.py", line 507, in increment
+    raise six.reraise(type(error), error, _stacktrace)
+  File "D:\python3\Lib\site-packages\urllib3\packages\six.py", line 735, in reraise
+    raise value
+  File "D:\python3\Lib\site-packages\urllib3\connectionpool.py", line 699, in urlopen
+    httplib_response = self._make_request(
+  File "D:\python3\Lib\site-packages\urllib3\connectionpool.py", line 394, in _make_request
+    conn.request(method, url, **httplib_request_kw)
+  File "D:\python3\Lib\site-packages\urllib3\connection.py", line 234, in request
+    super(HTTPConnection, self).request(method, url, body=body, headers=headers)
+  File "D:\python3\lib\http\client.py", line 1255, in request
+    self._send_request(method, url, body, headers, encode_chunked)
+  File "D:\python3\lib\http\client.py", line 1301, in _send_request
+    self.endheaders(body, encode_chunked=encode_chunked)
+  File "D:\python3\lib\http\client.py", line 1250, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "D:\python3\lib\http\client.py", line 1010, in _send_output
+    self.send(msg)
+  File "D:\python3\lib\http\client.py", line 950, in send
+    self.connect()
+  File "D:\python3\Lib\site-packages\urllib3\connection.py", line 200, in connect
+    conn = self._new_conn()
+  File "D:\python3\Lib\site-packages\urllib3\connection.py", line 181, in _new_conn
+    raise NewConnectionError(
+urllib3.exceptions.NewConnectionError: <urllib3.connection.HTTPConnection object at 0x0000023C93C95A60>: Failed to establish a new connection: [WinError 10060] 由于连接方在一段时间后没有正确答复或连接的主机没有反应，连接尝试失败。
+2021/06/28 17:56:28 - elasticsearch - DEBUG - 302 - base - > {"query":{"bool":{"must":[{"range":{"@timestamp":{"gte":"now-5d","lte":"now"}}}],"must_not":[],"should":[]}},"from":0,"size":10000,"sort":[],"aggs":{}}
+2021/06/28 17:56:28 - urllib3.connectionpool - DEBUG - 227 - connectionpool - Starting new HTTP connection (3): 192.168.1.221:9200
+2021/06/28 17:56:49 - elasticsearch - WARNING - 285 - base - POST http://192.168.1.221:9200/logstash-qiyue-sound-access*/_search [status:N/A request:21.042s]
+Traceback (most recent call last):
+  File "D:\python3\Lib\site-packages\urllib3\connection.py", line 169, in _new_conn
+    conn = connection.create_connection(
+  File "D:\python3\Lib\site-packages\urllib3\util\connection.py", line 96, in create_connection
+    raise err
+  File "D:\python3\Lib\site-packages\urllib3\util\connection.py", line 86, in create_connection
+    sock.connect(sa)
+TimeoutError: [WinError 10060] 由于连接方在一段时间后没有正确答复或连接的主机没有反应，连接尝试失败。
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\python3\Lib\site-packages\elasticsearch\connection\http_urllib3.py", line 251, in perform_request
+    response = self.pool.urlopen(
+  File "D:\python3\Lib\site-packages\urllib3\connectionpool.py", line 755, in urlopen
+    retries = retries.increment(
+  File "D:\python3\Lib\site-packages\urllib3\util\retry.py", line 507, in increment
+    raise six.reraise(type(error), error, _stacktrace)
+  File "D:\python3\Lib\site-packages\urllib3\packages\six.py", line 735, in reraise
+    raise value
+  File "D:\python3\Lib\site-packages\urllib3\connectionpool.py", line 699, in urlopen
+    httplib_response = self._make_request(
+  File "D:\python3\Lib\site-packages\urllib3\connectionpool.py", line 394, in _make_request
+    conn.request(method, url, **httplib_request_kw)
+  File "D:\python3\Lib\site-packages\urllib3\connection.py", line 234, in request
+    super(HTTPConnection, self).request(method, url, body=body, headers=headers)
+  File "D:\python3\lib\http\client.py", line 1255, in request
+    self._send_request(method, url, body, headers, encode_chunked)
+  File "D:\python3\lib\http\client.py", line 1301, in _send_request
+    self.endheaders(body, encode_chunked=encode_chunked)
+  File "D:\python3\lib\http\client.py", line 1250, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "D:\python3\lib\http\client.py", line 1010, in _send_output
+    self.send(msg)
+  File "D:\python3\lib\http\client.py", line 950, in send
+    self.connect()
+  File "D:\python3\Lib\site-packages\urllib3\connection.py", line 200, in connect
+    conn = self._new_conn()
+  File "D:\python3\Lib\site-packages\urllib3\connection.py", line 181, in _new_conn
+    raise NewConnectionError(
+urllib3.exceptions.NewConnectionError: <urllib3.connection.HTTPConnection object at 0x0000023C93C959A0>: Failed to establish a new connection: [WinError 10060] 由于连接方在一段时间后没有正确答复或连接的主机没有反应，连接尝试失败。
+2021/06/28 17:56:49 - elasticsearch - DEBUG - 302 - base - > {"query":{"bool":{"must":[{"range":{"@timestamp":{"gte":"now-5d","lte":"now"}}}],"must_not":[],"should":[]}},"from":0,"size":10000,"sort":[],"aggs":{}}
+2021/06/28 17:56:49 - urllib3.connectionpool - DEBUG - 227 - connectionpool - Starting new HTTP connection (4): 192.168.1.221:9200
+2021/06/28 17:57:10 - elasticsearch - WARNING - 285 - base - POST http://192.168.1.221:9200/logstash-qiyue-sound-access*/_search [status:N/A request:21.048s]
+Traceback (most recent call last):
+  File "D:\python3\Lib\site-packages\urllib3\connection.py", line 169, in _new_conn
+    conn = connection.create_connection(
+  File "D:\python3\Lib\site-packages\urllib3\util\connection.py", line 96, in create_connection
+    raise err
+  File "D:\python3\Lib\site-packages\urllib3\util\connection.py", line 86, in create_connection
+    sock.connect(sa)
+TimeoutError: [WinError 10060] 由于连接方在一段时间后没有正确答复或连接的主机没有反应，连接尝试失败。
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\python3\Lib\site-packages\elasticsearch\connection\http_urllib3.py", line 251, in perform_request
+    response = self.pool.urlopen(
+  File "D:\python3\Lib\site-packages\urllib3\connectionpool.py", line 755, in urlopen
+    retries = retries.increment(
+  File "D:\python3\Lib\site-packages\urllib3\util\retry.py", line 507, in increment
+    raise six.reraise(type(error), error, _stacktrace)
+  File "D:\python3\Lib\site-packages\urllib3\packages\six.py", line 735, in reraise
+    raise value
+  File "D:\python3\Lib\site-packages\urllib3\connectionpool.py", line 699, in urlopen
+    httplib_response = self._make_request(
+  File "D:\python3\Lib\site-packages\urllib3\connectionpool.py", line 394, in _make_request
+    conn.request(method, url, **httplib_request_kw)
+  File "D:\python3\Lib\site-packages\urllib3\connection.py", line 234, in request
+    super(HTTPConnection, self).request(method, url, body=body, headers=headers)
+  File "D:\python3\lib\http\client.py", line 1255, in request
+    self._send_request(method, url, body, headers, encode_chunked)
+  File "D:\python3\lib\http\client.py", line 1301, in _send_request
+    self.endheaders(body, encode_chunked=encode_chunked)
+  File "D:\python3\lib\http\client.py", line 1250, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "D:\python3\lib\http\client.py", line 1010, in _send_output
+    self.send(msg)
+  File "D:\python3\lib\http\client.py", line 950, in send
+    self.connect()
+  File "D:\python3\Lib\site-packages\urllib3\connection.py", line 200, in connect
+    conn = self._new_conn()
+  File "D:\python3\Lib\site-packages\urllib3\connection.py", line 181, in _new_conn
+    raise NewConnectionError(
+urllib3.exceptions.NewConnectionError: <urllib3.connection.HTTPConnection object at 0x0000023C93C958B0>: Failed to establish a new connection: [WinError 10060] 由于连接方在一段时间后没有正确答复或连接的主机没有反应，连接尝试失败。
+2021/06/28 17:57:10 - elasticsearch - DEBUG - 302 - base - > {"query":{"bool":{"must":[{"range":{"@timestamp":{"gte":"now-5d","lte":"now"}}}],"must_not":[],"should":[]}},"from":0,"size":10000,"sort":[],"aggs":{}}

@@ -9,7 +9,6 @@ import sys
 import inspect
 
 
-@loger.logging_read
 def syn_market_keep_day(s_date=None):
     work = retained.KeepTableDay(list_day=[1, 2, 3, 7, 14, 30])
     if s_date:
@@ -17,7 +16,6 @@ def syn_market_keep_day(s_date=None):
     work.count_keep_table_day_run()
 
 
-@loger.logging_read
 def syn_market_keep_day_admin(s_date=None):
     work = retained.RunCount('market_read', 'market_keep_day_admin', 'date_day', extend='list')
     if s_date:
@@ -29,7 +27,6 @@ def syn_market_keep_day_admin(s_date=None):
     )
 
 
-# @loger.logging_read
 def syn_market_keep_day_admin_new(s_date=None):
     work = retained.RunCount('market_read', 'market_keep_day_admin_test', 'date_day', extend='delete')
     if s_date:
@@ -42,7 +39,6 @@ def syn_market_keep_day_admin_new(s_date=None):
     )
 
 
-@loger.logging_read
 def syn_admin_book_order(s_date=None):
     work = retained.RunCount('market_read', 'order_logon_conversion', 'order_day', extend='delete')
     if s_date:
@@ -52,7 +48,6 @@ def syn_admin_book_order(s_date=None):
     work.direct_run(retained.compress_order_logon_conversion)
 
 
-@loger.logging_read
 def table_show_logon_admin_book_order(s_date=None):
     work = retained.RunCount('market_show', 'logon_admin_book_val', None)
     if s_date:
@@ -61,7 +56,6 @@ def table_show_logon_admin_book_order(s_date=None):
     work.direct_run(show_tabel.logon_admin_book_val)
 
 
-@loger.logging_read
 def syn_market_keep_day_by_order_consume(s_date=None):
     work = retained.RunCount(
         write_db='market_read', write_tab='keep_day_by_order_consume', date_col='date_day', extend='delete'
@@ -75,7 +69,6 @@ def syn_market_keep_day_by_order_consume(s_date=None):
     )
 
 
-@loger.logging_read
 def syn_market_logon_compress_thirty_day(s_date=None):
     work = retained.RunCount(
         write_db='market_read', write_tab='logon_compress_thirty_day', date_col='logon_date', extend='delete'
@@ -85,12 +78,11 @@ def syn_market_logon_compress_thirty_day(s_date=None):
     work.step_run_kwargs(
         func=retained.retained_logon_compress_thirty_day,
         follow_func=retained.retained_logon_compress_thirty_day_count,
-        date_sub=90,
+        date_sub=60,
         process_num=8
     )
 
 
-# @loger.logging_read
 def syn_market_book_admin_read_situation(s_date=None):
     work = retained.RunCount(
         write_db='market_read', write_tab='book_admin_read_situation_30', date_col='start_date',  extend='delete'
@@ -100,12 +92,11 @@ def syn_market_book_admin_read_situation(s_date=None):
     work.step_run_kwargs(
         func=retained.chart_book_admin_read_30,
         follow_func=retained.chart_book_admin_read_count_30,
-        date_sub=90,
+        date_sub=60,
         process_num=8
     )
 
 
-# @loger.logging_read
 def syn_new_user_market_book_admin_read_situation(s_date=None):
     work = retained.RunCount(
         write_db='market_read', write_tab='new_user_book_admin_read_situation_30',
@@ -121,7 +112,6 @@ def syn_new_user_market_book_admin_read_situation(s_date=None):
     )
 
 
-@loger.logging_read
 def sound_market_book_count(s_date):
     work = retained.RunCount(
         write_db='sound', write_tab='market_book_count', date_col='logon_day', extend='delete'
@@ -133,7 +123,6 @@ def sound_market_book_count(s_date):
     )
 
 
-@loger.logging_read
 def sound_market_chapter_count(s_date):
     work = retained.RunCount(
         write_db='sound', write_tab='market_chapter_count', date_col='date_day', extend='delete'
@@ -145,7 +134,6 @@ def sound_market_chapter_count(s_date):
     )
 
 
-@loger.logging_read
 def syn_read_sign_order_count(s_date=None):
     rd.syn_date_block_run(
         data_job.read_sign_order_read, s_date, process_num=12,
@@ -153,7 +141,6 @@ def syn_read_sign_order_count(s_date=None):
     )
 
 
-@loger.logging_read
 def conversion_funnel_count(s_date=None):
     work = retained.RunCount(
         write_db='market_read', write_tab='conversion_funnel_count', date_col='logon_date', extend='delete'
@@ -163,12 +150,11 @@ def conversion_funnel_count(s_date=None):
     work.step_run_kwargs(
         func=retained.chart_book_admin_conversion_funnel,
         follow_func=retained.conversion_funnel_count,
-        date_sub=90,
+        date_sub=60,
         process_num=12
     )
 
 
-@loger.logging_read
 def conversion_funnel_count_all_book(s_date=None):
     work = retained.RunCount(
         write_db='market_read', write_tab='conversion_funnel_count_all_book', date_col='logon_date', extend='delete'
@@ -178,7 +164,7 @@ def conversion_funnel_count_all_book(s_date=None):
     work.step_run_kwargs(
         func=retained.chart_book_admin_conversion_funnel_all_book,
         follow_func=retained.conversion_funnel_count,
-        date_sub=90,
+        date_sub=60,
         process_num=8
     )
 
@@ -290,10 +276,10 @@ if __name__ == '__main__':
     syn_market_keep_day()  # 老留存 -- 不废弃
     syn_admin_book_order()  # 书籍分销
     table_show_logon_admin_book_order('2020-06-01')  # 书籍分销 展示 -> .1h
-    syn_market_logon_compress_thirty_day()  # 注册后30日的订阅 -> .3h
+    syn_market_logon_compress_thirty_day('2021-06-01')  # 注册后30日的订阅 -> .3h
 
-    conversion_funnel_count()  # 转化漏斗 -> .2h
-    conversion_funnel_count_all_book()  # 转化漏斗-所有书 -> .8h
+    conversion_funnel_count('2021-06-01')  # 转化漏斗 -> .2h
+    conversion_funnel_count_all_book('2021-06-01')  # 转化漏斗-所有书 -> .8h
 
     sound_market_book_count('2020-05-01')  # 有声book数据 -> .1h
     sound_market_chapter_count('2020-05-01')  # 有声chapter数据 -> .1h

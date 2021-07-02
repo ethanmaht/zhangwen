@@ -165,7 +165,7 @@ where createtime >= '{date}'
 
 sql_user_info = """
 select id user_id,createtime,updatetime,channel_id admin_id,sex,country,is_subscribe,
-    province,city,isp,referral_id,referral_id_permanent,ext
+    province,city,isp,referral_id,referral_id_permanent
 FROM cps_user_{_num}.user
 where updatetime >= '{date}'
 """
@@ -1338,6 +1338,7 @@ group by uc
 sql_chapter_sequence = """
 select id chapter_id,`sequence` ,`free` 
 from heiyan.chapter_info ci 
+where create_time >= '2020-01-01'
 """
 
 sql_restructure_read_log = """
@@ -1347,6 +1348,7 @@ from (
     if(book_id='0',refer_book,book_id) book_id,
     if(chapter_id='0',refer_chapter,chapter_id) chapter_id 
     from heiyan.read_log
+    where day = '{date_day}'
 ) rl 
 left join (
     select uc,max(user_id) uid
@@ -1358,6 +1360,41 @@ left join (
     ) a
     group by uc
 ) u on u.uc = rl.uc
+"""
+
+sql_restructure_read_log_mid = """
+SELECT user_id,uc,if(free='true','1',type) type,site,day,plat,book_id,chapter_id,sequence,free
+from heiyan.show_follow_tab sft 
+where day = '{date_day}'
+"""
+
+sql_restructure_read_first = """
+SELECT user_id,book_id,min(day) first_day
+from heiyan.show_follow_tab sft 
+group by user_id,book_id
+"""
+
+
+sql_restructure_group = """
+SELECT first_day,book_id,`sequence`,count(DISTINCT user_id) users
+from heiyan.show_follow_tab
+where book_id > '' and sequence > 0
+group by first_day,book_id,`sequence` 
+having sequence <= 90
+order by first_day desc,book_id,sequence
+"""
+
+sql_book_info_group = """
+select id book_id,i_name,if(finish_time<'1970-02-01','连载','完结') finish
+from heiyan.book_info
+where status >= 0
+"""
+
+sql_restructure_pv_uv = """
+SELECT first_day,book_id,count(*) pv,count(DISTINCT user_id) uv
+from heiyan.show_follow_tab
+where book_id > ''
+group by first_day,book_id
 """
 
 
