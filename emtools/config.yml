@@ -188,6 +188,17 @@ click_min:
     heiyan
 
 
+click_local:
+  host:
+    127.0.0.1
+  user:
+    testuser
+  pw:
+    1a2s3d4f
+  db:
+    heiyan
+
+
 bigdata_hive:
   host: 8.140.178.215
   port: 10000

@@ -1,6 +1,7 @@
 from clickhouse_driver import Client
 from emtools import read_database as rd
 from emtools import sql_code
+from emtools import emdate
 import pandas as pd
 
 
@@ -79,17 +80,14 @@ def hy_show_tab_keep(conn, db_name, tab_name):
 
 
 def hy_show_follow_tab(conn, db_name, tab_name, date_day):
-    print(0)
+
     read_log = rd.read_click_sql(sql_code.sql_restructure_read_log.format(date_day=date_day), conn)
-    print(1)
     chapter = rd.read_click_sql(sql_code.sql_chapter_sequence, conn)
-    print(2)
     read_log.fillna(0, inplace=True)
     read_log[['chapter_id', 'user_id']] = read_log[['chapter_id', 'user_id']].astype(str)
     chapter['chapter_id'] = chapter['chapter_id'].astype(str)
 
     chapter['sequence'] = chapter['sequence'].astype(int)
-    print(4)
     all_data = pd.merge(read_log, chapter, on=['chapter_id'], how='left')
 
     delete_sql = sql_code.click_sql_delete_table_data.format(
@@ -104,11 +102,8 @@ def hy_show_follow_tab(conn, db_name, tab_name, date_day):
 
 
 def hy_show_follow_tab_first(conn, db_name, tab_name, date_day):
-    print(0)
     read_log = rd.read_click_sql(sql_code.sql_restructure_read_log_mid.format(date_day=date_day), conn)
-    print(1)
     first = rd.read_click_sql(sql_code.sql_restructure_read_first, conn)
-    print(read_log.dtypes)
     read_log[['user_id', 'book_id']] = read_log[['user_id', 'book_id']].astype(str)
     first[['user_id', 'book_id']] = first[['user_id', 'book_id']].astype(str)
     all_data = pd.merge(read_log, first, on=['user_id', 'book_id'], how='left')
@@ -116,7 +111,6 @@ def hy_show_follow_tab_first(conn, db_name, tab_name, date_day):
         db=db_name, tab=tab_name, col='day', cd='=', val=date_day
     )
     all_data.fillna(0, inplace=True)
-    print(all_data.dtypes)
     rd.execute_click_sql(delete_sql, conn)
     rd.write_click_date(all_data, conn, db_name, tab_name, step=10000)
 
@@ -147,9 +141,11 @@ def hy_show_follow_group(conn, db_name, tab_name):
 if __name__ == '__main__':
     client = Client(host='127.0.0.1', user='testuser', password='1a2s3d4f', database='heiyan')
 
-    # hy_show_tab_conversion(client, 'heiyan', 'show_tab_conversion')
+    hy_show_tab_conversion(client, 'heiyan', 'show_tab_conversion')
 
-    # hy_show_follow_tab(client, 'heiyan', 'show_follow_tab', '2021_06_28')
+    run_day = emdate.datetime_format_code(emdate.date_sub_days(1), code='{Y}_{M}_{D}')
+    print(run_day)
+    hy_show_follow_tab(client, 'heiyan', 'show_follow_tab', run_day)
     hy_show_follow_group(client, 'heiyan', 'show_follow_tab_group')
 
     # hy_show_tab_keep(client, 'heiyan', 'mid_read_log')

@@ -1018,16 +1018,11 @@ from (
 """
 
 
-sql_user_referral = """
-SELECT user_id,referral_id,date(FROM_UNIXTIME(createtime)) logon_day
-from user_info.user_info_0
-where createtime >= UNIX_TIMESTAMP({s_date})
-"""
-
 sql_order_day_logon = """
-SELECT user_id,TIMESTAMPDIFF(day, FROM_UNIXTIME(user_createtime), FROM_UNIXTIME(createtime)) day_sub,money
+SELECT user_id,TIMESTAMPDIFF(day, FROM_UNIXTIME(user_createtime), FROM_UNIXTIME(createtime)) day_sub,money,
+    date(FROM_UNIXTIME(createtime)) logon_day,referral_id
 from orders_log.orders_log_{num}
-where state = 1 and deduct = 0
+where state = 1 and deduct = 0 and createtime >= UNIX_TIMESTAMP('{s_date}')
 """
 
 sql_referral_info = """
@@ -1036,10 +1031,26 @@ from market_read.referral_info
 """
 
 sql_referral_logon_user = """
-SELECT referral_id,date(FROM_UNIXTIME(createtime)) logon_day,count(*) logon_users
+SELECT referral_id,count(*) logon_users
 from user_info.user_info_{num}
-where referral_id > 0 and createtime >= UNIX_TIMESTAMP({s_date})
-GROUP BY referral_id,logon_day
+where referral_id > 0 and createtime >= UNIX_TIMESTAMP('{s_date}')
+GROUP BY referral_id
+"""
+
+sql_referral_roi_90 = """
+select referral_day,referral_id,book_id,admin_id,{num} sub_days,'' plat,
+    max(cost) cost,max(logon_users) logon_users,sum(money) money
+from heiyan.referral_roi
+where day_sub <= {num} and referral_day >= '{s_date}'
+group by 
+referral_day,referral_id,book_id,admin_id
+order by referral_day
+"""
+
+sql_referral_roi_all = """
+select referral_id,sum(logon_users) all_logon,sum(money) all_money
+from heiyan.referral_roi
+group by referral_id
 """
 
 
@@ -1300,7 +1311,7 @@ group by day,book_id
 """
 
 sql_hy_book_info = """
-select id book_id,i_name,date(create_time) book_create,words
+select id book_id,i_name,date(create_time) book_create,date(update_time) book_update,words
 from heiyan.book_info bi  
 """
 

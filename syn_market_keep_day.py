@@ -4,6 +4,9 @@ import time
 from es_worker import ec_market
 from emtools import read_database as rd
 from emtools import data_job
+from emtools import sql_code
+from clickhouse_driver import Client
+import pandas as pd
 from logs import loger
 import sys
 import inspect
@@ -257,16 +260,54 @@ def models_keep_data_run(s_date=None):
 
 def referral_roi_run(s_date=None):
     work = retained.RunCount(
-        write_db='market_read', write_tab='referral_roi', date_col='logon_day', extend='delete'
+        write_db='heiyan', write_tab='referral_roi', date_col='logon_day',  # extend='delete'
     )
     if s_date:
         work.s_date = s_date
+
+    config = rd.read_db_config('click_min')
+    client = Client(host=config['host'], user=config['user'], password=config['pw'], database=config['db'])
+    delete_sql = sql_code.click_sql_delete_table_data.format(
+        db='heiyan', tab='referral_roi', col='logon_day', cd='>=', val=s_date
+    )
+
+    rd.execute_click_sql(delete_sql, client)
     referral_info = retained.read_referral_info()
     work.step_run_kwargs(
         func=retained.referral_roi,
-        date_sub=2,
+        date_sub=0,
         process_num=8,
         referral_info=referral_info
+    )
+
+
+def referral_roi_90_run(s_date=None):
+    work = retained.RunCount(
+        write_db='market_read', write_tab='referral_roi', date_col='referral_day', extend='delete'
+    )
+    if s_date:
+        work.s_date = s_date
+
+    read_config = rd.read_db_config('datamarket')
+    conn = rd.connect_database_host(read_config['host'], read_config['user'], read_config['pw'])
+    book_info = pd.read_sql(sql_code.sql_keep_book_id_name, conn)
+    admin_info = pd.read_sql(sql_code.sql_retained_admin_info, conn)
+    book_info['book_id'] = book_info['book_id'].astype(str)
+    admin_info['channel_id'] = admin_info['channel_id'].astype(str)
+    admin_info.rename(columns={'channel_id': 'admin_id'}, inplace=True)
+    config = rd.read_db_config('click_min')
+    client = Client(host=config['host'], user=config['user'], password=config['pw'], database=config['db'])
+    all_data = rd.read_click_sql(sql_code.sql_referral_roi_all, client)
+    all_data['referral_id'] = all_data['referral_id'].astype(str)
+    work.step_run_kwargs(
+        func=retained.referral_roi_show,
+        date_sub=0,
+        process_num=1,
+        admin_info=admin_info,
+        book_info=book_info,
+        all_data=all_data,
+        run_num=91,
+        client=client
     )
 
 
@@ -297,8 +338,11 @@ if __name__ == '__main__':
 
     models_keep_data_run()  # 留存 按天 -> 3h
 
+    referral_roi_run(s_date='2019-01-01')  # 推广roi
+    referral_roi_90_run(s_date='2021-01-01')
+
     """ ****** ↓ discard ↓ ****** """
-    # referral_roi_run()
+
     # order_book_date_sub_run('2019-01-01')
     # syn_market_keep_day_by_order_consume()  # 新留存 订阅和充值 -- 废弃 210412
     # syn_market_keep_day()  # 老留存 -- 废弃 210412

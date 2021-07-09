@@ -7,6 +7,7 @@ from emtools import read_database as rd
 from emtools import emdate
 import datetime as dt
 import random
+from clickhouse_driver import Client
 
 
 def retain_date_day(conn, db_name, table, date):
@@ -1130,18 +1131,14 @@ def referral_roi(read_config, db_name, tab_name, date_col, num, referral_info, s
     print('======> is start to run {db}.{tab} - {num} - {date} ===> start time:'.format(
         db=db_name, tab=tab_name, date=s_date, num=num), dt.datetime.now())
     conn = rd.connect_database_host(read_config['host'], read_config['user'], read_config['pw'])
+    config = rd.read_db_config('click_min')
+    client = Client(host=config['host'], user=config['user'], password=config['pw'], database=config['db'])
 
-    user_referral = pd.read_sql(
-        sql_code.sql_user_referral.format(num=num, s_date=s_date), conn
-    )
-    order_day_logon = pd.read_sql(
+    read_date = pd.read_sql(
         sql_code.sql_order_day_logon.format(num=num, s_date=s_date), conn
     )
 
-    user_referral[['user_id', 'referral_id']] = user_referral[['user_id', 'referral_id']].astype(str)
-    order_day_logon['user_id'] = order_day_logon['user_id'].astype(str)
-
-    read_date = pd.merge(order_day_logon, user_referral, on='user_id', how='left')
+    read_date['user_id'] = read_date['user_id'].astype(str)
 
     read_date.fillna(0, inplace=True)
     read_date[['referral_id', 'logon_day']] = read_date[['referral_id', 'logon_day']].astype(str)
@@ -1155,15 +1152,27 @@ def referral_roi(read_config, db_name, tab_name, date_col, num, referral_info, s
     referral_info[['referral_id', 'book_id', 'admin_id']] = \
         referral_info[['referral_id', 'book_id', 'admin_id']].astype(str)
 
-    referral_users[['referral_id', 'logon_day']] = referral_users[['referral_id', 'logon_day']].astype(str)
+    referral_users['referral_id'] = referral_users['referral_id'].astype(str)
 
     read_date = pd.merge(read_date, referral_info, on='referral_id', how='left')
-    read_date = pd.merge(read_date, referral_users, on=['referral_id', 'logon_day'], how='left')
-
+    read_date = pd.merge(read_date, referral_users, on='referral_id', how='left')
+    read_date['tab_num'] = num
+    read_date['referral_day'].fillna('2000-01-01', inplace=True)
     read_date.fillna(0, inplace=True)
 
-    rd.insert_to_data(read_date, conn, db_name, tab_name)
-    conn.close()
+    read_date['referral_day'] = read_date['referral_day'].apply(
+        lambda x: emdate.datetime_format_code(str(x), '{Y}-{M}-{D} 00:00:00')
+    )
+    read_date['logon_day'] = read_date['logon_day'].apply(
+        lambda x: emdate.datetime_format_code(str(x), '{Y}-{M}-{D}')
+    )
+
+    read_date.sort_values(by='logon_day', inplace=True)
+
+    rd.write_click_date(read_date, client, db_name, tab_name, step=500)
+
+    # rd.insert_to_data(read_date, conn, db_name, tab_name)
+    # conn.close()
 
 
 def read_referral_info():
@@ -1173,5 +1182,49 @@ def read_referral_info():
     return referral_info
 
 
-def referral_roi_show():
-    return 0
+def referral_roi_show(
+        read_config, db_name, tab_name, date_col, num, book_info, admin_info, all_data, client, s_date=None
+):
+    if isinstance(s_date, list):
+        s_date = s_date[0]
+    print('======> is start to run {db}.{tab} - {num} - {date} ===> start time:'.format(
+        db=db_name, tab=tab_name, date=s_date, num=num), dt.datetime.now())
+    conn = rd.connect_database_host(read_config['host'], read_config['user'], read_config['pw'])
+    # print(sql_code.sql_referral_roi_90.format(num=num, s_date=s_date))
+    read_date = rd.read_click_sql(sql_code.sql_referral_roi_90.format(num=num, s_date=s_date), client)
+    read_date[['book_id', 'admin_id', 'referral_id']] = read_date[['book_id', 'admin_id', 'referral_id']].astype(str)
+
+    read_date = pd.merge(read_date, book_info, on='book_id', how='left')
+    read_date = pd.merge(read_date, admin_info, on='admin_id', how='left')
+    read_date = pd.merge(read_date, all_data, on='referral_id', how='left')
+
+    read_date['plat'] = read_date['admin_id'].apply(lambda x: relation_plat(x))
+
+    read_date.fillna(0, inplace=True)
+
+    rd.insert_to_data(read_date, conn, db_name, tab_name)
+
+
+def relation_plat(admin_id):
+    if isinstance(admin_id, int):
+        admin_id = str(admin_id)
+    qi_yue = [
+        "15586", "15753", "15585", "15584", "15529", "15518", "15426", "15411", "15410", "15403", "15364", "14713",
+        "14711", "14710", "14703", "14635", "14387", "14386", "14385", "14384", "14383", "14346", "14345", "14344",
+        "14215", "14203", "14202", "14163", "14162", "14161", "14160", "14133", "14132", "14131", "14084", "14077",
+        "14072", "14071", "14049", "14046", "14045", "14044", "14043", "14033", "14025", "14018", "13982", "13981",
+        "13980", "13974", "13973", "13972", "13971", "13936", "13920", "13897", "13896", "13879", "13877", "13876",
+        "13875", "13874", "13845", "13842", "13841", "13840", "13839", "13838", "13828", "13798", "13797", "13796",
+        "13750", "13710", "13695", "13692", "13691", "13689", "13650", "13571", "13570", "13568", "13566", "13565",
+        "13231", "13230", "13229", "13226", "13225", "11720", "11719", "11716", "11693", "11692", "11691", "11689",
+        "11613", "10571", "10314", "10310", "10309", "10194", "10193", "9819", "9808"
+    ]
+    hei_yan = [
+        "14387", "14386", "14385", "14384", "14383", "14163", "14162", "14161", "14160", "13974", "13973", "13972",
+        "13971", "13845", "13750", "13710", "13695"
+    ]
+    if admin_id in qi_yue:
+        return 'qi_yue'
+    if admin_id in hei_yan:
+        return 'hei_yan'
+    return ''

@@ -340,7 +340,6 @@ def write_click_date(write_data, client, db_name, table, step=0):
     else:
         _sql = make_click_inert_sql(db_name, table, _data)
         client.execute(_sql)
-        print(f'Write date to click success: {len(_data)} row')
 
 
 class OperateDataBase:
@@ -511,13 +510,11 @@ def _step_write_click_date(write_data, client, db_name, table, step=0):
         val_sub = _data[_s: _e]
         _sql = make_click_inert_step_sql(db_name, table, val_sub, _col)
         client.execute(_sql)
-        print('is insert data to db now:', _e, 'for ', _top)
         _s += step
         _e += step
     val_sub = _data[_s: _top]
     _sql = make_click_inert_step_sql(db_name, table, val_sub, _col)
     client.execute(_sql)
-    print('is insert data to db now:', _e, 'for ', _top)
 
 
 def make_click_inert_step_sql(db_name, table, _data, col):

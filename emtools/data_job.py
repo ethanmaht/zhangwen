@@ -110,7 +110,7 @@ def user_and_order(read_conn_fig, write_conn_fig, date, referral_data, date_sub,
     user_info = user_info.fillna(0)
     rd.insert_to_data(user_info, write_conn, write_user_db_name, write_user_tab_name, key_name='user_id')
 
-    _user_info = user_info[['user_id', 'referral_book']]
+    _user_info = user_info[['user_id', 'referral_book', 'referral_id']]
     order_info = pd.read_sql(
         sql_code.sql_order_info.format(_num=_, date=order_date), read_conn,
     )
