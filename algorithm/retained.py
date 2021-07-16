@@ -8,6 +8,8 @@ from emtools import emdate
 import datetime as dt
 import random
 from clickhouse_driver import Client
+import os
+from pyhive import hive
 
 
 def retain_date_day(conn, db_name, table, date):
@@ -1228,3 +1230,112 @@ def relation_plat(admin_id):
     if admin_id in hei_yan:
         return 'hei_yan'
     return ''
+
+
+def keep_logon(db_name, tab_name, num, referral_info, date=None):
+    if isinstance(date, list):
+        s_date = date[0]
+    print('======> is start to run {db}.{tab} - {num} - {date} ===> start time:'.format(
+        db=db_name, tab=tab_name, date=date, num=num), dt.datetime.now())
+
+    read_conn_fig = rd.read_db_config('shart_host')
+    read_host_conn_fig = cm.pick_conn_host_by_num(num, read_conn_fig)
+
+    config = rd.read_db_config('click_min')
+    client = Client(host=config['host'], user=config['user'], password=config['pw'], database=config['db'])
+    read_conn = rd.connect_database_host(
+        read_host_conn_fig['host'], read_host_conn_fig['user'], read_host_conn_fig['pw']
+    )
+
+    user_info = pd.read_sql(sql_code.sql_logon.format(num=num), read_conn)
+    custom = pd.read_sql(sql_code.sql_custom_nums.format(num=num), read_conn)
+    sign = pd.read_sql(sql_code.sql_sign.format(num=num), read_conn)
+
+    user_info.fillna(0, inplace=True)
+
+    user_info['user_id'] = user_info['user_id'].astype(str)
+    user_info['referral_id'] = user_info['referral_id'].astype(int)
+    custom['user_id'] = custom['user_id'].astype(str)
+    sign['user_id'] = sign['user_id'].astype(str)
+
+    user_custom = pd.merge(custom, user_info, on='user_id', how='left')
+    user_custom['day_sub'] = user_custom[['c_date', 'u_date']].apply(
+        lambda x: emdate.sub_date(x['u_date'], x['c_date']), axis=1
+    )
+    user_custom = user_custom[user_custom['day_sub'] <= 30]
+
+    user_sign = pd.merge(sign, user_info, on='user_id', how='left')
+    user_sign['day_sub'] = user_sign[['s_date', 'u_date']].apply(
+        lambda x: emdate.sub_date(x['u_date'], x['s_date']), axis=1
+    )
+
+    user_sign = user_sign[user_sign['day_sub'] <= 30][['user_id', 'day_sub', 'sign', 's_date']]
+
+    user_custom_sign = pd.merge(user_custom, user_sign, on=['user_id', 'day_sub'], how='outer')
+
+    referral_info['referral_id'] = referral_info['referral_id'].astype(int)
+    user_custom_sign = pd.merge(user_custom_sign, referral_info, on=['referral_id'], how='left')
+    user_custom_sign = user_custom_sign[user_custom_sign['referral_id'] > 0]
+
+    users = user_info[['user_id', 'referral_id', 'u_date']]
+    user_custom_sign = pd.concat([users, user_custom_sign])
+
+    user_custom_sign.fillna(0, inplace=True)
+    user_custom_sign[['u_date', 's_date', 'c_date']] = user_custom_sign[['u_date', 's_date', 'c_date']].astype(str)
+    user_custom_sign['tab_num'] = num
+    user_custom_sign.sort_values(by=['book_id'], inplace=True, axis=0)
+    # user_custom_sign.to_excel(r'C:\Users\111\Desktop\files\test.xlsx')
+    # print(user_custom_sign.dtypes)
+    rd.write_click_date(user_custom_sign, client, db_name, tab_name, step=300)
+
+
+def logon_keep_hive(db_name, tab_name):
+    host = rd.read_db_config('bigdata_hive_inside')
+    print(host)
+    conn = hive.Connection(
+        host=host['host'], port=10000, username=host['user'],
+    )
+
+    user_logon = pd.read_sql(sql_code.hql_user_logon, conn)
+    consumes_same = pd.read_sql(sql_code.hql_consumes_same, conn)
+    consumes_other = pd.read_sql(sql_code.hql_consumes_other, conn)
+    read_same = pd.read_sql(sql_code.hql_read_same, conn)
+    read_other = pd.read_sql(sql_code.hql_read_other, conn)
+
+    user_logon.fillna(0, inplace=True)
+    consumes_same.fillna(0, inplace=True)
+    consumes_other.fillna(0, inplace=True)
+    read_same.fillna(0, inplace=True)
+    read_other.fillna(0, inplace=True)
+
+    user_logon['referral_id'] = user_logon['referral_id'].astype(int)
+    consumes_same[['referral_id', 'book_id', 'channel_id']] = \
+        consumes_same[['referral_id', 'book_id', 'channel_id']].astype(int)
+    consumes_other[['referral_id', 'book_id', 'channel_id']] = \
+        consumes_other[['referral_id', 'book_id', 'channel_id']].astype(int)
+    read_same[['referral_id', 'book_id', 'channel_id']] = \
+        read_same[['referral_id', 'book_id', 'channel_id']].astype(int)
+    read_other[['referral_id', 'book_id', 'channel_id']] = \
+        read_other[['referral_id', 'book_id', 'channel_id']].astype(int)
+    print(user_logon.index.size)
+    keep_data = pd.merge(user_logon, consumes_same, on=['referral_id'], how='left')
+    print(keep_data.index.size)
+    del user_logon, consumes_same
+    keep_data = pd.merge(keep_data, consumes_other, on=['referral_id', 'day_sub', 'book_id', 'channel_id'], how='left')
+    del consumes_other
+    print(keep_data.index.size)
+    keep_data = pd.merge(keep_data, read_same, on=['referral_id', 'day_sub', 'book_id', 'channel_id'], how='left')
+    del read_same
+    print(keep_data.index.size)
+    keep_data = pd.merge(keep_data, read_other, on=['referral_id', 'day_sub', 'book_id', 'channel_id'], how='left')
+    print(keep_data.index.size)
+    print(keep_data.dtypes)
+    keep_data.fillna(0, inplace=True)
+
+    # config = rd.read_db_config('click_min')
+    # client = Client(host=config['host'], user=config['user'], password=config['pw'], database=config['db'])
+    # rd.write_click_date(keep_data, client, db_name, tab_name, step=300)
+
+    read_config = rd.read_db_config('datamarket')
+    conn = rd.connect_database_host(read_config['host'], read_config['user'], read_config['pw'])
+    rd.insert_to_data(keep_data, conn, db_name, tab_name)

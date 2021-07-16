@@ -103,6 +103,13 @@ shard_host_sound:
   pw:
     Qiyue@321
 
+cps_host:
+  host:
+    rr-2zea0g0z399brxl1b.mysql.rds.aliyuncs.com
+  user:
+    cps_select
+  pw:
+    KU4CsBwrVKpmXt@4yk&LBDuI
 
 cps_host_sound:
   host:
@@ -199,8 +206,15 @@ click_local:
     heiyan
 
 
-bigdata_hive:
+bigdata_hive_out:
   host: 8.140.178.215
   port: 10000
   user: mht
   pw: mht
+
+bigdata_hive_inside:
+  host: 192.168.100.52
+  port: 10000
+  user: mht
+  pw: mht
+

@@ -4,6 +4,7 @@ from emtools import emdate
 import threading
 import time
 from multiprocessing import Process
+from multiprocessing import Pool
 from pandas import DataFrame as df
 import os
 import copy
@@ -84,6 +85,22 @@ def thread_work_kwargs(func, run_list, process_num=8, interval=0.03, step=None, 
         time.sleep(interval)
     for t in pool:
         t.join()
+
+
+def parent_work_kwargs(func, run_list, process_num=8, interval=0.03, step=None, **kwarg):
+    kwarg_dict = kwarg
+    pool = Pool(process_num)
+    while run_list:
+        if len(pool._cache) < process_num:
+            _one = run_list.pop(0)
+            if step:
+                kwarg_dict.update({'num': _one})
+                pool.apply_async(func=func, kwds=kwarg_dict)
+            else:
+                pool.apply_async(func=func, kwds=kwarg_dict)
+        time.sleep(interval)
+    pool.close()
+    pool.join()
 
 
 def thread_work_conn(func, _split_list=None, one_size=2, interval=0.03, **kwarg):

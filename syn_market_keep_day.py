@@ -311,6 +311,17 @@ def referral_roi_90_run(s_date=None):
     )
 
 
+def run_keep_logon():
+    config = rd.read_db_config('cps_host')
+    read_conn = rd.connect_database_host(config['host'], config['user'], config['pw'])
+    referral_info = pd.read_sql('SELECT id referral_id,book_id referral_book from cps.referral', read_conn)
+    rd.syn_date_block_run(
+        func=retained.keep_logon,
+        date='', process_num=4, db_name='heiyan', tab_name='keep_logon', referral_info=referral_info,
+    )
+    read_conn.close()
+
+
 if __name__ == '__main__':
     print('Start work:')
     """ ****** ↓ 自动并部署 ↓ ****** """
@@ -338,11 +349,15 @@ if __name__ == '__main__':
 
     models_keep_data_run()  # 留存 按天 -> 3h
 
-    referral_roi_run(s_date='2019-01-01')  # 推广roi
-    referral_roi_90_run(s_date='2021-01-01')
-
     """ ****** ↓ discard ↓ ****** """
 
+    referral_roi_run(s_date='2021-01-01')  # 推广roi
+    referral_roi_90_run(s_date='2021-01-01')
+
+    # run_keep_logon()
     # order_book_date_sub_run('2019-01-01')
     # syn_market_keep_day_by_order_consume()  # 新留存 订阅和充值 -- 废弃 210412
     # syn_market_keep_day()  # 老留存 -- 废弃 210412
+
+    # referral_roi_run(s_date='2021-01-01')  # 推广roi
+    # referral_roi_90_run(s_date='2021-01-01')

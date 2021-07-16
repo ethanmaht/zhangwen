@@ -1249,6 +1249,21 @@ from model_keep.model_keep_{num}
 where date_day = '{s_date}'
 """
 
+sql_logon = """
+SELECT id user_id,date(FROM_UNIXTIME(createtime)) u_date,channel_id,referral_id_permanent referral_id
+from cps_user_{num}.user
+"""
+
+sql_custom_nums = """
+SELECT user_id,book_id,date(FROM_UNIXTIME(createtime)) c_date,count(*) consumes
+from cps_shard_{num}.consume
+GROUP BY user_id,book_id,c_date
+"""
+
+sql_sign = """
+SELECT uid user_id,date(FROM_UNIXTIME(createtime)) s_date,1 sign
+from cps_shard_{num}.sign
+"""
 
 """ ************** -*- clickhouse -*- ************** """
 
@@ -1406,6 +1421,85 @@ SELECT first_day,book_id,count(*) pv,count(DISTINCT user_id) uv
 from heiyan.show_follow_tab
 where book_id > ''
 group by first_day,book_id
+"""
+
+""" ************** -*- hive sql -*- ************** """
+
+hql_consumes_logon_day_sub = """
+insert into table dm_analyst.dm_consumes_logon_day_sub 
+select user_id,u.logon_date,consume_date,consume.book_id,referral_book,channel_id,u.referral_id,
+    datediff(consume_date, logon_date) day_sub,consumes
+from (
+    SELECT user_id,book_id,dt consume_date,count(*) consumes
+    from dwd_qy_db.dwd_qy_all_consume_delta_day 
+    GROUP BY user_id,book_id,dt
+) consume
+left join (
+    SELECT u.id,date(u.createtime) logon_date,u.channel_id,u.referral_id_permanent referral_id,
+        referral.book_id referral_book
+    from dwd_qy_db.dwd_qy_all_user_chain u
+    left join dev_dwd_db.dwd_qy_profile_cps_referral referral  
+        on referral.id = u.referral_id_permanent
+    where start_time <= current_date() and end_time > current_date()
+) u on u.id = consume.user_id
+"""
+
+hql_read_logon_day_sub = """
+insert into table dm_analyst.dm_read_logon_day_sub 
+select user_read.user_id,u.logon_date,read_date,user_read.book_id,referral_book,channel_id,u.referral_id,
+    datediff(read_date, logon_date) day_sub,user_read
+from (
+    select user_id,book_id,date(createtime) read_date,1 user_read
+    from dwd_qy_db.dwd_qy_profile_cpsshardn_user_recently_read 
+    group by user_id,book_id,date(createtime)
+) user_read
+left join (
+    SELECT u.id,date(u.createtime) logon_date,u.channel_id,u.referral_id_permanent referral_id,
+        referral.book_id referral_book
+    from dwd_qy_db.dwd_qy_all_user_chain u
+    left join dev_dwd_db.dwd_qy_profile_cps_referral referral  
+        on referral.id = u.referral_id_permanent
+    where start_time <= current_date() and end_time > current_date()
+) u on u.id = user_read.user_id
+"""
+
+hql_consumes_same = """
+select book_id,channel_id,referral_id,day_sub,count(DISTINCT user_id) consumes_user,sum(consumes) consumes
+from dm_analyst.dm_consumes_logon_day_sub
+where day_sub <= 15 
+    and referral_book = book_id 
+group by book_id,channel_id,referral_id,day_sub
+"""
+
+hql_consumes_other = """
+select book_id,channel_id,referral_id,day_sub,count(DISTINCT user_id) consumes_user_other,sum(consumes) consumes_other
+from dm_analyst.dm_consumes_logon_day_sub
+where day_sub <= 15
+    and referral_book != book_id 
+group by book_id,channel_id,referral_id,day_sub
+"""
+
+hql_read_same = """
+select book_id,channel_id,referral_id,day_sub,count(DISTINCT user_id) read_user,sum(user_read) user_read
+from dm_analyst.dm_read_logon_day_sub
+where day_sub <= 15 
+    and referral_book = book_id 
+group by book_id,channel_id,referral_id,day_sub
+"""
+
+hql_read_other = """
+select book_id,channel_id,referral_id,day_sub,count(DISTINCT user_id) read_user_other,sum(user_read) user_read_other
+from dm_analyst.dm_read_logon_day_sub
+where day_sub <= 15
+    and referral_book != book_id 
+group by book_id,channel_id,referral_id,day_sub
+"""
+
+hql_user_logon = """
+SELECT referral_id_permanent referral_id,count(*) logon_users
+from dwd_qy_db.dwd_qy_all_user_chain
+where start_time <= current_date() and end_time > current_date() and referral_id_permanent > 0
+group by referral_id_permanent
 """
 
 
